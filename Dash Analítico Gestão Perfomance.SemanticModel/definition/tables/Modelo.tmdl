@@ -1,0 +1,229 @@
+table Modelo
+	excludeFromModelRefresh
+	lineageTag: 3ee90283-dee6-4624-a264-eee2b52893c1
+
+	column Nome
+		dataType: string
+		lineageTag: 7ff11716-16b2-49b6-ac9c-db220784ee0f
+		summarizeBy: none
+		sourceColumn: Nome
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Código
+		dataType: string
+		lineageTag: 0ddf1651-ccb3-4807-807a-d4e9bc5ba423
+		summarizeBy: none
+		sourceColumn: Código
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Identificador Externo'
+		dataType: string
+		lineageTag: 9082c8cc-c589-419d-9f7d-0c501bfa3270
+		summarizeBy: none
+		sourceColumn: Identificador Externo
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Tipo de Equipamento'
+		dataType: string
+		lineageTag: 9b34a822-b954-4fce-a08d-704a8b629bcf
+		summarizeBy: none
+		sourceColumn: Tipo de Equipamento
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Família de Produtos'
+		dataType: string
+		lineageTag: 4d8fcdd8-2117-45e4-b6e1-5963ae585b15
+		summarizeBy: none
+		sourceColumn: Família de Produtos
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Fabricante
+		dataType: string
+		lineageTag: 3f7d3a39-5796-45f8-a3dc-a10f1443324b
+		summarizeBy: none
+		sourceColumn: Fabricante
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Categoria
+		dataType: string
+		lineageTag: a6e7f64e-01a5-412b-84eb-c5f972855a79
+		summarizeBy: none
+		sourceColumn: Categoria
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Descrição
+		dataType: string
+		lineageTag: 8fd1cd50-14f9-443b-9cd0-21b1f4a4d8d9
+		summarizeBy: none
+		sourceColumn: Descrição
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Status
+		dataType: string
+		lineageTag: 64c33061-d9fc-4745-ba5b-92e92ee4d64d
+		summarizeBy: none
+		sourceColumn: Status
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Peso (gramas)'
+		dataType: int64
+		formatString: 0
+		lineageTag: b58372ec-9861-48eb-84bd-bb947c9af169
+		summarizeBy: none
+		sourceColumn: Peso (gramas)
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Part Number'
+		dataType: string
+		lineageTag: ef1c7fd5-8689-442f-91f7-4e6b4587ebbd
+		summarizeBy: none
+		sourceColumn: Part Number
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Custo
+		dataType: double
+		formatString: 0
+		lineageTag: 9ea9219a-7f99-4e2b-826b-394f0e371843
+		summarizeBy: none
+		sourceColumn: Custo
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Custo de Venda'
+		dataType: double
+		formatString: 0
+		lineageTag: 6efb24ca-7c70-4263-9e33-e7336c337db2
+		summarizeBy: none
+		sourceColumn: Custo de Venda
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Modelo = m
+		mode: import
+		source =
+				let
+				    Fonte =
+				        Excel.Workbook(
+				            File.Contents(
+				                "C:\Users\sbahia\OneDrive - UNIVERSO ONLINE S.A\Área de Trabalho\Ambiente PY\logins\Dash Fifo\Modelo.xlsx"
+				            ),
+				            null,
+				            true
+				        ),
+				
+				    ModeloBruto = Fonte{[Item = "Modelo__1", Kind = "Table"]}[Data],
+				
+				    LimpaTexto = (valor as any) as nullable text =>
+				        if valor = null then
+				            null
+				        else if Value.Is(valor, type text) then
+				            Text.Trim(valor)
+				        else
+				            Text.Trim(Text.From(valor, "pt-BR")),
+				
+				    ColunasTexto = {
+				        {"Nome", LimpaTexto, type text},
+				        {"Código", LimpaTexto, type text},
+				        {"Identificador Externo", LimpaTexto, type text},
+				        {"Tipo de Equipamento", LimpaTexto, type text},
+				        {"Família de Produtos", LimpaTexto, type text},
+				        {"Fabricante", LimpaTexto, type text},
+				        {"Categoria", LimpaTexto, type text},
+				        {"Descrição", LimpaTexto, type text},
+				        {"Status", LimpaTexto, type text},
+				        {"Part Number", LimpaTexto, type text}
+				    },
+				
+				    #"Textos Normalizados" =
+				        Table.TransformColumns(ModeloBruto, ColunasTexto),
+				
+				    #"Tipos Ajustados" =
+				        Table.TransformColumnTypes(
+				            #"Textos Normalizados",
+				            {
+				                {"Peso (gramas)", Int64.Type},
+				                {"Custo", type number},
+				                {"Custo de Venda", type number}
+				            },
+				            "pt-BR"
+				        ),
+				
+				    #"Coluna StatusPrioridade" =
+				        Table.AddColumn(
+				            #"Tipos Ajustados",
+				            "StatusPrioridade",
+				            each
+				                if [Status] = null then
+				                    1
+				                else if Text.Upper([Status]) = "HABILITADO" then
+				                    0
+				                else
+				                    1,
+				            Int64.Type
+				        ),
+				
+				    #"Tabela Ordenada" =
+				        Table.Sort(
+				            #"Coluna StatusPrioridade",
+				            {
+				                {"Código", Order.Ascending},
+				                {"StatusPrioridade", Order.Ascending},
+				                {"Nome", Order.Ascending}
+				            }
+				        ),
+				
+				    #"Codigos Válidos" =
+				        Table.SelectRows(
+				            #"Tabela Ordenada",
+				            each [Código] <> null and [Código] <> ""
+				        ),
+				
+				    #"Duplicatas Removidas" =
+				        Table.Distinct(#"Codigos Válidos", {"Código"}),
+				
+				    #"Colunas Auxiliares Removidas" =
+				        Table.RemoveColumns(#"Duplicatas Removidas", {"StatusPrioridade"})
+				in
+				    #"Colunas Auxiliares Removidas"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navegação
+

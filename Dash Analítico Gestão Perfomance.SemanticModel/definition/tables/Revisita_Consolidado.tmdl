@@ -1,0 +1,102 @@
+table Revisita_Consolidado
+	lineageTag: 3033e2a3-9b2c-46bf-9338-d8205bf3398c
+
+	column '2ª Visita foi no Prazo?'
+		dataType: string
+		lineageTag: 459eaa2f-cc6d-4e61-806b-844cc8e4316a
+		summarizeBy: none
+		sourceColumn: 2ª Visita foi no Prazo?
+
+		annotation SummarizationSetBy = Automatic
+
+	column OS_ID
+		dataType: string
+		lineageTag: 86b6b320-fe01-4c47-bef9-8b323e45143e
+		summarizeBy: none
+		sourceColumn: OS_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Name
+		dataType: string
+		lineageTag: 4bced8bd-736e-42eb-844f-c7010aada3dd
+		summarizeBy: none
+		sourceColumn: Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column Extension
+		dataType: string
+		lineageTag: f1183b83-bc53-426c-85f5-5b021db1a81e
+		summarizeBy: none
+		sourceColumn: Extension
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Date accessed'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: f79f0e21-5e91-48c3-8517-a916dbace280
+		summarizeBy: none
+		sourceColumn: Date accessed
+
+		variation Variation
+			isDefault
+			relationship: e72fafc6-9f17-4e1e-9abc-a12246e0b00b
+			defaultHierarchy: LocalDateTable_5df248b4-d940-449f-9be9-63b526d91eb7.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Date modified'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 923ce84f-9b2e-4610-813c-657ed6f8a346
+		summarizeBy: none
+		sourceColumn: Date modified
+
+		variation Variation
+			isDefault
+			relationship: eaa5d5e2-17b0-488a-a725-afdaebe741b8
+			defaultHierarchy: LocalDateTable_27a92a1b-b109-479d-a857-e56fd626332a.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Date created'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 23d5d5d5-5575-4c8b-b8fd-3709ad08ffbc
+		summarizeBy: none
+		sourceColumn: Date created
+
+		variation Variation
+			isDefault
+			relationship: e84fb956-fc01-4c90-a547-d6943e028b0a
+			defaultHierarchy: LocalDateTable_a80bd418-5643-41ff-9292-1a40b9921a19.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Folder Path'
+		dataType: string
+		lineageTag: b991eebe-7a64-4d28-b161-30d7abd73fbd
+		summarizeBy: none
+		sourceColumn: Folder Path
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Revisita_Consolidado = m
+		mode: import
+		source =
+				let
+				    Combinado =
+				        Table.Combine({
+				            Revisita_HISTORICO,
+				            Revisita_ATUAL
+				        }),
+				    UnicoPorOS = Table.Distinct(Combinado, {"OS_ID"})
+				in
+				    UnicoPorOS
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navegação
+

@@ -1,0 +1,396 @@
+===============================================
+MEDIDAS DAX - DASH RV (COMPLETO - ENVIADAS PELO USUÁRIO)
+===============================================
+Dependem de: Eixo_Colaboradores (tabela calculada/consulta), FactOS, FactCSAT.
+FactOS precisa: Matricula, des_service_provider, Líder, Coordenador.Coordenador,
+  pct_ordens_com_ativacao, qtd_ativacoes, pct_ordens_dentro_do_prazo_calculado, qtd_ordens_dentro_do_prazo_calculado.
+FactCSAT precisa: Matricula2, des_service_provider, nota_pesquisa, STATUS ("Considerar").
+
+-----------------------------------------------
+MEDIDAS BASE (usadas pelas regras de cargo)
+-----------------------------------------------
+
+Ativacao_% Base = 
+AVERAGE(FactOS[pct_ordens_com_ativacao])
+
+Ativacao_Qtd Base = 
+SUM(FactOS[qtd_ativacoes])
+
+SLA_% Base = 
+AVERAGE(FactOS[pct_ordens_dentro_do_prazo_calculado])
+
+SLA_Qtd Dentro do Prazo Base = 
+SUM(FactOS[qtd_ordens_dentro_do_prazo_calculado])
+
+CSAT Médio Base (Considerar) = 
+CALCULATE(
+    AVERAGE(FactCSAT[nota_pesquisa]),
+    KEEPFILTERS( FactCSAT[STATUS] = "Considerar" )
+)
+
+CSAT_Base = AVERAGE(FactCSAT[nota_pesquisa])
+
+
+-----------------------------------------------
+ATIVAÇÃO % (REGRA CARGO)
+-----------------------------------------------
+
+Ativacao_% (Regra Cargo) = 
+VAR CargoSel     = SELECTEDVALUE(Eixo_Colaboradores[Cargo])
+VAR CargoSelNorm0= UPPER(TRIM(CargoSel))
+VAR CargoSelNorm =
+    SUBSTITUTE(
+    SUBSTITUTE(
+    SUBSTITUTE(
+    SUBSTITUTE(
+    SUBSTITUTE(
+    SUBSTITUTE(
+    SUBSTITUTE(
+    SUBSTITUTE(
+    SUBSTITUTE(
+    SUBSTITUTE(
+    SUBSTITUTE(
+    SUBSTITUTE(CargoSelNorm0,"Á","A"),"À","A"),"Â","A"),"Ã","A"),"É","E"),
+    "Ê","E"),"Í","I"),"Ó","O"),"Ô","O"),"Õ","O"),"Ú","U"),"Ü","U")
+VAR PoloRegra    = SELECTEDVALUE(Eixo_Colaboradores[Polo Base (Regra)])
+VAR MatriculaSel = SELECTEDVALUE(Eixo_Colaboradores[Matricula])
+VAR MatSelTxt    = FORMAT(MatriculaSel, "")
+VAR NomeNormSel  = SELECTEDVALUE(Eixo_Colaboradores[Nome_Normalizado])
+VAR IsMatrizSel  = COALESCE(SELECTEDVALUE(Eixo_Colaboradores[IsMatriz]), FALSE())
+
+-- linha x total
+VAR IsLinha =
+    HASONEVALUE(Eixo_Colaboradores[Nome_Normalizado]) ||
+    HASONEVALUE(Eixo_Colaboradores[Matricula])        ||
+    HASONEVALUE(Eixo_Colaboradores[Polo Base (Regra)])
+
+-- Polos por gestor (03) – nome normalizado
+VAR Polos_Lider =
+    CALCULATETABLE(
+        DISTINCT(FactOS[des_service_provider]),
+        KEEPFILTERS(
+            FILTER(
+                ALL(FactOS[Líder]),
+                VAR n  = UPPER(TRIM(FactOS[Líder]))
+                VAR n1 = SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(n,
+                       "Á","A"),"À","A"),"Â","A"),"Ã","A"),"É","E"),"Ê","E"),"Í","I"),"Ó","O"),"Ô","O"),"Õ","O")
+                VAR n2 = SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(n1,"Ú","U"),"Ü","U"),"Ç","C")
+                RETURN n2 = NomeNormSel
+            )
+        )
+    )
+VAR Polos_Coord =
+    CALCULATETABLE(
+        DISTINCT(FactOS[des_service_provider]),
+        KEEPFILTERS(
+            FILTER(
+                ALL(FactOS[Coordenador.Coordenador]),
+                VAR n  = UPPER(TRIM(FactOS[Coordenador.Coordenador]))
+                VAR n1 = SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(n,
+                       "Á","A"),"À","A"),"Â","A"),"Ã","A"),"É","E"),"Ê","E"),"Í","I"),"Ó","O"),"Ô","O"),"Õ","O")
+                VAR n2 = SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(n1,"Ú","U"),"Ü","U"),"Ç","C")
+                RETURN n2 = NomeNormSel
+            )
+        )
+    )
+
+RETURN
+IF(
+    NOT IsLinha,
+    -- Total = projeto
+    CALCULATE(
+        [Ativacao_% Base],
+        REMOVEFILTERS(Eixo_Colaboradores),
+        REMOVEFILTERS(FactOS[Matricula]),
+        REMOVEFILTERS(FactOS[des_service_provider])
+    ),
+    SWITCH(
+        TRUE(),
+        -- Matriz = projeto
+        IsMatrizSel,
+            CALCULATE(
+                [Ativacao_% Base],
+                REMOVEFILTERS(Eixo_Colaboradores),
+                REMOVEFILTERS(FactOS[Matricula]),
+                REMOVEFILTERS(FactOS[des_service_provider])
+            ),
+
+        -- Técnico → por MATRÍCULA (03)
+        CONTAINSSTRING(CargoSelNorm, "TECNICO") && NOT ISBLANK(MatriculaSel),
+            CALCULATE(
+                [Ativacao_% Base],
+                KEEPFILTERS(
+                    FILTER(
+                        ALL(FactOS),
+                        FORMAT(FactOS[Matricula], "") = MatSelTxt
+                    )
+                )
+            ),
+
+        -- Assistente → Polo Base (Regra)
+        CONTAINSSTRING(CargoSelNorm, "ASSISTENTE") && NOT ISBLANK(PoloRegra),
+            CALCULATE(
+                [Ativacao_% Base],
+                REMOVEFILTERS(Eixo_Colaboradores),
+                REMOVEFILTERS(FactOS[Matricula]),
+                TREATAS({ PoloRegra }, FactOS[des_service_provider])
+            ),
+
+        -- Líder / Coordenador → conjunto de polos
+        CONTAINSSTRING(CargoSelNorm, "LIDER") && NOT ISEMPTY(Polos_Lider),
+            CALCULATE(
+                [Ativacao_% Base],
+                REMOVEFILTERS(Eixo_Colaboradores),
+                REMOVEFILTERS(FactOS[Matricula]),
+                TREATAS(Polos_Lider, FactOS[des_service_provider])
+            ),
+        CONTAINSSTRING(CargoSelNorm, "COORDENADOR") && NOT ISEMPTY(Polos_Coord),
+            CALCULATE(
+                [Ativacao_% Base],
+                REMOVEFILTERS(Eixo_Colaboradores),
+                REMOVEFILTERS(FactOS[Matricula]),
+                TREATAS(Polos_Coord, FactOS[des_service_provider])
+            ),
+
+        [Ativacao_% Base]
+    )
+)
+
+
+-----------------------------------------------
+CSAT MÉDIO (REGRA CARGO)
+-----------------------------------------------
+
+CSAT Médio (Regra Cargo) = 
+VAR CargoSel     = SELECTEDVALUE(Eixo_Colaboradores[Cargo])
+VAR CargoSelNorm0= UPPER(TRIM(CargoSel))
+VAR CargoSelNorm =
+    SUBSTITUTE(
+    SUBSTITUTE(
+    SUBSTITUTE(
+    SUBSTITUTE(
+    SUBSTITUTE(
+    SUBSTITUTE(
+    SUBSTITUTE(
+    SUBSTITUTE(
+    SUBSTITUTE(
+    SUBSTITUTE(
+    SUBSTITUTE(
+    SUBSTITUTE(CargoSelNorm0,"Á","A"),"À","A"),"Â","A"),"Ã","A"),"É","E"),
+    "Ê","E"),"Í","I"),"Ó","O"),"Ô","O"),"Õ","O"),"Ú","U"),"Ü","U")
+VAR PoloRegra    = SELECTEDVALUE(Eixo_Colaboradores[Polo Base (Regra)])
+VAR MatriculaSel = SELECTEDVALUE(Eixo_Colaboradores[Matricula])
+VAR MatSelTxt    = FORMAT(MatriculaSel, "")
+VAR NomeNormSel  = SELECTEDVALUE(Eixo_Colaboradores[Nome_Normalizado])
+VAR IsMatrizSel  = COALESCE(SELECTEDVALUE(Eixo_Colaboradores[IsMatriz]), FALSE())
+
+VAR IsLinha =
+    HASONEVALUE(Eixo_Colaboradores[Nome_Normalizado]) ||
+    HASONEVALUE(Eixo_Colaboradores[Matricula])        ||
+    HASONEVALUE(Eixo_Colaboradores[Polo Base (Regra)])
+
+VAR Polos_Lider =
+    CALCULATETABLE(
+        DISTINCT(FactOS[des_service_provider]),
+        KEEPFILTERS(
+            FILTER(
+                ALL(FactOS[Líder]),
+                VAR n  = UPPER(TRIM(FactOS[Líder]))
+                VAR n1 = SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(n,
+                       "Á","A"),"À","A"),"Â","A"),"Ã","A"),"É","E"),"Ê","E"),"Í","I"),"Ó","O"),"Ô","O"),"Õ","O")
+                VAR n2 = SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(n1,"Ú","U"),"Ü","U"),"Ç","C")
+                RETURN n2 = NomeNormSel
+            )
+        )
+    )
+VAR Polos_Coord =
+    CALCULATETABLE(
+        DISTINCT(FactOS[des_service_provider]),
+        KEEPFILTERS(
+            FILTER(
+                ALL(FactOS[Coordenador.Coordenador]),
+                VAR n  = UPPER(TRIM(FactOS[Coordenador.Coordenador]))
+                VAR n1 = SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(n,
+                       "Á","A"),"À","A"),"Â","A"),"Ã","A"),"É","E"),"Ê","E"),"Í","I"),"Ó","O"),"Ô","O"),"Õ","O")
+                VAR n2 = SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(n1,"Ú","U"),"Ü","U"),"Ç","C")
+                RETURN n2 = NomeNormSel
+            )
+        )
+    )
+
+RETURN
+IF(
+    NOT IsLinha,
+    CALCULATE(
+        [CSAT Médio Base (Considerar)],
+        REMOVEFILTERS(Eixo_Colaboradores),
+        REMOVEFILTERS(FactCSAT[Matricula2]),
+        REMOVEFILTERS(FactCSAT[des_service_provider])
+    ),
+    SWITCH(
+        TRUE(),
+        IsMatrizSel,
+            CALCULATE(
+                [CSAT Médio Base (Considerar)],
+                REMOVEFILTERS(Eixo_Colaboradores),
+                REMOVEFILTERS(FactCSAT[Matricula2]),
+                REMOVEFILTERS(FactCSAT[des_service_provider])
+            ),
+
+        CONTAINSSTRING(CargoSelNorm, "TECNICO") && NOT ISBLANK(MatriculaSel),
+            CALCULATE(
+                [CSAT Médio Base (Considerar)],
+                KEEPFILTERS(FactCSAT[STATUS] = "Considerar"),
+                KEEPFILTERS(
+                    FILTER(
+                        ALL(FactCSAT),
+                        FORMAT(FactCSAT[Matricula2], "") = MatSelTxt
+                    )
+                )
+            ),
+
+        CONTAINSSTRING(CargoSelNorm, "ASSISTENTE") && NOT ISBLANK(PoloRegra),
+            CALCULATE(
+                [CSAT Médio Base (Considerar)],
+                REMOVEFILTERS(Eixo_Colaboradores),
+                REMOVEFILTERS(FactCSAT[Matricula2]),
+                TREATAS({ PoloRegra }, FactCSAT[des_service_provider])
+            ),
+
+        CONTAINSSTRING(CargoSelNorm, "LIDER") && NOT ISEMPTY(Polos_Lider),
+            CALCULATE(
+                [CSAT Médio Base (Considerar)],
+                REMOVEFILTERS(Eixo_Colaboradores),
+                REMOVEFILTERS(FactCSAT[Matricula2]),
+                TREATAS(Polos_Lider, FactCSAT[des_service_provider])
+            ),
+        CONTAINSSTRING(CargoSelNorm, "COORDENADOR") && NOT ISEMPTY(Polos_Coord),
+            CALCULATE(
+                [CSAT Médio Base (Considerar)],
+                REMOVEFILTERS(Eixo_Colaboradores),
+                REMOVEFILTERS(FactCSAT[Matricula2]),
+                TREATAS(Polos_Coord, FactCSAT[des_service_provider])
+            ),
+
+        [CSAT Médio Base (Considerar)]
+    )
+)
+
+
+-----------------------------------------------
+SLA % (REGRA CARGO)
+-----------------------------------------------
+
+SLA_% (Regra Cargo) = 
+VAR CargoSel     = SELECTEDVALUE(Eixo_Colaboradores[Cargo])
+VAR CargoSelNorm0= UPPER(TRIM(CargoSel))
+VAR CargoSelNorm =
+    SUBSTITUTE(
+    SUBSTITUTE(
+    SUBSTITUTE(
+    SUBSTITUTE(
+    SUBSTITUTE(
+    SUBSTITUTE(
+    SUBSTITUTE(
+    SUBSTITUTE(
+    SUBSTITUTE(
+    SUBSTITUTE(
+    SUBSTITUTE(
+    SUBSTITUTE(CargoSelNorm0,"Á","A"),"À","A"),"Â","A"),"Ã","A"),"É","E"),
+    "Ê","E"),"Í","I"),"Ó","O"),"Ô","O"),"Õ","O"),"Ú","U"),"Ü","U")
+VAR PoloRegra    = SELECTEDVALUE(Eixo_Colaboradores[Polo Base (Regra)])
+VAR MatriculaSel = SELECTEDVALUE(Eixo_Colaboradores[Matricula])
+VAR MatSelTxt    = FORMAT(MatriculaSel, "")
+VAR NomeNormSel  = SELECTEDVALUE(Eixo_Colaboradores[Nome_Normalizado])
+VAR IsMatrizSel  = COALESCE(SELECTEDVALUE(Eixo_Colaboradores[IsMatriz]), FALSE())
+
+VAR IsLinha =
+    HASONEVALUE(Eixo_Colaboradores[Nome_Normalizado]) ||
+    HASONEVALUE(Eixo_Colaboradores[Matricula])        ||
+    HASONEVALUE(Eixo_Colaboradores[Polo Base (Regra)])
+
+VAR Polos_Lider =
+    CALCULATETABLE(
+        DISTINCT(FactOS[des_service_provider]),
+        KEEPFILTERS(
+            FILTER(
+                ALL(FactOS[Líder]),
+                VAR n  = UPPER(TRIM(FactOS[Líder]))
+                VAR n1 = SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(n,
+                       "Á","A"),"À","A"),"Â","A"),"Ã","A"),"É","E"),"Ê","E"),"Í","I"),"Ó","O"),"Ô","O"),"Õ","O")
+                VAR n2 = SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(n1,"Ú","U"),"Ü","U"),"Ç","C")
+                RETURN n2 = NomeNormSel
+            )
+        )
+    )
+VAR Polos_Coord =
+    CALCULATETABLE(
+        DISTINCT(FactOS[des_service_provider]),
+        KEEPFILTERS(
+            FILTER(
+                ALL(FactOS[Coordenador.Coordenador]),
+                VAR n  = UPPER(TRIM(FactOS[Coordenador.Coordenador]))
+                VAR n1 = SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(n,
+                       "Á","A"),"À","A"),"Â","A"),"Ã","A"),"É","E"),"Ê","E"),"Í","I"),"Ó","O"),"Ô","O"),"Õ","O")
+                VAR n2 = SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(n1,"Ú","U"),"Ü","U"),"Ç","C")
+                RETURN n2 = NomeNormSel
+            )
+        )
+    )
+
+RETURN
+IF(
+    NOT IsLinha,
+    CALCULATE(
+        [SLA_% Base],
+        REMOVEFILTERS(Eixo_Colaboradores),
+        REMOVEFILTERS(FactOS[Matricula]),
+        REMOVEFILTERS(FactOS[des_service_provider])
+    ),
+    SWITCH(
+        TRUE(),
+        IsMatrizSel,
+            CALCULATE(
+                [SLA_% Base],
+                REMOVEFILTERS(Eixo_Colaboradores),
+                REMOVEFILTERS(FactOS[Matricula]),
+                REMOVEFILTERS(FactOS[des_service_provider])
+            ),
+
+        CONTAINSSTRING(CargoSelNorm, "TECNICO") && NOT ISBLANK(MatriculaSel),
+            CALCULATE(
+                [SLA_% Base],
+                KEEPFILTERS(
+                    FILTER(
+                        ALL(FactOS),
+                        FORMAT(FactOS[Matricula], "") = MatSelTxt
+                    )
+                )
+            ),
+
+        CONTAINSSTRING(CargoSelNorm, "ASSISTENTE") && NOT ISBLANK(PoloRegra),
+            CALCULATE(
+                [SLA_% Base],
+                REMOVEFILTERS(Eixo_Colaboradores),
+                REMOVEFILTERS(FactOS[Matricula]),
+                TREATAS({ PoloRegra }, FactOS[des_service_provider])
+            ),
+
+        CONTAINSSTRING(CargoSelNorm, "LIDER") && NOT ISEMPTY(Polos_Lider),
+            CALCULATE(
+                [SLA_% Base],
+                REMOVEFILTERS(Eixo_Colaboradores),
+                REMOVEFILTERS(FactOS[Matricula]),
+                TREATAS(Polos_Lider, FactOS[des_service_provider])
+            ),
+        CONTAINSSTRING(CargoSelNorm, "COORDENADOR") && NOT ISEMPTY(Polos_Coord),
+            CALCULATE(
+                [SLA_% Base],
+                REMOVEFILTERS(Eixo_Colaboradores),
+                REMOVEFILTERS(FactOS[Matricula]),
+                TREATAS(Polos_Coord, FactOS[des_service_provider])
+            ),
+
+        [SLA_% Base]
+    )
+)

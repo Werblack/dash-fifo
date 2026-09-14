@@ -1,0 +1,62 @@
+table _DiagEixo
+	lineageTag: b2647a2f-fc84-446f-bf2d-2a7733602fa4
+
+	column Qtd
+		formatString: 0
+		lineageTag: c9768fdb-2af4-40fd-b6da-e3f50a7d28f4
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Qtd]
+
+		annotation SummarizationSetBy = Automatic
+
+	column IsMatriz
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 9b3199ec-5f5e-432a-a55f-234d5a732eb2
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: Eixo_Colaboradores[IsMatriz]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Cargo
+		lineageTag: 03f9ccbf-4ab0-4aaa-bab8-2af23077e5c2
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: Eixo_Colaboradores[Cargo]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Polo Base (Regra)'
+		lineageTag: 527de946-a53e-4fda-93ec-21b296a20cb0
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: Eixo_Colaboradores[Polo Base (Regra)]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Fonte
+		lineageTag: 592b1099-8a75-4ef4-aa62-2f901ee199b4
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: Eixo_Colaboradores[Fonte]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition _DiagEixo = calculated
+		mode: import
+		source =
+				
+				ADDCOLUMNS(
+				    SUMMARIZE(
+				        Eixo_Colaboradores,
+				        Eixo_Colaboradores[IsMatriz],
+				        Eixo_Colaboradores[Cargo],
+				        Eixo_Colaboradores[Polo Base (Regra)],
+				        Eixo_Colaboradores[Fonte]
+				    ),
+				    "Qtd", CALCULATE(COUNTROWS(Eixo_Colaboradores))
+				)
+
+	annotation PBI_Id = 4362f623df464973a24128a7c276c42b
+

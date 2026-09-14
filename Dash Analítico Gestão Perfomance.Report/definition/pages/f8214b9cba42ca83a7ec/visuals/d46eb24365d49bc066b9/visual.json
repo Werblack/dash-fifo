@@ -1,0 +1,57 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "d46eb24365d49bc066b9",
+  "position": {
+    "x": 964,
+    "y": 130,
+    "z": 6000,
+    "height": 150,
+    "width": 280,
+    "tabOrder": 6000
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Consolidado_Abono"
+                    }
+                  },
+                  "Property": "Teste_Aguardando"
+                }
+              },
+              "queryRef": "Consolidado_Abono.Teste_Aguardando",
+              "nativeQueryRef": "Teste_Aguardando",
+              "format": "#,0.00"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Consolidado_Abono"
+                  }
+                },
+                "Property": "Teste_Aguardando"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

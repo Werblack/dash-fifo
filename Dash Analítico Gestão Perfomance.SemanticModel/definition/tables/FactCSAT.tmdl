@@ -1,0 +1,196 @@
+table FactCSAT
+	excludeFromModelRefresh
+	lineageTag: 8147d262-4f8d-483d-97c4-a5945d30ee98
+
+	measure '_Tec Polos from 03' =
+			
+			VAR MatSel = SELECTEDVALUE(Eixo_Colaboradores[Matricula])
+			RETURN
+			CALCULATETABLE(
+			    DISTINCT(FactOS[des_service_provider]),
+			    TREATAS( { MatSel }, FactOS[Matricula] )
+			)
+		lineageTag: 6d74c164-c3a9-41ef-bd2f-b1962ea587e8
+
+	column data_resposta
+		dataType: string
+		lineageTag: cbaf3619-5401-4d55-a0ae-106339344e6a
+		summarizeBy: none
+		sourceColumn: data_resposta
+
+		annotation SummarizationSetBy = Automatic
+
+	column nota_pesquisa
+		dataType: int64
+		formatString: 0
+		lineageTag: ab656af9-c5c1-43e3-ae2b-28771bc6e2ec
+		summarizeBy: sum
+		sourceColumn: nota_pesquisa
+
+		annotation SummarizationSetBy = Automatic
+
+	column resposta_pesquisa
+		dataType: string
+		lineageTag: 42075844-81ae-4eda-ad25-a22f415ff3f9
+		summarizeBy: none
+		sourceColumn: resposta_pesquisa
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'ID WorkFinity'
+		dataType: string
+		lineageTag: c1ba2214-8026-4cfd-9a2f-6f8f670a0167
+		summarizeBy: none
+		sourceColumn: ID WorkFinity
+
+		annotation SummarizationSetBy = Automatic
+
+	column des_service_provider
+		dataType: string
+		lineageTag: c1da07f6-490e-4c3e-af84-a79d5bf94af0
+		summarizeBy: none
+		sourceColumn: des_service_provider
+
+		annotation SummarizationSetBy = Automatic
+
+	column des_closed_by_user
+		dataType: string
+		lineageTag: 9086f9d9-3295-4de6-b017-1aabd313059f
+		summarizeBy: none
+		sourceColumn: des_closed_by_user
+
+		annotation SummarizationSetBy = Automatic
+
+	column Matricula
+		dataType: string
+		lineageTag: 23389ae2-663b-460a-bf7d-172cde0102b8
+		summarizeBy: none
+		sourceColumn: Matricula
+
+		annotation SummarizationSetBy = Automatic
+
+	column Codigo_Polo
+		dataType: string
+		lineageTag: 2a25598b-df17-446e-95bf-ac4d1cc1b3b4
+		summarizeBy: none
+		sourceColumn: Codigo_Polo
+
+		annotation SummarizationSetBy = Automatic
+
+	column Coordenador
+		dataType: string
+		lineageTag: f35002bb-2491-4e47-9358-f3d282f1207a
+		summarizeBy: none
+		sourceColumn: Coordenador
+
+		annotation SummarizationSetBy = Automatic
+
+	column Líder
+		dataType: string
+		lineageTag: 07375e30-98b4-4ef3-b2a7-80250bf25507
+		summarizeBy: none
+		sourceColumn: Líder
+
+		annotation SummarizationSetBy = Automatic
+
+	column Matricula2
+		dataType: string
+		lineageTag: d18863d1-89af-4803-bc3a-f8492610d1d4
+		summarizeBy: none
+		sourceColumn: Matricula2
+
+		annotation SummarizationSetBy = Automatic
+
+	column KeyHierarquia =
+			
+			VAR Coord = COALESCE( TRIM( FactCSAT[Coordenador] ), "" )   // ajuste o nome se for outro
+			VAR Lider = COALESCE( TRIM( FactCSAT[Líder] ), "" )
+			VAR Polo  = COALESCE( TRIM( FactCSAT[des_service_provider] ), "" )
+			RETURN Coord & "|" & Lider & "|" & Polo
+		lineageTag: 00ed60d2-2571-4546-bad4-94a0dd284177
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column STATUS
+		dataType: string
+		lineageTag: c461d139-ab59-4f9e-8f09-d95fdfbaa064
+		summarizeBy: none
+		sourceColumn: STATUS
+
+		annotation SummarizationSetBy = Automatic
+
+	partition FactCSAT = m
+		mode: import
+		source =
+				let
+				    Fonte = Excel.Workbook(
+				        File.Contents("C:\Users\sbahia\OneDrive - UNIVERSO ONLINE S.A\Área de Trabalho\Ambiente PY\logins\Dash Fifo\AUT RV\RV_JANEIRO26\Dados_RV_Janeiro_2026_1.xlsx"),
+				        null,
+				        false
+				    ),
+				
+				    Base04_Sheet = Fonte{[Item="04 - Dados_CSAT", Kind="Sheet"]}[Data],
+				    Cabecalhos = Table.PromoteHeaders(Base04_Sheet, [PromoteAllScalars=true]),
+				
+				    // Limpa #N/A/#N/A! em todas as colunas
+				    LimpaNA1 = Table.ReplaceValue(Cabecalhos, "#N/A", null, Replacer.ReplaceValue, Table.ColumnNames(Cabecalhos)),
+				    LimpaNA2 = Table.ReplaceValue(LimpaNA1, "#N/A!", null, Replacer.ReplaceValue, Table.ColumnNames(LimpaNA1)),
+				
+				    // Normaliza Matricula (mantemos linhas sem Matricula para cálculo por polo)
+				    NormalizaMatricula = Table.TransformColumns(
+				        LimpaNA2,
+				        {{"Matricula", each try Text.Clean(Text.Trim(Text.From(_))) otherwise null, type text}}
+				    ),
+				
+				    // Renomeia colunas conhecidas
+				    RenomeiaColunas = Table.RenameColumns(
+				        NormalizaMatricula,
+				        {
+				            {"Coordenador.Coordenador", "Coordenador"},
+				            {"Codigo Polo", "Codigo_Polo"}
+				        },
+				        MissingField.Ignore
+				    ),
+				
+				    // Garante/Padroniza 'des_service_provider'
+				    Colunas = Table.ColumnNames(RenomeiaColunas),
+				    GaranteDSP =
+				        if List.Contains(Colunas, "des_service_provider") then
+				            RenomeiaColunas
+				        else if List.Contains(Colunas, "Polo") then
+				            Table.RenameColumns(RenomeiaColunas, {{"Polo", "des_service_provider"}})
+				        else if List.Contains(Colunas, "Codigo_Polo") then
+				            Table.RenameColumns(RenomeiaColunas, {{"Codigo_Polo", "des_service_provider"}})
+				        else
+				            Table.AddColumn(RenomeiaColunas, "des_service_provider", each null, type text),
+				
+				    LimpaDSP = Table.TransformColumns(
+				        GaranteDSP,
+				        {{"des_service_provider", each if _ = null then null else Text.Clean(Text.Trim(Text.From(_))), type text}}
+				    ),
+				
+				    // Converte nota_pesquisa para inteiro (tolerante a "10", "10,0", "10.0", texto)
+				    ConverteNota = Table.TransformColumns(
+				        LimpaDSP,
+				        {
+				            {"nota_pesquisa",
+				                each
+				                    let
+				                        v = _
+				                    in
+				                        try Int64.From(v)
+				                        otherwise
+				                            try Int64.From(Number.FromText(Text.Replace(Text.From(v), ",", ".")))
+				                            otherwise null
+				                , Int64.Type}
+				        }
+				    ),
+				    #"Linhas Filtradas" = Table.SelectRows(ConverteNota, each ([Líder] <> null))
+				in
+				    #"Linhas Filtradas"
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+

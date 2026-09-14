@@ -1,0 +1,288 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 345.91193150600657,
+        "y": 119696.8326125654
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 1014.0733119324728,
+            "y": 289558.74078825908
+          },
+          "nodeIndex": "Modelo",
+          "nodeLineageTag": "3ee90283-dee6-4624-a264-eee2b52893c1",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 14
+        },
+        {
+          "location": {
+            "x": 304.45470146632641,
+            "y": 289339.81348637567
+          },
+          "nodeIndex": "pagresolve_regionais",
+          "nodeLineageTag": "a557570b-52df-406c-b8ee-f0d8a86a0a28",
+          "size": {
+            "height": 272,
+            "width": 234
+          },
+          "zIndex": 16
+        },
+        {
+          "location": {
+            "x": 762.61838905412287,
+            "y": 288202.32431217382
+          },
+          "nodeIndex": "Consolidado_Abono",
+          "nodeLineageTag": "ea5432f4-7848-401b-b881-d52e6c685bf6",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 15
+        },
+        {
+          "location": {
+            "x": 1753.1082400058747,
+            "y": 288502.69740281283
+          },
+          "nodeIndex": "Analitico_OS_Consolidado",
+          "nodeLineageTag": "3f3c6241-660b-4cd1-9ce5-d840e5fe0412",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 11
+        },
+        {
+          "location": {
+            "x": 1321.468251194801,
+            "y": 285299.97674125317
+          },
+          "nodeIndex": "Justificativa_Consolidada",
+          "nodeLineageTag": "f7b06fae-76ef-4095-8f95-4acab581242c",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 12
+        },
+        {
+          "location": {
+            "x": 1605.468251194801,
+            "y": 285299.97674125317
+          },
+          "nodeIndex": "Retorno_Consolidado",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 13
+        },
+        {
+          "location": {
+            "x": 2073.6468923859134,
+            "y": 287871.24813679355
+          },
+          "nodeIndex": "DimCalendario",
+          "nodeLineageTag": "e1518dd8-7710-45b7-ac49-3cf8806452ea",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 9
+        },
+        {
+          "location": {
+            "x": 1464.0502121699644,
+            "y": 289087.19940638816
+          },
+          "nodeIndex": "Semanal FIFO",
+          "nodeLineageTag": "896e5b50-99aa-403c-a1c5-916e33ded316",
+          "size": {
+            "height": 459.786805105663,
+            "width": 234
+          },
+          "zIndex": 10
+        },
+        {
+          "location": {
+            "x": 2053.1921909195871,
+            "y": 277323.09225728561
+          },
+          "nodeIndex": "UltimaAtualizacao",
+          "nodeLineageTag": "53c817da-51ac-4518-b997-61d5e1cadc41",
+          "size": {
+            "height": 104,
+            "width": 234
+          },
+          "zIndex": 1
+        },
+        {
+          "location": {
+            "x": 2053.1921909195871,
+            "y": 276111.40124553413
+          },
+          "nodeIndex": "Revisita_Consolidado",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 2
+        },
+        {
+          "location": {
+            "x": 2053.1921909195871,
+            "y": 273078.48911279079
+          },
+          "nodeIndex": "DimColaboradores",
+          "size": {
+            "height": 248,
+            "width": 234
+          },
+          "zIndex": 3
+        },
+        {
+          "location": {
+            "x": 2053.1921909195871,
+            "y": 269677.65422710957
+          },
+          "nodeIndex": "FactOS",
+          "nodeLineageTag": "c029690e-8b18-46b7-aeaa-9bb8e784298e",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 4
+        },
+        {
+          "location": {
+            "x": 2053.1921909195871,
+            "y": 265557.59130824247
+          },
+          "nodeIndex": "FactCSAT",
+          "nodeLineageTag": "8147d262-4f8d-483d-97c4-a5945d30ee98",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 5
+        },
+        {
+          "location": {
+            "x": 2053.1921909195871,
+            "y": 247341.67701787496
+          },
+          "nodeIndex": "Eixo_Colaboradores",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 8
+        },
+        {
+          "location": {
+            "x": 2053.1921909195871,
+            "y": 213038.3794488174
+          },
+          "nodeIndex": "DimHierarquiaSlicer",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 17
+        },
+        {
+          "location": {
+            "x": 2053.1921909195871,
+            "y": 169117.87834013987
+          },
+          "nodeIndex": "_DiagEixo",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 2053.1921909195871,
+            "y": 149938.78800527944
+          },
+          "nodeIndex": "Org",
+          "size": {
+            "height": 248,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 2053.1921909195871,
+            "y": 119789.57239324963
+          },
+          "nodeIndex": "Consolidado_Abono_ATUAL",
+          "nodeLineageTag": "a36543a5-20f2-42b4-b4e5-21151ed942d7",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 2337.1921909195871,
+            "y": 119789.57239324963
+          },
+          "nodeIndex": "Consolidado_Abono_HISTORICO",
+          "nodeLineageTag": "572268ee-1762-445c-9ee7-f9c15391ae9a",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 2621.1921909195871,
+            "y": 119789.57239324963
+          },
+          "nodeIndex": "Revisita_ATUAL",
+          "nodeLineageTag": "ea153c31-fddc-4ce2-ab4f-c91adb9a26a2",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 2905.1921909195871,
+            "y": 119789.57239324963
+          },
+          "nodeIndex": "Revisita_HISTORICO",
+          "nodeLineageTag": "ffeeeded-1183-4064-aec0-6e00facc5c66",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "Todas as tabelas",
+      "zoomValue": 44.230911415480691,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "Todas as tabelas",
+  "defaultDiagram": "Todas as tabelas"
+}

@@ -1,0 +1,204 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "707100a0396d3d4cec38",
+  "position": {
+    "x": 941.42857142857144,
+    "y": 280,
+    "z": 8000,
+    "height": 185.71428571428572,
+    "width": 324.28571428571433,
+    "tabOrder": 8000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "pagresolve_regionais"
+                    }
+                  },
+                  "Property": "Polo"
+                }
+              },
+              "queryRef": "pagresolve_regionais.Polo",
+              "nativeQueryRef": "Polo"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Consolidado_Abono"
+                    }
+                  },
+                  "Property": "Pendente_Justificativa"
+                }
+              },
+              "queryRef": "Consolidado_Abono.Pendente_Justificativa",
+              "nativeQueryRef": "Pendente_Justificativa"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Consolidado_Abono"
+                    }
+                  },
+                  "Property": "Fonte"
+                }
+              },
+              "queryRef": "Consolidado_Abono.Fonte",
+              "nativeQueryRef": "Fonte"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Consolidado_Abono"
+                    }
+                  },
+                  "Property": "OS_ID"
+                }
+              },
+              "queryRef": "Consolidado_Abono.OS_ID",
+              "nativeQueryRef": "OS_ID"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Consolidado_Abono"
+                    }
+                  },
+                  "Property": "Total_OS_FP"
+                }
+              },
+              "queryRef": "Consolidado_Abono.Total_OS_FP",
+              "nativeQueryRef": "Total_OS_FP"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "7c7c2756509a1dca5070",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "pagresolve_regionais"
+              }
+            },
+            "Property": "Polo"
+          }
+        },
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "p",
+              "Entity": "pagresolve_regionais",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "In": {
+                  "Expressions": [
+                    {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Source": "p"
+                          }
+                        },
+                        "Property": "Polo"
+                      }
+                    }
+                  ],
+                  "Values": [
+                    [
+                      {
+                        "Literal": {
+                          "Value": "'SP Riviera'"
+                        }
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "17ab06fc795597900051",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Consolidado_Abono"
+              }
+            },
+            "Property": "Fonte"
+          }
+        },
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "c",
+              "Entity": "Consolidado_Abono",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "In": {
+                  "Expressions": [
+                    {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Source": "c"
+                          }
+                        },
+                        "Property": "Fonte"
+                      }
+                    }
+                  ],
+                  "Values": [
+                    [
+                      {
+                        "Literal": {
+                          "Value": "'Workfinity'"
+                        }
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

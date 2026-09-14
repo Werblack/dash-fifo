@@ -1,0 +1,281 @@
+table Org
+	lineageTag: 3d058941-8dcc-4af8-b341-cdaca7e6ef0a
+
+	column Pessoa
+		dataType: string
+		lineageTag: ba9a72b8-01ef-47ce-83d4-b54f2975b5bb
+		summarizeBy: none
+		sourceColumn: Pessoa
+
+		annotation SummarizationSetBy = Automatic
+
+	column Cargo
+		dataType: string
+		lineageTag: 9f6f9e21-739d-458f-9757-fa095ffc7ba6
+		summarizeBy: none
+		sourceColumn: Cargo
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column Superior
+		dataType: string
+		lineageTag: 8232b0dc-51b4-4133-acb5-8b65b336f4a9
+		summarizeBy: none
+		sourceColumn: Superior
+
+		annotation SummarizationSetBy = Automatic
+
+	column Regional
+		dataType: string
+		lineageTag: 5e7273ce-62d1-4ab5-b7c1-4e5354708194
+		summarizeBy: none
+		sourceColumn: Regional
+
+		annotation SummarizationSetBy = Automatic
+
+	column Subregional
+		dataType: string
+		lineageTag: a9db9447-fe2f-47f6-bd6e-c63b5a78e3d1
+		summarizeBy: none
+		sourceColumn: Subregional
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Assistente Focal'
+		dataType: string
+		lineageTag: 2510e825-d319-4072-b932-d31b43621882
+		summarizeBy: none
+		sourceColumn: Assistente Focal
+
+		annotation SummarizationSetBy = Automatic
+
+	column Nivel
+		dataType: int64
+		formatString: 0
+		lineageTag: 4b728fe3-d0a0-4a65-bc1d-a0f2ad881dfa
+		summarizeBy: sum
+		sourceColumn: Nivel
+
+		annotation SummarizationSetBy = Automatic
+
+	column RowID
+		dataType: int64
+		formatString: 0
+		lineageTag: 95b96b2e-d363-4a43-870c-93b44d759430
+		summarizeBy: count
+		sourceColumn: RowID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Pessoa_Key
+		dataType: string
+		lineageTag: 3a4ff341-7072-4554-acef-0e0132511748
+		summarizeBy: none
+		sourceColumn: Pessoa_Key
+
+		annotation SummarizationSetBy = Automatic
+
+	column Superior_Key
+		dataType: string
+		lineageTag: c070214a-2d5a-458a-ac14-505b400031f1
+		summarizeBy: none
+		sourceColumn: Superior_Key
+
+		annotation SummarizationSetBy = Automatic
+
+	column Cargo_Exibicao
+		dataType: string
+		lineageTag: 775dacc5-0db0-41d7-83ad-2a5f8def7974
+		summarizeBy: none
+		sourceColumn: Cargo_Exibicao
+
+		annotation SummarizationSetBy = Automatic
+
+	column CargoOrdenado
+		dataType: int64
+		formatString: 0
+		lineageTag: d23ff600-5ca2-410a-bda0-e6720b9921c9
+		summarizeBy: sum
+		sourceColumn: CargoOrdenado
+
+		annotation SummarizationSetBy = Automatic
+
+	column NodeID
+		dataType: string
+		lineageTag: 97ad3b90-137f-48ad-bdd3-83fd4ca803a9
+		summarizeBy: none
+		sourceColumn: NodeID
+
+		annotation SummarizationSetBy = Automatic
+
+	column ParentID
+		dataType: string
+		lineageTag: c2d5da3f-a841-48f1-a3e1-6f0e650419cb
+		summarizeBy: none
+		sourceColumn: ParentID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Tooltip_Detalhe
+		dataType: string
+		lineageTag: d85900ac-6b1b-4ad4-afe7-bd3679b7610d
+		summarizeBy: none
+		sourceColumn: Tooltip_Detalhe
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Org = m
+		mode: import
+		source =
+				let
+				    // 1) Fonte
+				    Fonte = Excel.Workbook(
+				        File.Contents("C:\Users\sbahia\OneDrive - UNIVERSO ONLINE S.A\Área de Trabalho\Ambiente PY\logins\Dash Fifo\Canais_Assistentes focais.xlsx"),
+				        null,
+				        true
+				    ),
+				    Base_Sheet = Fonte{[Item="Base", Kind="Sheet"]}[Data],
+				    #"Cabecalhos Promovidos" = Table.PromoteHeaders(Base_Sheet, [PromoteAllScalars=true]),
+				
+				    // 2) Mantem somente colunas necessarias
+				    #"Colunas Selecionadas" = Table.SelectColumns(
+				        #"Cabecalhos Promovidos",
+				        {"Pessoa", "Cargo", "Superior", "Regional", "Subregional", "Assistente Focal", "Nivel"}
+				    ),
+				
+				    // 3) Tipagem
+				    #"Tipos Ajustados" = Table.TransformColumnTypes(
+				        #"Colunas Selecionadas",
+				        {
+				            {"Pessoa", type text},
+				            {"Cargo", type text},
+				            {"Superior", type text},
+				            {"Regional", type text},
+				            {"Subregional", type text},
+				            {"Assistente Focal", type text},
+				            {"Nivel", Int64.Type}
+				        }
+				    ),
+				
+				    // 4) Limpeza de texto
+				    #"Texto Limpo" = Table.TransformColumns(
+				        #"Tipos Ajustados",
+				        {
+				            {"Pessoa", each if _ = null then null else Text.Trim(Text.Clean(Text.From(_))), type text},
+				            {"Cargo", each if _ = null then null else Text.Trim(Text.Clean(Text.From(_))), type text},
+				            {"Superior", each if _ = null then null else Text.Trim(Text.Clean(Text.From(_))), type text},
+				            {"Regional", each if _ = null then null else Text.Trim(Text.Clean(Text.From(_))), type text},
+				            {"Subregional", each if _ = null then null else Text.Trim(Text.Clean(Text.From(_))), type text},
+				            {"Assistente Focal", each if _ = null then null else Text.Trim(Text.Clean(Text.From(_))), type text}
+				        }
+				    ),
+				
+				    // 5) Normaliza superior vazio
+				    #"Superior Normalizado" = Table.TransformColumns(
+				        #"Texto Limpo",
+				        {{"Superior", each if _ = null or _ = "" or _ = "-" then null else _, type text}}
+				    ),
+				
+				    // 6) Indice unico
+				    #"RowID Adicionado" = Table.AddIndexColumn(#"Superior Normalizado", "RowID", 1, 1, Int64.Type),
+				
+				    // 7) Chaves auxiliares
+				    #"Pessoa_Key Adicionada" = Table.AddColumn(#"RowID Adicionado", "Pessoa_Key", each if [Pessoa] = null then null else Text.Upper([Pessoa]), type text),
+				    #"Superior_Key Adicionada" = Table.AddColumn(#"Pessoa_Key Adicionada", "Superior_Key", each if [Superior] = null then null else Text.Upper([Superior]), type text),
+				
+				    // 8) Campos de exibicao/ordenacao
+				    #"Cargo_Exibicao Adicionada" = Table.AddColumn(#"Superior_Key Adicionada", "Cargo_Exibicao", each [Cargo], type text),
+				    #"CargoOrdenado Adicionada" = Table.AddColumn(
+				        #"Cargo_Exibicao Adicionada",
+				        "CargoOrdenado",
+				        each
+				            if [Cargo] = "CEO" then 1
+				            else if [Cargo] = "Analista" or [Cargo] = "Assistente Focal" then 2
+				            else if [Cargo] = "Coordenador" then 3
+				            else if [Cargo] = "Líder" then 4
+				            else if [Cargo] = "Assistente" then 5
+				            else 99,
+				        Int64.Type
+				    ),
+				
+				    // 9) NodeID unico
+				    #"NodeID Adicionado" = Table.AddColumn(
+				        #"CargoOrdenado Adicionada",
+				        "NodeID",
+				        each "N" & Text.PadStart(Text.From([RowID]), 6, "0"),
+				        type text
+				    ),
+				
+				    // 10) Mapa Pessoa_Key -> NodeID (escolhe 1 por Pessoa_Key)
+				    #"Ordenado Mapa" = Table.Sort(#"NodeID Adicionado", {{"Pessoa_Key", Order.Ascending}, {"Nivel", Order.Ascending}, {"RowID", Order.Ascending}}),
+				    #"Mapa Agrupado" = Table.Group(
+				        #"Ordenado Mapa",
+				        {"Pessoa_Key"},
+				        {{"PrimeiroRegistro", each Table.FirstN(_, 1)}}
+				    ),
+				    #"Mapa Expandido" = Table.ExpandTableColumn(#"Mapa Agrupado", "PrimeiroRegistro", {"NodeID"}, {"ParentID_Base"}),
+				
+				    // 11) Resolve ParentID_Base via Superior_Key
+				    #"Merge Parent" = Table.NestedJoin(
+				        #"NodeID Adicionado",
+				        {"Superior_Key"},
+				        #"Mapa Expandido",
+				        {"Pessoa_Key"},
+				        "LookupParent",
+				        JoinKind.LeftOuter
+				    ),
+				    #"Parent Expandido" = Table.ExpandTableColumn(#"Merge Parent", "LookupParent", {"ParentID_Base"}, {"ParentID_Base"}),
+				
+				    // 12) Define root principal (CEO; se nao houver, usa o primeiro por Nivel/RowID)
+				    #"Ordena Root Fallback" = Table.Sort(#"Parent Expandido", {{"Nivel", Order.Ascending}, {"RowID", Order.Ascending}}),
+				    RootFallback = #"Ordena Root Fallback"{0}[NodeID],
+				    RootCEOtry = try Table.SelectRows(#"Parent Expandido", each [Cargo] = "CEO"){0}[NodeID] otherwise null,
+				    RootNodeID = if RootCEOtry <> null then RootCEOtry else RootFallback,
+				
+				    // 13) ParentID final (garante arvore unica)
+				    #"ParentID Final" = Table.AddColumn(
+				        #"Parent Expandido",
+				        "ParentID",
+				        each
+				            let p = [ParentID_Base]
+				            in
+				                if [NodeID] = RootNodeID then null
+				                else if p = null or p = "" or p = [NodeID] then RootNodeID
+				                else p,
+				        type text
+				    ),
+				
+				    // 14) Tooltip final
+				    #"Tooltip Adicionada" = Table.AddColumn(
+				        #"ParentID Final",
+				        "Tooltip_Detalhe",
+				        each
+				            "Cargo: " & (if [Cargo] = null then "-" else [Cargo]) &
+				            " | Regional: " & (if [Regional] = null then "-" else [Regional]) &
+				            " | Subregional: " & (if [Subregional] = null then "-" else [Subregional]) &
+				            " | AF: " & (if [Assistente Focal] = null then "-" else [Assistente Focal]),
+				        type text
+				    ),
+				
+				    // 15) Remove auxiliar interno
+				    #"Auxiliares Removidas" = Table.RemoveColumns(#"Tooltip Adicionada", {"ParentID_Base"}),
+				
+				    // 16) Ordem final de colunas
+				    #"Colunas Reordenadas" = Table.ReorderColumns(
+				        #"Auxiliares Removidas",
+				        {
+				            "RowID", "NodeID", "ParentID",
+				            "Pessoa", "Cargo", "Cargo_Exibicao", "CargoOrdenado",
+				            "Superior", "Regional", "Subregional", "Assistente Focal", "Nivel",
+				            "Pessoa_Key", "Superior_Key", "Tooltip_Detalhe"
+				        }
+				    )
+				in
+				    #"Colunas Reordenadas"
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+

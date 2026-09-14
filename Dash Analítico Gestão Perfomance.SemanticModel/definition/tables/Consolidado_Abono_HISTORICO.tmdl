@@ -1,0 +1,752 @@
+table Consolidado_Abono_HISTORICO
+	lineageTag: 572268ee-1762-445c-9ee7-f9c15391ae9a
+
+	column 'Nome da Origem'
+		dataType: string
+		lineageTag: 0f1ecdc4-76f8-44d3-ab57-4e05a01ccc7c
+		summarizeBy: none
+		sourceColumn: Nome da Origem
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'ID Cliente'
+		dataType: string
+		lineageTag: e2dff91a-aaa4-487c-baa8-5b44d98ba269
+		summarizeBy: none
+		sourceColumn: ID Cliente
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Número WorFinity'
+		dataType: string
+		lineageTag: d069186b-bbf4-4b4d-b2ec-7fe2748fbb1a
+		summarizeBy: none
+		sourceColumn: Número WorFinity
+
+		annotation SummarizationSetBy = Automatic
+
+	column Polo
+		dataType: string
+		lineageTag: db4bb04a-688d-4ab8-9506-af0c4c910cbd
+		summarizeBy: none
+		sourceColumn: Polo
+
+		annotation SummarizationSetBy = Automatic
+
+	column Técnico
+		dataType: string
+		lineageTag: 3cfb7e7d-c808-489d-aba3-776c5ec3769d
+		summarizeBy: none
+		sourceColumn: Técnico
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Novo Modelo'
+		dataType: string
+		lineageTag: d9df54c7-fed5-4e0d-abe4-93080e2a34b3
+		summarizeBy: none
+		sourceColumn: Novo Modelo
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Data Limite Atendimento'
+		dataType: string
+		lineageTag: a4c75d37-0dc3-4242-bd7d-f275d7a24048
+		summarizeBy: none
+		sourceColumn: Data Limite Atendimento
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Fechamento OS'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 7ba7dc25-f133-4bba-b67c-0e9226dc2dea
+		summarizeBy: none
+		sourceColumn: Fechamento OS
+
+		variation Variation
+			isDefault
+			relationship: c0dbfa18-04cc-4d1f-bc82-50e995e58b63
+			defaultHierarchy: LocalDateTable_cfe9b495-ff56-41e0-a1b9-2b0b775f55bc.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Está no Prazo?'
+		dataType: string
+		lineageTag: ff707f6c-f068-4ea0-8870-c5b9c2c9a385
+		summarizeBy: none
+		sourceColumn: Está no Prazo?
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Data e Hora Abertura'
+		dataType: string
+		lineageTag: 37d5bfca-e086-4ca9-9a10-a6979ba2fc4a
+		summarizeBy: none
+		sourceColumn: Data e Hora Abertura
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Status Serial'
+		dataType: string
+		lineageTag: 54d62151-e3a6-4d30-9414-2a5b2673d7bd
+		summarizeBy: none
+		sourceColumn: Status Serial
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Tipo de Serviço'
+		dataType: string
+		lineageTag: d275b680-7593-44fe-8b20-1506c66ae2b8
+		summarizeBy: none
+		sourceColumn: Tipo de Serviço
+
+		annotation SummarizationSetBy = Automatic
+
+	column Família
+		dataType: string
+		lineageTag: 3f6313c9-17be-4c3d-97b8-484e19f13012
+		summarizeBy: none
+		sourceColumn: Família
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Lead Time Dias Ùteis'
+		dataType: string
+		lineageTag: d651929d-8dcd-49d0-a131-71b7e32ce1d5
+		summarizeBy: none
+		sourceColumn: Lead Time Dias Ùteis
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'cep 3'
+		dataType: string
+		lineageTag: ed8ae050-968b-4d22-8cd0-72f9e5d3676b
+		summarizeBy: none
+		sourceColumn: cep
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'estado 3'
+		dataType: string
+		lineageTag: ffcdb9cc-705f-48a7-bbd1-e89a77f03638
+		summarizeBy: none
+		sourceColumn: estado
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'recebedor 3'
+		dataType: string
+		lineageTag: 229c4081-e0c9-4dee-b079-43dec26bcb55
+		summarizeBy: none
+		sourceColumn: recebedor
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'cidade 3'
+		dataType: string
+		lineageTag: 1071948c-c0df-44d6-bba9-51731770dd25
+		summarizeBy: none
+		sourceColumn: cidade
+
+		annotation SummarizationSetBy = Automatic
+
+	column MesRef
+		dataType: string
+		lineageTag: 45efb083-ccea-418e-8953-9ae2b1e06aa6
+		summarizeBy: none
+		sourceColumn: MesRef
+
+		annotation SummarizationSetBy = Automatic
+
+	column Data_Snapshot
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 3c097c02-4c0d-4214-8c6d-a9ba750054f7
+		summarizeBy: none
+		sourceColumn: Data_Snapshot
+
+		variation Variation
+			isDefault
+			relationship: e3f23459-2dda-4433-a97c-3d58c216106e
+			defaultHierarchy: LocalDateTable_dd0fd5ff-bcae-4103-a1ea-d53477b7da41.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column OS_ID
+		dataType: string
+		lineageTag: 080b834c-43f1-4411-8975-619ce322cb54
+		summarizeBy: none
+		sourceColumn: OS_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column FechamentoOS_Date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: a200c659-56c9-4b09-85a9-15bf60fbebb0
+		summarizeBy: none
+		sourceColumn: FechamentoOS_Date
+
+		variation Variation
+			isDefault
+			relationship: 4ed20439-3901-49bc-9491-99a2563b727b
+			defaultHierarchy: LocalDateTable_44324d17-45fc-4ed4-94a1-f07ce7c6f460.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Status_Prazo_Original
+		dataType: string
+		lineageTag: 18047bb2-b4ef-4efd-8948-338747a863ee
+		summarizeBy: none
+		sourceColumn: Status_Prazo_Original
+
+		annotation SummarizationSetBy = Automatic
+
+	column Data_Fechamento_Limpa
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 8ceaeb5c-7bd1-4d8d-9eae-da53dd022b5c
+		summarizeBy: none
+		sourceColumn: Data_Fechamento_Limpa
+
+		variation Variation
+			isDefault
+			relationship: 80a91d2d-ff7d-4bb7-820e-7a77fcb081af
+			defaultHierarchy: LocalDateTable_b2691c41-1ee0-4c61-9774-540df3fe2404.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Data_SLA
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 0c0267ad-7f07-4ac8-836c-d5d7d911dfd0
+		summarizeBy: none
+		sourceColumn: Data_SLA
+
+		variation Variation
+			isDefault
+			relationship: 49e18304-bc48-4a2b-a1dd-d355750bccd8
+			defaultHierarchy: LocalDateTable_03be963f-e7a0-4a9d-9891-6a9197b48fa9.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Status da Justificativa'
+		dataType: string
+		lineageTag: aec1dc10-e039-49cb-a00a-91fa4d9e88eb
+		summarizeBy: none
+		sourceColumn: Status da Justificativa
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Status do Abono'
+		dataType: string
+		lineageTag: 625e0029-e528-4326-bf6b-3be659f5922c
+		summarizeBy: none
+		sourceColumn: Status do Abono
+
+		annotation SummarizationSetBy = Automatic
+
+	column Observação
+		dataType: string
+		lineageTag: a5c79686-d9c5-410c-a45e-9455b3b33834
+		summarizeBy: none
+		sourceColumn: Observação
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Justificativa do Prestador'
+		dataType: string
+		lineageTag: 2bd26ad8-92f2-4a3f-bcf4-8ae0253e0baf
+		summarizeBy: none
+		sourceColumn: Justificativa do Prestador
+
+		annotation SummarizationSetBy = Automatic
+
+	column RET_WF_Just_Prest
+		dataType: string
+		lineageTag: e1514e32-a01a-4c91-bf9c-c6c45c06ddb1
+		summarizeBy: none
+		sourceColumn: RET_WF_Just_Prest
+
+		annotation SummarizationSetBy = Automatic
+
+	column RET_WF_Observacao
+		dataType: string
+		lineageTag: ea62213a-dafa-405c-9aa0-09a058ed96f6
+		summarizeBy: none
+		sourceColumn: RET_WF_Observacao
+
+		annotation SummarizationSetBy = Automatic
+
+	column RET_WF_Abono
+		dataType: string
+		lineageTag: e3c2c9e8-a32c-4e72-8ddb-4f605617e0be
+		summarizeBy: none
+		sourceColumn: RET_WF_Abono
+
+		annotation SummarizationSetBy = Automatic
+
+	column WF_Abono
+		dataType: string
+		lineageTag: 7a3d4efd-5d66-4dcd-b8d5-eec2fb36b8d8
+		summarizeBy: none
+		sourceColumn: WF_Abono
+
+		annotation SummarizationSetBy = Automatic
+
+	column WF_Just_Prest
+		dataType: string
+		lineageTag: ad7a3d2d-ea90-48d2-ad81-838e2cf89b15
+		summarizeBy: none
+		sourceColumn: WF_Just_Prest
+
+		annotation SummarizationSetBy = Automatic
+
+	column WF_Observacao
+		dataType: string
+		lineageTag: f6352a59-5ce8-4669-a8a0-69426e7881d0
+		summarizeBy: none
+		sourceColumn: WF_Observacao
+
+		annotation SummarizationSetBy = Automatic
+
+	column Fonte
+		dataType: string
+		lineageTag: b19985d9-eb18-4002-bc9c-c96813838585
+		summarizeBy: none
+		sourceColumn: Fonte
+
+		annotation SummarizationSetBy = Automatic
+
+	column Status_Abono
+		dataType: string
+		lineageTag: 6f68e176-92f9-4175-9b25-91e33650dc5d
+		summarizeBy: none
+		sourceColumn: Status_Abono
+
+		annotation SummarizationSetBy = Automatic
+
+	column WF_Abono_Flag
+		dataType: int64
+		formatString: 0
+		lineageTag: 83d9134e-0c71-4588-83b6-9c5b0c079729
+		summarizeBy: sum
+		sourceColumn: WF_Abono_Flag
+
+		annotation SummarizationSetBy = Automatic
+
+	column Cod_Polo
+		dataType: string
+		lineageTag: 09311afc-8b77-4290-8203-95f5f3afa3b9
+		summarizeBy: none
+		sourceColumn: Cod_Polo
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Consolidado_Abono_HISTORICO = m
+		mode: import
+		source =
+				let
+				    Fonte = Folder.Files("C:\Users\sbahia\OneDrive - UNIVERSO ONLINE S.A\Área de Trabalho\Ambiente PY\logins\Dash Fifo\Dados Mensais\HISTORICO"),
+				    #"Linhas Filtradas" = Table.SelectRows(Fonte, each Text.Contains([Name], "Analítico de OS's Finalizadas")),
+				    #"Arquivos Ocultos Filtrados1" = Table.SelectRows(#"Linhas Filtradas", each [Attributes]?[Hidden]? <> true),
+				    #"Invocar Função Personalizada1" = Table.AddColumn(#"Arquivos Ocultos Filtrados1", "Transformar Arquivo", each #"Transformar Arquivo"([Content])),
+				    #"Colunas Renomeadas1" = Table.RenameColumns(#"Invocar Função Personalizada1", {"Name", "Nome da Origem"}),
+				    #"Outras Colunas Removidas1" = Table.SelectColumns(#"Colunas Renomeadas1", {"Nome da Origem", "Transformar Arquivo"}),
+				
+				    // EXPANSÃO: une colunas de todos os arquivos (inclui as do mês 10)
+				    ColunasModelo =
+				        let
+				            tabelas = #"Outras Colunas Removidas1"[Transformar Arquivo],
+				            listas  = List.Transform(tabelas, each try Table.ColumnNames(_) otherwise {}),
+				            uniao   = List.Distinct(List.Combine(listas))
+				        in
+				            uniao,
+				    #"Coluna de Tabela Expandida1" = Table.ExpandTableColumn(#"Outras Colunas Removidas1", "Transformar Arquivo", ColunasModelo, ColunasModelo),
+				
+				    // normalização mínima (renomeia só se destino não existir)
+				    MapCols = {
+				        {"Cidade","cidade"},
+				        {"CEP","cep"},
+				        {"Cep","cep"},
+				        {"Estado","estado"},
+				        {"Recebedor","recebedor"},
+				        {"Está no Prazo","Está no Prazo?"},
+				        {"Esta no Prazo","Está no Prazo?"},
+				        {"Tipo de Visita","Tipo de Serviço"},
+				        {"Familia","Família"},
+				        {"Lead Time Dias Úteis","Lead Time Dias Ùteis"},
+				        {"Lead Time Dias Uteis","Lead Time Dias Ùteis"}
+				    },
+				    Normalizado =
+				        List.Accumulate(
+				            MapCols,
+				            #"Coluna de Tabela Expandida1",
+				            (t,p) =>
+				                let
+				                    src  = p{0},
+				                    dst  = p{1},
+				                    cols = Table.ColumnNames(t)
+				                in
+				                    if List.Contains(cols, src) and not List.Contains(cols, dst)
+				                    then Table.RenameColumns(t,{p}, MissingField.Ignore)
+				                    else t
+				        ),
+				
+				    // Tipo de Serviço <- (Tipo de Serviço | Tipo de Visita)
+				    _TipoServ_add = Table.AddColumn(
+				        Normalizado,
+				        "_TipoServ_tmp",
+				        each
+				            let
+				                a = try Text.Trim(Text.From(Record.Field(_, "Tipo de Serviço"))) otherwise null,
+				                b = try Text.Trim(Text.From(Record.Field(_, "Tipo de Visita")))   otherwise null
+				            in
+				                if a <> null and a <> "" then a else b,
+				        type text
+				    ),
+				    _TipoServ_drop = Table.RemoveColumns(_TipoServ_add, {"Tipo de Serviço"}, MissingField.Ignore),
+				    _TipoServ_set  = Table.RenameColumns(_TipoServ_drop, {{"_TipoServ_tmp","Tipo de Serviço"}}, MissingField.Ignore),
+				
+				    // Família <- (Família | Familia)
+				    _Familia_add = Table.AddColumn(
+				        _TipoServ_set,
+				        "_Familia_tmp",
+				        each
+				            let
+				                a = try Text.Trim(Text.From(Record.Field(_, "Família"))) otherwise null,
+				                b = try Text.Trim(Text.From(Record.Field(_, "Familia")))  otherwise null
+				            in
+				                if a <> null and a <> "" then a else b,
+				        type text
+				    ),
+				    _Familia_drop = Table.RemoveColumns(_Familia_add, {"Família"}, MissingField.Ignore),
+				    _Familia_set  = Table.RenameColumns(_Familia_drop, {{"_Familia_tmp","Família"}}, MissingField.Ignore),
+				
+				    // Lead Time Dias Ùteis <- (Lead Time Dias Ùteis | Lead Time Dias Úteis | Lead Time Dias Uteis)
+				    _LT_add = Table.AddColumn(
+				        _Familia_set,
+				        "_LT_tmp",
+				        each
+				            let
+				                a = try Text.Trim(Text.From(Record.Field(_, "Lead Time Dias Ùteis"))) otherwise null,
+				                b = try Text.Trim(Text.From(Record.Field(_, "Lead Time Dias Úteis"))) otherwise null,
+				                c = try Text.Trim(Text.From(Record.Field(_, "Lead Time Dias Uteis"))) otherwise null
+				            in
+				                List.First(
+				                    List.RemoveNulls({
+				                        if a = "" then null else a,
+				                        if b = "" then null else b,
+				                        if c = "" then null else c
+				                    }),
+				                    null
+				                ),
+				        type text
+				    ),
+				    _LT_drop = Table.RemoveColumns(_LT_add, {"Lead Time Dias Ùteis"}, MissingField.Ignore),
+				    _LT_set  = Table.RenameColumns(_LT_drop, {{"_LT_tmp","Lead Time Dias Ùteis"}}, MissingField.Ignore),
+				
+				    // cep <- (cep | CEP | Cep)
+				    _cep_add = Table.AddColumn(
+				        _LT_set,
+				        "_cep_tmp",
+				        each
+				            let
+				                a = try Text.Trim(Text.From(Record.Field(_, "cep"))) otherwise null,
+				                b = try Text.Trim(Text.From(Record.Field(_, "CEP"))) otherwise null,
+				                c = try Text.Trim(Text.From(Record.Field(_, "Cep"))) otherwise null
+				            in
+				                List.First(
+				                    List.RemoveNulls({
+				                        if a = "" then null else a,
+				                        if b = "" then null else b,
+				                        if c = "" then null else c
+				                    }),
+				                    null
+				                ),
+				        type text
+				    ),
+				    _cep_drop = Table.RemoveColumns(_cep_add, {"cep"}, MissingField.Ignore),
+				    _cep_set  = Table.RenameColumns(_cep_drop, {{"_cep_tmp","cep"}}, MissingField.Ignore),
+				
+				    // estado <- (estado | Estado)
+				    _estado_add = Table.AddColumn(
+				        _cep_set,
+				        "_estado_tmp",
+				        each
+				            let
+				                a = try Text.Trim(Text.From(Record.Field(_, "estado"))) otherwise null,
+				                b = try Text.Trim(Text.From(Record.Field(_, "Estado"))) otherwise null
+				            in
+				                if a <> null and a <> "" then a else b,
+				        type text
+				    ),
+				    _estado_drop = Table.RemoveColumns(_estado_add, {"estado"}, MissingField.Ignore),
+				    _estado_set  = Table.RenameColumns(_estado_drop, {{"_estado_tmp","estado"}}, MissingField.Ignore),
+				
+				    // recebedor <- (recebedor | Recebedor)
+				    _receb_add = Table.AddColumn(
+				        _estado_set,
+				        "_receb_tmp",
+				        each
+				            let
+				                a = try Text.Trim(Text.From(Record.Field(_, "recebedor"))) otherwise null,
+				                b = try Text.Trim(Text.From(Record.Field(_, "Recebedor"))) otherwise null
+				            in
+				                if a <> null and a <> "" then a else b,
+				        type text
+				    ),
+				    _receb_drop = Table.RemoveColumns(_receb_add, {"recebedor"}, MissingField.Ignore),
+				    _receb_set  = Table.RenameColumns(_receb_drop, {{"_receb_tmp","recebedor"}}, MissingField.Ignore),
+				
+				    // cidade <- (cidade | Cidade)
+				    _cidade_add = Table.AddColumn(
+				        _receb_set,
+				        "_cidade_tmp",
+				        each
+				            let
+				                a = try Text.Trim(Text.From(Record.Field(_, "cidade"))) otherwise null,
+				                b = try Text.Trim(Text.From(Record.Field(_, "Cidade"))) otherwise null
+				            in
+				                if a <> null and a <> "" then a else b,
+				        type text
+				    ),
+				    _cidade_drop = Table.RemoveColumns(_cidade_add, {"cidade"}, MissingField.Ignore),
+				    Preenchido   = Table.RenameColumns(_cidade_drop, {{"_cidade_tmp","cidade"}}, MissingField.Ignore),
+				
+				    // mantém linhas com OS
+				    #"Remover Linhas Vazias" =
+				        Table.SelectRows(
+				            Preenchido,
+				            each [Número WorFinity] <> null and Text.Trim(Text.From([Número WorFinity])) <> ""
+				        ),
+				
+				    // snapshot e chaves
+				    #"Personalização Adicionada" =
+				        Table.AddColumn(
+				            #"Remover Linhas Vazias",
+				            "MesRef",
+				            each Text.Range([Nome da Origem], Text.PositionOf([Nome da Origem], "2025-"), 7)
+				        ),
+				    #"Data Snapshot" =
+				        Table.AddColumn(
+				            #"Personalização Adicionada",
+				            "Data_Snapshot",
+				            each if [MesRef] <> null then Date.EndOfMonth(Date.FromText([MesRef] & "-01")) else null,
+				            type date
+				        ),
+				    #"Personalização Adicionada1" =
+				        Table.AddColumn(
+				            #"Data Snapshot",
+				            "OS_ID",
+				            each Text.Trim(Text.From([Número WorFinity]))
+				        ),
+				    #"Tipo Alterado3" =
+				        Table.TransformColumnTypes(
+				            #"Personalização Adicionada1",
+				            {{"OS_ID", type text}, {"Fechamento OS", type datetime}}
+				        ),
+				
+				    // data real de fechamento
+				    #"FechamentoOS_Date" =
+				        Table.AddColumn(
+				            #"Tipo Alterado3",
+				            "FechamentoOS_Date",
+				            each if [Fechamento OS] <> null then Date.From([Fechamento OS]) else null,
+				            type date
+				        ),
+				
+				    // guarda status original de prazo (antes de padronizar)
+				    #"Status Prazo Original" =
+				        if List.Contains(Table.ColumnNames(#"FechamentoOS_Date"), "Está no Prazo?")
+				        then
+				            Table.AddColumn(
+				                #"FechamentoOS_Date",
+				                "Status_Prazo_Original",
+				                each Text.Trim(Text.From([#"Está no Prazo?"])),
+				                type text
+				            )
+				        else
+				            #"FechamentoOS_Date",
+				
+				    // padroniza valores do prazo (mantido para não quebrar medidas existentes)
+				    PrazoPadronizado =
+				        if List.Contains(Table.ColumnNames(#"Status Prazo Original"), "Está no Prazo?")
+				        then
+				            Table.TransformColumns(
+				                #"Status Prazo Original",
+				                {{"Está no Prazo?",
+				                  each let v = Text.Lower(Text.Trim(Text.From(_)))
+				                       in  if v = "fechada dentro do prazo" or v = "dentro do prazo" then "Dentro do prazo"
+				                           else if v = "fechada fora do prazo" or v = "fora do prazo" then "Fora do prazo"
+				                           else _,
+				                  type text}}
+				            )
+				        else
+				            #"Status Prazo Original",
+				
+				    // fallback (não usar no slicer)
+				    #"Data_Fechamento_Limpa" =
+				        Table.AddColumn(
+				            PrazoPadronizado,
+				            "Data_Fechamento_Limpa",
+				            each if [Fechamento OS] <> null then Date.From([Fechamento OS]) else [Data_Snapshot],
+				            type date
+				        ),
+				
+				    // Data_SLA: fechadas usam FechamentoOS_Date; abertas fora do prazo usam Data Limite Atendimento
+				    #"Data SLA" =
+				        Table.AddColumn(
+				            #"Data_Fechamento_Limpa",
+				            "Data_SLA",
+				            each
+				                let
+				                    statusOrig =
+				                        try Text.Lower(Text.Trim(Text.From([Status_Prazo_Original])))
+				                        otherwise null,
+				                    temFech = [FechamentoOS_Date] <> null,
+				                    foraPrazo = statusOrig <> null and Text.Contains(statusOrig, "fora do prazo"),
+				                    dataLimite =
+				                        try Date.From([Data Limite Atendimento]) otherwise
+				                        try Date.From([#"Data Limite Atendimento"]) otherwise null
+				                in
+				                    if temFech then [FechamentoOS_Date]
+				                    else if foraPrazo then dataLimite
+				                    else null,
+				            type date
+				        ),
+				
+				    // join justificativa
+				    JoinJust =
+				        Table.NestedJoin(
+				            #"Data SLA",
+				            {"OS_ID"},
+				            Justificativa_Consolidada,
+				            {"OS_ID"},
+				            "Just",
+				            JoinKind.LeftOuter
+				        ),
+				    ExpJust =
+				        Table.ExpandTableColumn(
+				            JoinJust,
+				            "Just",
+				            {"Status da Justificativa","Status do Abono","Observação","Justificativa do Prestador"},
+				            {"Status da Justificativa","Status do Abono","Observação","Justificativa do Prestador"}
+				        ),
+				
+				    // join retorno
+				    JoinRet =
+				        Table.NestedJoin(
+				            ExpJust,
+				            {"OS_ID"},
+				            Retorno_Consolidado,
+				            {"OS_ID"},
+				            "Ret",
+				            JoinKind.LeftOuter
+				        ),
+				    ExpRet =
+				        Table.ExpandTableColumn(
+				            JoinRet,
+				            "Ret",
+				            {"WF_Just_Prest","WF_Observacao","WF_Abono"},
+				            {"RET_WF_Just_Prest","RET_WF_Observacao","RET_WF_Abono"}
+				        ),
+				
+				    // campos WF finais
+				    WF_Abono =
+				        Table.AddColumn(
+				            ExpRet,
+				            "WF_Abono",
+				            each
+				                if [RET_WF_Abono] <> null and Text.Trim([RET_WF_Abono]) <> ""
+				                then [RET_WF_Abono]
+				                else [Status do Abono],
+				            type text
+				        ),
+				    WF_Just_Prest =
+				        Table.AddColumn(
+				            WF_Abono,
+				            "WF_Just_Prest",
+				            each
+				                if [RET_WF_Just_Prest] <> null and Text.Trim([RET_WF_Just_Prest]) <> ""
+				                then [RET_WF_Just_Prest]
+				                else [Justificativa do Prestador],
+				            type text
+				        ),
+				    WF_Observacao =
+				        Table.AddColumn(
+				            WF_Just_Prest,
+				            "WF_Observacao",
+				            each
+				                if [RET_WF_Observacao] <> null and Text.Trim([RET_WF_Observacao]) <> ""
+				                then [RET_WF_Observacao]
+				                else [Observação],
+				            type text
+				        ),
+				
+				    // FONTE: considera Workfinity só se tiver dado vindo de Justificativa/Retorno
+				    FonteCorrigida =
+				        Table.AddColumn(
+				            WF_Observacao,
+				            "Fonte",
+				            each
+				                let
+				                    vJust   = try Text.Trim(Text.From([Status da Justificativa])) otherwise null,
+				                    vAbRet  = try Text.Trim(Text.From([RET_WF_Abono]))          otherwise null,
+				                    vJustR  = try Text.Trim(Text.From([RET_WF_Just_Prest]))     otherwise null,
+				                    vObsRet = try Text.Trim(Text.From([RET_WF_Observacao]))     otherwise null
+				                in
+				                    if (vJust   <> null and vJust   <> "")
+				                    or (vAbRet  <> null and vAbRet  <> "")
+				                    or (vJustR  <> null and vJustR  <> "")
+				                    or (vObsRet <> null and vObsRet <> "")
+				                    then "Workfinity"
+				                    else "Somente BI",
+				            type text
+				        ),
+				
+				    // status do abono
+				    StatusAbono =
+				        Table.AddColumn(
+				            FonteCorrigida,
+				            "Status_Abono",
+				            each
+				                if [#"Está no Prazo?"] = "Dentro do prazo" then null
+				                else if [Fonte] = "Somente BI" then "Somente BI"
+				                else if [WF_Abono] <> null and Text.Trim([WF_Abono]) <> "" then "Abonada"
+				                else "Pendente de Abono",
+				            type text
+				        ),
+				
+				    // flags e chaves
+				    #"Abono Flag" =
+				        Table.AddColumn(
+				            StatusAbono,
+				            "WF_Abono_Flag",
+				            each if [WF_Abono] <> null and Text.Trim([WF_Abono]) <> "" then 1 else 0,
+				            Int64.Type
+				        ),
+				    #"Cod Polo" =
+				        Table.AddColumn(
+				            #"Abono Flag",
+				            "Cod_Polo",
+				            each Text.AfterDelimiter([Polo], "- ", {0, RelativePosition.FromEnd}),
+				            type text
+				        ),
+				    #"Linhas Filtradas1" = Table.SelectRows(#"Cod Polo", each true)
+				in
+				    #"Linhas Filtradas1"
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+

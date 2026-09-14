@@ -1,0 +1,1133 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "d4f77146b02137a919b2",
+  "position": {
+    "x": 0,
+    "y": 0,
+    "z": 15000,
+    "height": 410,
+    "width": 1612,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Consolidado_Abono"
+                    }
+                  },
+                  "Property": "ID Cliente"
+                }
+              },
+              "queryRef": "Sum(Consolidado_Abono.ID Cliente)",
+              "nativeQueryRef": "ID Cliente"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Consolidado_Abono"
+                    }
+                  },
+                  "Property": "OS_ID"
+                }
+              },
+              "queryRef": "Consolidado_Abono.OS_ID",
+              "nativeQueryRef": "OS_ID"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Consolidado_Abono"
+                    }
+                  },
+                  "Property": "Polo"
+                }
+              },
+              "queryRef": "Consolidado_Abono.Polo",
+              "nativeQueryRef": "Polo"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Consolidado_Abono"
+                    }
+                  },
+                  "Property": "Técnico"
+                }
+              },
+              "queryRef": "Consolidado_Abono.Técnico",
+              "nativeQueryRef": "Técnico"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Consolidado_Abono"
+                    }
+                  },
+                  "Property": "Novo Modelo"
+                }
+              },
+              "queryRef": "Consolidado_Abono.Novo Modelo",
+              "nativeQueryRef": "Novo Modelo"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Consolidado_Abono"
+                    }
+                  },
+                  "Property": "Família"
+                }
+              },
+              "queryRef": "Consolidado_Abono.Família",
+              "nativeQueryRef": "Família"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Consolidado_Abono"
+                    }
+                  },
+                  "Property": "Tipo de Serviço"
+                }
+              },
+              "queryRef": "Consolidado_Abono.Tipo de Serviço",
+              "nativeQueryRef": "Tipo de Serviço"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Consolidado_Abono"
+                    }
+                  },
+                  "Property": "Data e Hora Abertura"
+                }
+              },
+              "queryRef": "Consolidado_Abono.Data e Hora Abertura",
+              "nativeQueryRef": "Data e Hora Abertura"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Consolidado_Abono"
+                    }
+                  },
+                  "Property": "Data Limite Atendimento"
+                }
+              },
+              "queryRef": "Consolidado_Abono.Data Limite Atendimento",
+              "nativeQueryRef": "Data Limite Atendimento"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Consolidado_Abono"
+                    }
+                  },
+                  "Property": "Fechamento OS"
+                }
+              },
+              "queryRef": "Consolidado_Abono.Fechamento OS",
+              "nativeQueryRef": "Fechamento OS"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Consolidado_Abono"
+                    }
+                  },
+                  "Property": "Está no Prazo?"
+                }
+              },
+              "queryRef": "Consolidado_Abono.Está no Prazo?",
+              "nativeQueryRef": "Está no Prazo?"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Consolidado_Abono"
+                    }
+                  },
+                  "Property": "Lead Time Dias Ùteis"
+                }
+              },
+              "queryRef": "Sum(Consolidado_Abono.Lead Time Dias Ùteis)",
+              "nativeQueryRef": "Lead Time Dias Ùteis"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Consolidado_Abono"
+                    }
+                  },
+                  "Property": "cep"
+                }
+              },
+              "queryRef": "Sum(Consolidado_Abono.cep)",
+              "nativeQueryRef": "cep"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Consolidado_Abono"
+                    }
+                  },
+                  "Property": "estado"
+                }
+              },
+              "queryRef": "Consolidado_Abono.estado",
+              "nativeQueryRef": "estado"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Consolidado_Abono"
+                    }
+                  },
+                  "Property": "WF_Just_Prest"
+                }
+              },
+              "queryRef": "Consolidado_Abono.WF_Just_Prest",
+              "nativeQueryRef": "WF_Just_Prest"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Consolidado_Abono"
+                    }
+                  },
+                  "Property": "WF_Observacao"
+                }
+              },
+              "queryRef": "Consolidado_Abono.WF_Observacao",
+              "nativeQueryRef": "WF_Observacao"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Consolidado_Abono"
+                    }
+                  },
+                  "Property": "WF_Abono"
+                }
+              },
+              "queryRef": "Consolidado_Abono.WF_Abono",
+              "nativeQueryRef": "WF_Abono"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Consolidado_Abono"
+                    }
+                  },
+                  "Property": "Revisita"
+                }
+              },
+              "queryRef": "Consolidado_Abono.Revisita",
+              "nativeQueryRef": "Revisita"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Consolidado_Abono"
+                  }
+                },
+                "Property": "Técnico"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ]
+      }
+    },
+    "objects": {
+      "total": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "values": [
+        {
+          "properties": {
+            "bold": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "columnHeaders": [
+        {
+          "properties": {
+            "bold": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "backColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 3,
+                      "Percent": 0.4
+                    }
+                  }
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "11D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "grid": [
+        {
+          "properties": {
+            "gridHorizontal": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "gridVertical": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "outlineStyle": {
+              "expr": {
+                "Literal": {
+                  "Value": "1D"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "padding": [
+        {
+          "properties": {
+            "top": {
+              "expr": {
+                "Literal": {
+                  "Value": "2D"
+                }
+              }
+            },
+            "bottom": {
+              "expr": {
+                "Literal": {
+                  "Value": "2D"
+                }
+              }
+            },
+            "left": {
+              "expr": {
+                "Literal": {
+                  "Value": "2D"
+                }
+              }
+            },
+            "right": {
+              "expr": {
+                "Literal": {
+                  "Value": "2D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "titleWrap": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Analitico Fora do WFT'"
+                }
+              }
+            },
+            "bold": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "heading": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Heading6'"
+                }
+              }
+            },
+            "fontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'''Segoe UI Bold'', wf_segoe-ui_bold, helvetica, arial, sans-serif'"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "16D"
+                }
+              }
+            },
+            "alignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'center'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#9ED5D6'"
+                    }
+                  }
+                }
+              }
+            },
+            "transparency": {
+              "expr": {
+                "Literal": {
+                  "Value": "82D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "border": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#9ED5D6'"
+                    }
+                  }
+                }
+              }
+            },
+            "radius": {
+              "expr": {
+                "Literal": {
+                  "Value": "6D"
+                }
+              }
+            },
+            "width": {
+              "expr": {
+                "Literal": {
+                  "Value": "1D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "dropShadow": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "visualHeader": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "stylePreset": [
+        {
+          "properties": {
+            "name": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Default'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "divider": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "ignorePadding": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "spacing": [
+        {
+          "properties": {
+            "customizeSpacing": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "visualTooltip": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "parentGroupName": "fc358a7d81c9d475e62b",
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "d3c64ce6d8a0c9456272",
+        "ordinal": 0,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Consolidado_Abono"
+              }
+            },
+            "Property": "Abertura OS"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "User"
+      },
+      {
+        "name": "7040990b864235893102",
+        "ordinal": 1,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Consolidado_Abono"
+              }
+            },
+            "Property": "cep"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "5049c85c591a92eeb1a6",
+        "ordinal": 2,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Consolidado_Abono"
+              }
+            },
+            "Property": "cidade"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "User"
+      },
+      {
+        "name": "9bdaf56e982c3e932206",
+        "ordinal": 3,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Consolidado_Abono"
+              }
+            },
+            "Property": "Data Limite Atendimento"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "0eb892bd79d533b1c52d",
+        "ordinal": 4,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Consolidado_Abono"
+              }
+            },
+            "Property": "Está no Prazo?"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "4702aac956eda2010b90",
+        "ordinal": 5,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Consolidado_Abono"
+              }
+            },
+            "Property": "estado"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "0b9a815b571a190d269c",
+        "ordinal": 6,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Consolidado_Abono"
+              }
+            },
+            "Property": "Família"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "931fea1730200abdd8d8",
+        "ordinal": 7,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Consolidado_Abono"
+              }
+            },
+            "Property": "Fechamento OS"
+          }
+        },
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "c",
+              "Entity": "Consolidado_Abono",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "Not": {
+                  "Expression": {
+                    "In": {
+                      "Expressions": [
+                        {
+                          "Column": {
+                            "Expression": {
+                              "SourceRef": {
+                                "Source": "c"
+                              }
+                            },
+                            "Property": "Fechamento OS"
+                          }
+                        }
+                      ],
+                      "Values": [
+                        [
+                          {
+                            "Literal": {
+                              "Value": "null"
+                            }
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "objects": {
+          "general": [
+            {
+              "properties": {
+                "isInvertedSelectionMode": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "true"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "0af64c1703b979584064",
+        "ordinal": 8,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Consolidado_Abono"
+              }
+            },
+            "Property": "ID Cliente"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "9c99ea5061894b8eb342",
+        "ordinal": 9,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Consolidado_Abono"
+              }
+            },
+            "Property": "Lead Time Dias Ùteis"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "0aa5734058a01d476932",
+        "ordinal": 10,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Consolidado_Abono"
+              }
+            },
+            "Property": "Novo Modelo"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "c50f25487bb4c05d8955",
+        "ordinal": 11,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Consolidado_Abono"
+              }
+            },
+            "Property": "Polo"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "cd97bbee34e890dee30b",
+        "ordinal": 12,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Consolidado_Abono"
+              }
+            },
+            "Property": "Técnico"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "4bdaf568bc250a0bbd70",
+        "ordinal": 13,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Consolidado_Abono"
+              }
+            },
+            "Property": "Tipo de Serviço"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "c9718bab844352865763",
+        "ordinal": 14,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Consolidado_Abono"
+              }
+            },
+            "Property": "OS_Somente_BI"
+          }
+        },
+        "type": "Advanced",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "c",
+              "Entity": "Consolidado_Abono",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "Comparison": {
+                  "ComparisonKind": 0,
+                  "Left": {
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Source": "c"
+                        }
+                      },
+                      "Property": "OS_Somente_BI"
+                    }
+                  },
+                  "Right": {
+                    "Literal": {
+                      "Value": "1L"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "howCreated": "User",
+        "isHiddenInViewMode": true,
+        "isLockedInViewMode": true
+      },
+      {
+        "name": "9c8610141d4420c08702",
+        "ordinal": 15,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Consolidado_Abono"
+              }
+            },
+            "Property": "WF_Abono"
+          }
+        },
+        "type": "Advanced",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "c",
+              "Entity": "Consolidado_Abono",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "Comparison": {
+                  "ComparisonKind": 0,
+                  "Left": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Source": "c"
+                        }
+                      },
+                      "Property": "WF_Abono"
+                    }
+                  },
+                  "Right": {
+                    "Literal": {
+                      "Value": "null"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "851787b806efe11d8913",
+        "ordinal": 16,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Justificativa_Consolidada"
+              }
+            },
+            "Property": "Status"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "User",
+        "isLockedInViewMode": true,
+        "objects": {
+          "general": [
+            {
+              "properties": {
+                "isInvertedSelectionMode": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "true"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "5065f024b7d3443a058a",
+        "ordinal": 17,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Consolidado_Abono"
+              }
+            },
+            "Property": "WF_Just_Prest"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "d45150087556b707a047",
+        "ordinal": 18,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Consolidado_Abono"
+              }
+            },
+            "Property": "WF_Observacao"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "33b65fb8bd50168c6c30",
+        "ordinal": 19,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Consolidado_Abono"
+              }
+            },
+            "Property": "OS_ID"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "3346f93f08bb630a373a",
+        "ordinal": 20,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Consolidado_Abono"
+              }
+            },
+            "Property": "Data e Hora Abertura"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "4841bd9a77260b0a0e03",
+        "ordinal": 21,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Revisita_Consolidado"
+              }
+            },
+            "Property": "2ª Visita foi no Prazo?"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "User"
+      },
+      {
+        "name": "e0aa13415e7003400102",
+        "ordinal": 22,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Revisita_Consolidado"
+              }
+            },
+            "Property": "2ª Visita foi no Prazo?"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "User"
+      }
+    ],
+    "filterSortOrder": "Custom"
+  }
+}

@@ -1,0 +1,143 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "e2010fb70a9e3c9d5c5a",
+  "position": {
+    "x": 823.90243902439022,
+    "y": 307.3170731707317,
+    "z": 0,
+    "height": 279.51219512195121,
+    "width": 279.51219512195121,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "hierarchyChartByAkvelon6F792A8745784877BCD8F4ACA5AD4207",
+    "query": {
+      "queryState": {
+        "category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Org"
+                    }
+                  },
+                  "Property": "NodeID"
+                }
+              },
+              "queryRef": "Org.NodeID",
+              "nativeQueryRef": "NodeID"
+            }
+          ]
+        },
+        "reportTo": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Org"
+                    }
+                  },
+                  "Property": "ParentID"
+                }
+              },
+              "queryRef": "Org.ParentID",
+              "nativeQueryRef": "ParentID"
+            }
+          ]
+        },
+        "position": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Org"
+                    }
+                  },
+                  "Property": "Cargo_Exibicao"
+                }
+              },
+              "queryRef": "Org.Cargo_Exibicao",
+              "nativeQueryRef": "Cargo_Exibicao"
+            }
+          ]
+        },
+        "team": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Org"
+                    }
+                  },
+                  "Property": "Cargo_Exibicao"
+                }
+              },
+              "queryRef": "Org.Cargo_Exibicao",
+              "nativeQueryRef": "Cargo_Exibicao"
+            }
+          ]
+        },
+        "tooltip": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Org"
+                    }
+                  },
+                  "Property": "Tooltip_Detalhe"
+                }
+              },
+              "queryRef": "Org.Tooltip_Detalhe",
+              "nativeQueryRef": "Tooltip_Detalhe"
+            }
+          ]
+        },
+        "title": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Org"
+                    }
+                  },
+                  "Property": "Pessoa"
+                }
+              },
+              "queryRef": "Org.Pessoa",
+              "nativeQueryRef": "Pessoa"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

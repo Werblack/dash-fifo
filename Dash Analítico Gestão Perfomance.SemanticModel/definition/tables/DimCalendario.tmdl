@@ -1,0 +1,185 @@
+table DimCalendario
+	excludeFromModelRefresh
+	lineageTag: e1518dd8-7710-45b7-ac49-3cf8806452ea
+
+	measure TemDadosPeriodo =
+			
+			VAR qtde =
+			    CALCULATE ( [Total_OS] )   -- respeita o filtro do eixo (mês/semana/dia)
+			RETURN
+			    IF ( qtde > 0, 1, 0 )
+		formatString: 0
+		lineageTag: b4746a00-90df-49ad-823d-9ba3d32887aa
+
+	column Date
+		dataType: dateTime
+		formatString: dd/mm/yyyy
+		lineageTag: 4ac5dc48-6a87-401e-bebc-13ed411b3c87
+		summarizeBy: none
+		sourceColumn: Date
+
+		variation Variation
+			isDefault
+			relationship: 98fc7cd5-6c8b-4ed0-a2d4-d91de4842026
+			defaultHierarchy: LocalDateTable_4eb6e002-2108-478b-945b-026e1db05419.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column Ano
+		dataType: int64
+		formatString: 0
+		lineageTag: 6e0d1f5e-03e2-4328-8f9b-7ebf9c3d7bb7
+		summarizeBy: sum
+		sourceColumn: Ano
+
+		annotation SummarizationSetBy = Automatic
+
+	column Mes
+		dataType: string
+		lineageTag: 8b7c4d09-4fff-41e9-a26d-ae5fe7547582
+		summarizeBy: none
+		sourceColumn: Mes
+		sortByColumn: MesOrdenacao
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column MesOrdenacao
+		dataType: string
+		lineageTag: 62716331-cd94-4a20-8a07-8e7f505bd755
+		summarizeBy: none
+		sourceColumn: MesOrdenacao
+
+		annotation SummarizationSetBy = Automatic
+
+	column SemanaAno
+		dataType: string
+		lineageTag: a2386999-c5f4-49e4-bff8-abb2d728440c
+		summarizeBy: none
+		sourceColumn: SemanaAno
+		sortByColumn: SemanaOrdenacao
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column SemanaOrdenacao
+		dataType: string
+		lineageTag: 260b3c68-944a-483d-b357-51be3319a20a
+		summarizeBy: none
+		sourceColumn: SemanaOrdenacao
+
+		annotation SummarizationSetBy = Automatic
+
+	column AnoMes
+		dataType: string
+		lineageTag: a0875c24-8d91-4775-a876-8bae135866d2
+		summarizeBy: none
+		sourceColumn: AnoMes
+
+		annotation SummarizationSetBy = Automatic
+
+	column InicioSemana
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: dbb88549-9d7e-45be-90b3-5440d17e2e7c
+		summarizeBy: none
+		sourceColumn: InicioSemana
+
+		variation Variation
+			isDefault
+			relationship: 0bf34dd9-0727-40f3-8d23-b83a1c2b37e7
+			defaultHierarchy: LocalDateTable_d862aeca-9371-4027-85af-7d7917f2fb5c.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column NomeDiaSemana
+		dataType: string
+		lineageTag: 6a316669-b681-47fa-8486-f5ca66a31aa3
+		summarizeBy: none
+		sourceColumn: NomeDiaSemana
+
+		annotation SummarizationSetBy = Automatic
+
+	column DiaNumero
+		dataType: int64
+		formatString: 0
+		lineageTag: 5fb8c47f-1595-4c9f-932a-a2ff538bd1d9
+		summarizeBy: sum
+		sourceColumn: DiaNumero
+
+		annotation SummarizationSetBy = Automatic
+
+	hierarchy Periodo
+		lineageTag: d70d6098-464c-4123-a386-6d4f7dfb2a81
+
+		level Ano
+			lineageTag: 1948da23-bbbc-4f1b-a8fb-c814b5ed2945
+			column: Ano
+
+		level Mes
+			lineageTag: 1f63e3df-22ed-4145-999b-80aa7fdb905c
+			column: Mes
+
+		level SemanaAno
+			lineageTag: 219c6248-f694-4c87-9e31-0112124c40dc
+			column: SemanaAno
+
+		level Date
+			lineageTag: c649baa5-f4e2-41a2-bd01-13d200c20533
+			column: Date
+
+	hierarchy PeriodoMulti
+		lineageTag: f10e9a91-6f1a-4f8a-ba30-ff430bdc5867
+
+		level Mes
+			lineageTag: db346b7a-2f95-4b7a-9499-f0f69dd80e16
+			column: Mes
+
+		level SemanaAno
+			lineageTag: a3b9c4e6-14c9-4cbc-a505-8e83b372523a
+			column: SemanaAno
+
+		level DiaNumero
+			lineageTag: a9044e4d-ce9f-4b78-8586-fdcddf346f62
+			column: DiaNumero
+
+	partition DimCalendario = m
+		mode: import
+		source =
+				let
+				    DataInicial = #date(2024, 1, 1),
+				    DataFinal   = #date(2029,12,31),
+				
+				    NumeroDias  = Duration.Days(DataFinal - DataInicial) + 1,
+				    ListaDatas  = List.Dates(DataInicial, NumeroDias, #duration(1,0,0,0)),
+				
+				    Tabela      = Table.FromList(ListaDatas, Splitter.SplitByNothing(), {"Date"}),
+				    TipoData    = Table.TransformColumnTypes(Tabela, {{"Date", type date}}),
+				
+				    AddAno      = Table.AddColumn(TipoData, "Ano", each Date.Year([Date]), Int64.Type),
+				
+				    AddMes      = Table.AddColumn(AddAno, "Mes", each Date.ToText([Date], "MMM/yyyy", "pt-BR"), type text),
+				    AddMesOrd   = Table.AddColumn(AddMes, "MesOrdenacao", each Date.ToText([Date], "yyyy-MM"), type text),
+				    AddAnoMes   = Table.AddColumn(AddMesOrd, "AnoMes", each Text.From([Ano]) & "-" & Text.PadStart(Text.From(Date.Month([Date])), 2, "0"), type text),
+				
+				    AddSemanaOrd = Table.AddColumn(AddAnoMes, "SemanaOrdenacao", each Text.From([Ano]) & "-" & Text.PadStart(Text.From(Date.WeekOfYear([Date])), 2, "0"), type text),
+				    AddSemana    = Table.AddColumn(AddSemanaOrd, "SemanaAno", each "WK-" & Text.PadStart(Text.From(Date.WeekOfYear([Date])), 2, "0"), type text),
+				
+				    AddDiaNumero = Table.AddColumn(AddSemana, "DiaNumero", each Date.Day([Date]), Int64.Type),
+				    AddNomeDia   = Table.AddColumn(AddDiaNumero, "NomeDiaSemana", each Date.ToText([Date], "ddd", "pt-BR"), type text),
+				    AddInicioSem = Table.AddColumn(AddNomeDia, "InicioSemana", each Date.StartOfWeek([Date], Day.Monday), type date)
+				in
+				    AddInicioSem
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+

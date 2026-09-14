@@ -1,0 +1,58 @@
+{
+  "name": "PagSeguro Colours",
+  "dataColors": [
+    "#9ED5D6", 
+    "#FFE72D", 
+    "#DDE05B", 
+    "#95B53D", 
+    "#45549B", 
+    "#8F5CA2", 
+    "#D46D6E",
+    "#E4A039",
+    "#DADADA",
+    "#9D9D9D",
+    "#575757"
+  ],
+  "foreground": "#575757",
+  "tableAccent": "#9D9D9D",
+  "visualStyles": {
+    "*": {
+      "*": {
+        "labels": [
+          {
+            "color": "#575757",
+            "fontSize": 12,
+            "fontFamily": "Arial"
+          }
+        ],
+        "title": [
+          {
+            "color": "#575757",
+            "fontSize": 14,
+            "fontFamily": "Arial",
+            "fontWeight": "bold"
+          }
+        ],
+        "axis": [
+          {
+            "color": "#575757",
+            "fontSize": 12,
+            "fontFamily": "Arial"
+          }
+        ],
+        "grid": [
+          {
+            "color": "#9D9D9D"
+          }
+        ],
+        "legend": [
+          {
+            "color": "#575757",
+            "fontSize": 12,
+            "fontFamily": "Arial"
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,586 @@
+table DimColaboradores
+	excludeFromModelRefresh
+	lineageTag: 119099d0-2e54-4aa6-a4b3-e78cbf7ff0a5
+
+	measure SLA_Dentro_Prazo_Final = ```
+			
+			VAR Cargo = 
+			    IF(
+			        HASONEVALUE(DimColaboradores[Cargo]),
+			        VALUES(DimColaboradores[Cargo]),
+			        BLANK()
+			    )
+			VAR MatriculaAtual = 
+			    IF(
+			        HASONEVALUE(DimColaboradores[Matricula]),
+			        VALUES(DimColaboradores[Matricula]),
+			        BLANK()
+			    )
+			VAR NomeAtual = 
+			    IF(
+			        HASONEVALUE(DimColaboradores[Nome]),
+			        VALUES(DimColaboradores[Nome]),
+			        BLANK()
+			    )
+			VAR PoloAtual = 
+			    IF(
+			        HASONEVALUE(DimColaboradores[Polo]),
+			        VALUES(DimColaboradores[Polo]),
+			        BLANK()
+			    )
+			RETURN
+			    IF(
+			        ISBLANK(Cargo) || ISBLANK(MatriculaAtual),
+			        BLANK(),
+			        IF(
+			            Cargo = "Técnico",
+			            // TÉCNICO: individual
+			            CALCULATE(AVERAGE(FactOS[pct_ordens_dentro_do_prazo_calculado])),
+			            
+			            IF(
+			                Cargo = "Assistente",
+			                // ASSISTENTE: média do polo dele (usando DimColaboradores[Polo])
+			                IF(
+			                    ISBLANK(PoloAtual),
+			                    BLANK(),
+			                    CALCULATE(
+			                        AVERAGE(FactOS[pct_ordens_dentro_do_prazo_calculado]),
+			                        FILTER(
+			                            FactOS,
+			                            FactOS[Matricula] IN 
+			                                FILTER(
+			                                    CALCULATETABLE(
+			                                        VALUES(DimColaboradores[Matricula]),
+			                                        DimColaboradores[Cargo] = "Técnico",
+			                                        DimColaboradores[Polo] = PoloAtual
+			                                    ),
+			                                    1=1
+			                                )
+			                        )
+			                    )
+			                ),
+			                
+			                IF(
+			                    Cargo = "Líder",
+			                    // LÍDER: média dos polos vinculados a ele (via FactOS)
+			                    VAR PolosDoLider = 
+			                        CALCULATETABLE(
+			                            DISTINCT(FactOS[des_service_provider]),
+			                            FactOS[Líder] = NomeAtual,
+			                            FactOS[des_service_provider] <> BLANK()
+			                        )
+			                    RETURN
+			                        IF(
+			                            COUNTROWS(PolosDoLider) = 0,
+			                            BLANK(),
+			                            VAR SLA_Polos = 
+			                                ADDCOLUMNS(
+			                                    PolosDoLider,
+			                                    "@SLA",
+			                                        VAR PoloAux = [des_service_provider]
+			                                        RETURN
+			                                            CALCULATE(
+			                                                AVERAGE(FactOS[pct_ordens_dentro_do_prazo_calculado]),
+			                                                FILTER(
+			                                                    FactOS,
+			                                                    FactOS[Matricula] IN 
+			                                                        FILTER(
+			                                                            CALCULATETABLE(
+			                                                                VALUES(DimColaboradores[Matricula]),
+			                                                                DimColaboradores[Cargo] = "Técnico"
+			                                                            ),
+			                                                            CALCULATE(
+			                                                                SELECTEDVALUE(FactOS[des_service_provider])
+			                                                            ) = PoloAux
+			                                                        )
+			                                                )
+			                                            )
+			                                )
+			                            RETURN
+			                                AVERAGEX(SLA_Polos, [@SLA])
+			                        ),
+			                    
+			                    IF(
+			                        Cargo = "Coordenador",
+			                        // COORDENADOR: média dos líderes vinculados a ele (via FactOS)
+			                        VAR LideresDoCoordenador = 
+			                            CALCULATETABLE(
+			                                DISTINCT(FactOS[Líder]),
+			                                FactOS[Coordenador.Coordenador] = NomeAtual,
+			                                FactOS[Líder] <> BLANK()
+			                            )
+			                        RETURN
+			                            IF(
+			                                COUNTROWS(LideresDoCoordenador) = 0,
+			                                BLANK(),
+			                                VAR SLA_Lideres = 
+			                                    ADDCOLUMNS(
+			                                        LideresDoCoordenador,
+			                                        "@SLA",
+			                                            VAR LiderAux = [Líder]
+			                                            VAR PolosDoLiderAux = 
+			                                                CALCULATETABLE(
+			                                                    DISTINCT(FactOS[des_service_provider]),
+			                                                    FactOS[Líder] = LiderAux,
+			                                                    FactOS[des_service_provider] <> BLANK()
+			                                                )
+			                                            VAR SLA_PolosAux = 
+			                                                ADDCOLUMNS(
+			                                                    PolosDoLiderAux,
+			                                                    "@SLA_Polo",
+			                                                        VAR PoloAux2 = [des_service_provider]
+			                                                        RETURN
+			                                                            CALCULATE(
+			                                                                AVERAGE(FactOS[pct_ordens_dentro_do_prazo_calculado]),
+			                                                                FILTER(
+			                                                                    FactOS,
+			                                                                    FactOS[Matricula] IN 
+			                                                                        FILTER(
+			                                                                            CALCULATETABLE(
+			                                                                                VALUES(DimColaboradores[Matricula]),
+			                                                                                DimColaboradores[Cargo] = "Técnico"
+			                                                                            ),
+			                                                                            CALCULATE(
+			                                                                                SELECTEDVALUE(FactOS[des_service_provider])
+			                                                                            ) = PoloAux2
+			                                                                        )
+			                                                                )
+			                                                            )
+			                                                )
+			                                            RETURN
+			                                                AVERAGEX(SLA_PolosAux, [@SLA_Polo])
+			                                        )
+			                                RETURN
+			                                    AVERAGEX(SLA_Lideres, [@SLA])
+			                            ),
+			                        
+			                        // Matriz/Admin: total geral
+			                        AVERAGE(FactOS[pct_ordens_dentro_do_prazo_calculado])
+			                    )
+			                )
+			            )
+			        )
+			    )
+			```
+		lineageTag: d34846ee-ac02-4487-aa60-84166c9315f0
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Ativacao_Percentual_Final = ```
+			
+			VAR Cargo = 
+			    IF(
+			        HASONEVALUE(DimColaboradores[Cargo]),
+			        VALUES(DimColaboradores[Cargo]),
+			        BLANK()
+			    )
+			VAR MatriculaAtual = 
+			    IF(
+			        HASONEVALUE(DimColaboradores[Matricula]),
+			        VALUES(DimColaboradores[Matricula]),
+			        BLANK()
+			    )
+			VAR NomeAtual = 
+			    IF(
+			        HASONEVALUE(DimColaboradores[Nome]),
+			        VALUES(DimColaboradores[Nome]),
+			        BLANK()
+			    )
+			VAR PoloAtual = 
+			    IF(
+			        HASONEVALUE(DimColaboradores[Polo]),
+			        VALUES(DimColaboradores[Polo]),
+			        BLANK()
+			    )
+			RETURN
+			    IF(
+			        ISBLANK(Cargo) || ISBLANK(MatriculaAtual),
+			        BLANK(),
+			        IF(
+			            Cargo = "Técnico",
+			            // TÉCNICO: individual
+			            CALCULATE(AVERAGE(FactOS[pct_ordens_com_ativacao])),
+			            
+			            IF(
+			                Cargo = "Assistente",
+			                // ASSISTENTE: média do polo dele (usando DimColaboradores[Polo])
+			                IF(
+			                    ISBLANK(PoloAtual),
+			                    BLANK(),
+			                    CALCULATE(
+			                        AVERAGE(FactOS[pct_ordens_com_ativacao]),
+			                        FILTER(
+			                            FactOS,
+			                            FactOS[Matricula] IN 
+			                                FILTER(
+			                                    CALCULATETABLE(
+			                                        VALUES(DimColaboradores[Matricula]),
+			                                        DimColaboradores[Cargo] = "Técnico",
+			                                        DimColaboradores[Polo] = PoloAtual
+			                                    ),
+			                                    1=1
+			                                )
+			                        )
+			                    )
+			                ),
+			                
+			                IF(
+			                    Cargo = "Líder",
+			                    // LÍDER: média dos polos vinculados a ele (via FactOS)
+			                    VAR PolosDoLider = 
+			                        CALCULATETABLE(
+			                            DISTINCT(FactOS[des_service_provider]),
+			                            FactOS[Líder] = NomeAtual,
+			                            FactOS[des_service_provider] <> BLANK()
+			                        )
+			                    RETURN
+			                        IF(
+			                            COUNTROWS(PolosDoLider) = 0,
+			                            BLANK(),
+			                            VAR Ativacao_Polos = 
+			                                ADDCOLUMNS(
+			                                    PolosDoLider,
+			                                    "@Ativacao",
+			                                        VAR PoloAux = [des_service_provider]
+			                                        RETURN
+			                                            CALCULATE(
+			                                                AVERAGE(FactOS[pct_ordens_com_ativacao]),
+			                                                FILTER(
+			                                                    FactOS,
+			                                                    FactOS[Matricula] IN 
+			                                                        FILTER(
+			                                                            CALCULATETABLE(
+			                                                                VALUES(DimColaboradores[Matricula]),
+			                                                                DimColaboradores[Cargo] = "Técnico"
+			                                                            ),
+			                                                            CALCULATE(
+			                                                                SELECTEDVALUE(FactOS[des_service_provider])
+			                                                            ) = PoloAux
+			                                                        )
+			                                                )
+			                                            )
+			                                )
+			                            RETURN
+			                                AVERAGEX(Ativacao_Polos, [@Ativacao])
+			                        ),
+			                    
+			                    IF(
+			                        Cargo = "Coordenador",
+			                        // COORDENADOR: média dos líderes vinculados a ele (via FactOS)
+			                        VAR LideresDoCoordenador = 
+			                            CALCULATETABLE(
+			                                DISTINCT(FactOS[Líder]),
+			                                FactOS[Coordenador.Coordenador] = NomeAtual,
+			                                FactOS[Líder] <> BLANK()
+			                            )
+			                        RETURN
+			                            IF(
+			                                COUNTROWS(LideresDoCoordenador) = 0,
+			                                BLANK(),
+			                                VAR Ativacao_Lideres = 
+			                                    ADDCOLUMNS(
+			                                        LideresDoCoordenador,
+			                                        "@Ativacao",
+			                                            VAR LiderAux = [Líder]
+			                                            VAR PolosDoLiderAux = 
+			                                                CALCULATETABLE(
+			                                                    DISTINCT(FactOS[des_service_provider]),
+			                                                    FactOS[Líder] = LiderAux,
+			                                                    FactOS[des_service_provider] <> BLANK()
+			                                                )
+			                                            VAR Ativacao_PolosAux = 
+			                                                ADDCOLUMNS(
+			                                                    PolosDoLiderAux,
+			                                                    "@Ativacao_Polo",
+			                                                        VAR PoloAux2 = [des_service_provider]
+			                                                        RETURN
+			                                                            CALCULATE(
+			                                                                AVERAGE(FactOS[pct_ordens_com_ativacao]),
+			                                                                FILTER(
+			                                                                    FactOS,
+			                                                                    FactOS[Matricula] IN 
+			                                                                        FILTER(
+			                                                                            CALCULATETABLE(
+			                                                                                VALUES(DimColaboradores[Matricula]),
+			                                                                                DimColaboradores[Cargo] = "Técnico"
+			                                                                            ),
+			                                                                            CALCULATE(
+			                                                                                SELECTEDVALUE(FactOS[des_service_provider])
+			                                                                            ) = PoloAux2
+			                                                                        )
+			                                                                )
+			                                                            )
+			                                                )
+			                                            RETURN
+			                                                AVERAGEX(Ativacao_PolosAux, [@Ativacao_Polo])
+			                                        )
+			                                RETURN
+			                                    AVERAGEX(Ativacao_Lideres, [@Ativacao])
+			                            ),
+			                        
+			                        // Matriz/Admin: total geral
+			                        AVERAGE(FactOS[pct_ordens_com_ativacao])
+			                    )
+			                )
+			            )
+			        )
+			    )
+			```
+		lineageTag: b0d479e8-7a65-479b-92d0-3b118259f1b0
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Teste_Contagem_OS =
+			
+			COUNTROWS(FactOS)
+		formatString: 0
+		lineageTag: 3a19b6cf-a8e4-44f8-b79c-04df843afbb2
+
+	measure CSAT_Polo = ```
+			
+			VAR MatriculaAtual = SELECTEDVALUE(DimColaboradores[Matricula])
+			VAR PoloAtual = 
+			    CALCULATE(
+			        SELECTEDVALUE(FactOS[des_service_provider]),
+			        DimColaboradores[Matricula] = MatriculaAtual
+			    )
+			RETURN
+			    IF(
+			        ISBLANK(PoloAtual),
+			        BLANK(),
+			        VAR MatriculasTecnicos = 
+			            CALCULATETABLE(
+			                DISTINCT(DimColaboradores[Matricula]),
+			                DimColaboradores[Cargo] = "Técnico"
+			            )
+			        RETURN
+			            CALCULATE(
+			                AVERAGE(FactCSAT[nota_pesquisa]),
+			                FactCSAT[des_service_provider] = PoloAtual,
+			                FactCSAT[Matricula] IN MatriculasTecnicos
+			            )
+			    )
+			```
+		lineageTag: 94d900e1-dfe7-47f9-b0ac-7605bc7a552a
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure CSAT_Teste_Simples = ```
+			
+			VAR Cargo = 
+			    IF(
+			        HASONEVALUE(DimColaboradores[Cargo]),
+			        VALUES(DimColaboradores[Cargo]),
+			        BLANK()
+			    )
+			VAR PoloAtual = 
+			    IF(
+			        HASONEVALUE(DimColaboradores[Polo]),
+			        VALUES(DimColaboradores[Polo]),
+			        BLANK()
+			    )
+			RETURN
+			    IF(
+			        Cargo = "Técnico",
+			        "É TÉCNICO",
+			        IF(
+			            Cargo = "Assistente",
+			            "É ASSISTENTE - Polo: " & IF(ISBLANK(PoloAtual), "SEM POLO", PoloAtual),
+			            IF(
+			                Cargo = "Líder",
+			                "É LÍDER",
+			                IF(
+			                    Cargo = "Coordenador",
+			                    "É COORDENADOR",
+			                    "OUTRO CARGO"
+			                )
+			            )
+			        )
+			    )
+			```
+		lineageTag: dde3ce98-0496-48d6-834c-b080782de8b2
+
+	column Periodo
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: a4e961b8-9196-4758-ac31-57a81e49377e
+		summarizeBy: none
+		sourceColumn: Periodo
+
+		variation Variation
+			isDefault
+			relationship: 588c3b76-d47b-4b4f-8bf4-b7a4c2ef2166
+			defaultHierarchy: LocalDateTable_af28834a-218c-4f01-a6e0-656809eeb1e0.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Matricula
+		dataType: string
+		lineageTag: 8d0d9244-a42d-41f5-9b48-eb45f95c8da5
+		summarizeBy: none
+		sourceColumn: Matricula
+
+		annotation SummarizationSetBy = Automatic
+
+	column Nome
+		dataType: string
+		lineageTag: dce6736c-1752-4af8-8b0b-0d6f5359f7aa
+		summarizeBy: none
+		sourceColumn: Nome
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Polo RH Site'
+		dataType: string
+		lineageTag: ce2c2630-96e9-44fb-b486-2d66b3072d67
+		summarizeBy: none
+		sourceColumn: Polo RH Site
+
+		annotation SummarizationSetBy = Automatic
+
+	column Cargo
+		dataType: string
+		lineageTag: 84412795-ef1b-4c38-97d3-b76fc995fdb5
+		summarizeBy: none
+		sourceColumn: Cargo
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'DATA ADMISSÃO'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 632f2787-07b0-41b1-83c9-861c8d5148a2
+		summarizeBy: none
+		sourceColumn: DATA ADMISSÃO
+
+		variation Variation
+			isDefault
+			relationship: 9a9f54ef-8745-443f-9ac1-df1d28d7b2d2
+			defaultHierarchy: LocalDateTable_10c69be4-3481-40a6-b46c-0ed9ba72f84f.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'DATA DEMISSÃO'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: c26c189c-45b5-4f38-8341-df30db65a5b0
+		summarizeBy: none
+		sourceColumn: DATA DEMISSÃO
+
+		variation Variation
+			isDefault
+			relationship: b1b0adec-e0ae-4bae-97c8-41c2df6c1332
+			defaultHierarchy: LocalDateTable_c05450e2-3893-4460-9006-3c31d99bfd5b.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Polo_Base
+		dataType: string
+		lineageTag: 9d6275ea-9c76-45c6-8887-0d91fc2c3fab
+		summarizeBy: none
+		sourceColumn: Polo_Base
+
+		annotation SummarizationSetBy = Automatic
+
+	column IsMatriz
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: f081eee1-16db-4807-9808-a0cd261a8232
+		summarizeBy: none
+		sourceColumn: IsMatriz
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimColaboradores = m
+		mode: import
+		source =
+				let
+				   Fonte = Excel.Workbook(
+				    File.Contents("C:\Users\sbahia\OneDrive - UNIVERSO ONLINE S.A\Área de Trabalho\Ambiente PY\logins\Dash Fifo\AUT RV\RV_JANEIRO26\Dados_RV_Janeiro_2026_1.xlsx"),
+				    null,
+				    false
+				),
+				    Base01_Sheet = Fonte{[Item="01 - Colaboradores Elegiveis", Kind="Sheet"]}[Data],
+				    Cabecalhos = Table.PromoteHeaders(Base01_Sheet, [PromoteAllScalars=true]),
+				
+				    // Limpa #N/A/#N/A! em todas as colunas
+				    LimpaNA1 = Table.ReplaceValue(Cabecalhos, "#N/A", null, Replacer.ReplaceValue, Table.ColumnNames(Cabecalhos)),
+				    LimpaNA2 = Table.ReplaceValue(LimpaNA1, "#N/A!", null, Replacer.ReplaceValue, Table.ColumnNames(LimpaNA1)),
+				
+				    // Converte tipos principais (cultura pt-BR)
+				    Tipos = Table.TransformColumnTypes(
+				        LimpaNA2,
+				        {
+				            {"Periodo", type date},
+				            {"Matricula", type text},
+				            {"Nome", type text},
+				            {"Polo RH Site", type text},
+				            {"Cargo", type text},
+				            {"DATA ADMISSÃO", type date},
+				            {"DATA DEMISSÃO", type date}
+				        },
+				        "pt-BR"
+				    ),
+				
+				    // Normaliza Matricula e textos principais
+				    NormalizaTextos = Table.TransformColumns(
+				        Tipos,
+				        {
+				            {"Matricula", each if _ = null then null else Text.Clean(Text.Trim(Text.From(_))), type text},
+				            {"Nome", each if _ = null then null else Text.Clean(Text.Trim(Text.From(_))), type text},
+				            {"Polo RH Site", each if _ = null then null else Text.Clean(Text.Trim(Text.From(_))), type text},
+				            {"Cargo", each if _ = null then null else Text.Clean(Text.Trim(Text.From(_))), type text}
+				        }
+				    ),
+				
+				    // Remove linhas sem matricula
+				    FiltraMatricula = Table.SelectRows(NormalizaTextos, each [Matricula] <> null and [Matricula] <> ""),
+				
+				    // Ordena por Periodo desc para manter o registro mais recente por Matricula
+				    OrdenaPeriodoDesc = Table.Sort(FiltraMatricula, {{"Periodo", Order.Descending}}),
+				    UnicoPorMatricula = Table.Distinct(OrdenaPeriodoDesc, {"Matricula"}),
+				
+				    // Merge com a 02 - DimMatriculaWFT (consulta já criada)
+				    MergeWFT = Table.NestedJoin(UnicoPorMatricula, {"Matricula"}, DimMatriculaWFT, {"Matricula"}, "WFT", JoinKind.LeftOuter),
+				    ExpandeWFT = Table.ExpandTableColumn(MergeWFT, "WFT", {"Polo_Base"}, {"Polo_Base"}),
+				
+				    // Flag Matriz (Polo RH Site = 'PagResolve Matriz SP')
+				    AddIsMatriz = Table.AddColumn(
+				        ExpandeWFT,
+				        "IsMatriz",
+				        each
+				            let
+				                poloSite = [Polo RH Site]
+				            in
+				                if poloSite <> null and Text.Upper(Text.Trim(poloSite)) = "PAGRESOLVE MATRIZ SP" then true else false,
+				        type logical
+				    ),
+				
+				    // Tipagem final (garantia)
+				    TipagemFinal = Table.TransformColumnTypes(
+				        AddIsMatriz,
+				        {
+				            {"Matricula", type text},
+				            {"Nome", type text},
+				            {"Cargo", type text},
+				            {"Polo RH Site", type text},
+				            {"Polo_Base", type text},
+				            {"Periodo", type date},
+				            {"DATA ADMISSÃO", type date},
+				            {"DATA DEMISSÃO", type date},
+				            {"IsMatriz", type logical}
+				        }
+				    )
+				in
+				    TipagemFinal
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navegação
+

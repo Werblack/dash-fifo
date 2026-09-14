@@ -1,0 +1,481 @@
+expression Parâmetro1 = #"Arquivo de Amostra" meta [IsParameterQuery=true, BinaryIdentifier=#"Arquivo de Amostra", Type="Binary", IsParameterQueryRequired=true]
+	lineageTag: 0cf4abc5-7299-4b7c-ad4d-69c56bf449f9
+	queryGroup: 'Transformar Arquivo de Dados Mensais\Consultas Auxiliares'
+
+	annotation PBI_ResultType = Binary
+
+expression 'Transformar o Arquivo de Exemplo' =
+		let
+		    Fonte = Excel.Workbook(Parâmetro1, null, true),
+		    Export_Sheet = Fonte{[Item="Export",Kind="Sheet"]}[Data],
+		    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Export_Sheet, [PromoteAllScalars=true])
+		in
+		    #"Cabeçalhos Promovidos"
+	lineageTag: 71cf97b7-7462-4dac-9556-17517c80e41e
+	queryGroup: 'Transformar Arquivo de Dados Mensais'
+
+	annotation PBI_ResultType = Table
+
+expression 'Arquivo de Amostra' =
+		let
+		    Fonte = Folder.Files("C:\Users\sbahia\OneDrive - UNIVERSO ONLINE S.A\Área de Trabalho\Ambiente PY\logins\Dash Fifo\Dados Mensais"),
+		    #"Linhas Filtradas" = Table.SelectRows(Fonte, each Text.Contains([Name], "Analítico de OS's Finalizadas")),
+		    Navegação1 = #"Linhas Filtradas"{0}[Content]
+		in
+		    Navegação1
+	lineageTag: b56774ed-a7b4-4c29-9ab8-4b23d8ec4435
+	queryGroup: 'Transformar Arquivo de Dados Mensais\Consultas Auxiliares'
+
+	annotation PBI_ResultType = Binary
+
+expression 'Transformar Arquivo' =
+		let
+		    Fonte = (Parâmetro1 as binary) => let
+		    Fonte = Excel.Workbook(Parâmetro1, null, true),
+		    Export_Sheet = Fonte{[Item="Export",Kind="Sheet"]}[Data],
+		    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Export_Sheet, [PromoteAllScalars=true])
+		in
+		    #"Cabeçalhos Promovidos"
+		in
+		    Fonte
+	lineageTag: 61ffda84-920d-428b-88af-95659ce346d0
+	queryGroup: 'Transformar Arquivo de Dados Mensais\Consultas Auxiliares'
+
+	annotation PBI_ResultType = Function
+
+expression Parâmetro2 = #"Arquivo de Amostra (2)" meta [IsParameterQuery=true, BinaryIdentifier=#"Arquivo de Amostra (2)", Type="Binary", IsParameterQueryRequired=true]
+	lineageTag: fed74f12-068a-4ef2-a32f-ea860964cb02
+	queryGroup: 'Transformar Arquivo de Analitico_OS_Consolidado (2)\Consultas Auxiliares'
+
+	annotation PBI_ResultType = Binary
+
+expression Parâmetro3 = #"Arquivo de Amostra (3)" meta [IsParameterQuery=true, BinaryIdentifier=#"Arquivo de Amostra (3)", Type="Binary", IsParameterQueryRequired=true]
+	lineageTag: 05aef503-4c83-465e-9fac-b95df0748b99
+	queryGroup: 'Transformar Arquivo de Analitico_OS_Consolidado (3)\Consultas Auxiliares'
+
+	annotation PBI_ResultType = Binary
+
+expression 'Arquivo de Amostra (2)' =
+		let
+		    Fonte = Folder.Files("C:\Users\sbahia\OneDrive - UNIVERSO ONLINE S.A\Área de Trabalho\Ambiente PY\logins\Dash Fifo\Dados Mensais"),
+		    #"Linhas Filtradas" = Table.SelectRows(Fonte, each Text.Contains([Name], "justificativa de abono")),
+		    Navegação1 = #"Linhas Filtradas"{0}[Content]
+		in
+		    Navegação1
+	lineageTag: a560bce8-4fb7-494c-8571-7c089d814d7f
+	queryGroup: 'Transformar Arquivo de Analitico_OS_Consolidado (2)\Consultas Auxiliares'
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Binary
+
+expression 'Transformar o Arquivo de Exemplo (2)' =
+		let
+		    Fonte = Csv.Document(Parâmetro2,21,";=",ExtraValues.Ignore,1252),
+		    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Fonte, [PromoteAllScalars=true])
+		in
+		    #"Cabeçalhos Promovidos"
+	lineageTag: d54fd2a1-15d1-4199-b945-9aff6ba9adae
+	queryGroup: 'Transformar Arquivo de Analitico_OS_Consolidado (2)'
+
+	annotation PBI_ResultType = Table
+
+expression 'Transformar Arquivo (2)' =
+		let
+		    Fonte = (Parâmetro2 as binary) => let
+		    Fonte = Csv.Document(Parâmetro2,21,";=",ExtraValues.Ignore,1252),
+		    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Fonte, [PromoteAllScalars=true])
+		in
+		    #"Cabeçalhos Promovidos"
+		in
+		    Fonte
+	lineageTag: 3e118fab-3c03-45c7-a4f5-e0782a0d9f04
+	queryGroup: 'Transformar Arquivo de Analitico_OS_Consolidado (2)\Consultas Auxiliares'
+
+	annotation PBI_ResultType = Function
+
+expression 'Transformar o Arquivo de Exemplo (3)' =
+		let
+		    Fonte = Excel.Workbook(Parâmetro3, null, true),
+		    #"Pendente de abono_Sheet" = Fonte{[Item="Pendente de abono",Kind="Sheet"]}[Data],
+		    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(#"Pendente de abono_Sheet", [PromoteAllScalars=true])
+		in
+		    #"Cabeçalhos Promovidos"
+	lineageTag: b54d4ddd-45c2-4176-bb31-827a64795174
+	queryGroup: 'Transformar Arquivo de Analitico_OS_Consolidado (3)'
+
+	annotation PBI_ResultType = Table
+
+expression 'Arquivo de Amostra (3)' =
+		let
+		    Fonte = Folder.Files("C:\Users\sbahia\OneDrive - UNIVERSO ONLINE S.A\Área de Trabalho\Ambiente PY\logins\Dash Fifo\Dados Mensais"),
+		    #"Linhas Filtradas" = Table.SelectRows(Fonte, each ([Name] = "Retorno abono_2025-09.xlsx")),
+		    Navegação1 = #"Linhas Filtradas"{0}[Content]
+		in
+		    Navegação1
+	lineageTag: ca4d42d7-d63f-4095-9796-14adcaef5466
+	queryGroup: 'Transformar Arquivo de Analitico_OS_Consolidado (3)\Consultas Auxiliares'
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Binary
+
+expression 'Transformar Arquivo (3)' =
+		let
+		    Fonte = (Parâmetro3 as binary) => let
+		    Fonte = Excel.Workbook(Parâmetro3, null, true),
+		    #"Pendente de abono_Sheet" = Fonte{[Item="Pendente de abono",Kind="Sheet"]}[Data],
+		    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(#"Pendente de abono_Sheet", [PromoteAllScalars=true])
+		in
+		    #"Cabeçalhos Promovidos"
+		in
+		    Fonte
+	lineageTag: e81f4ed0-d824-42ac-9501-b0109d30d8e3
+	queryGroup: 'Transformar Arquivo de Analitico_OS_Consolidado (3)\Consultas Auxiliares'
+
+	annotation PBI_ResultType = Function
+
+	annotation PBI_NavigationStepName = Navegação
+
+expression Parâmetro4 = #"Arquivo de Amostra (4)" meta [IsParameterQuery=true, BinaryIdentifier=#"Arquivo de Amostra (4)", Type="Binary", IsParameterQueryRequired=true]
+	lineageTag: 98f0d140-e7f8-4926-87bd-adc1d55ffb8d
+	queryGroup: 'Transformar Arquivo de Semanal FIFO\Consultas Auxiliares'
+
+	annotation PBI_ResultType = Binary
+
+expression 'Transformar o Arquivo de Exemplo (4)' =
+		let
+		    Fonte = Excel.Workbook(Parâmetro4, null, true),
+		    Base_Sheet = Fonte{[Item="Base",Kind="Sheet"]}[Data],
+		    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Base_Sheet, [PromoteAllScalars=true])
+		in
+		    #"Cabeçalhos Promovidos"
+	lineageTag: c45037b8-142e-4b9f-84dd-73aba60861f4
+	queryGroup: 'Transformar Arquivo de Semanal FIFO'
+
+	annotation PBI_ResultType = Table
+
+expression 'Arquivo de Amostra (4)' =
+		let
+		    Fonte = Folder.Files("C:\Users\sbahia\OneDrive - UNIVERSO ONLINE S.A\Área de Trabalho\Ambiente PY\logins\Dash Fifo\Semanal FIFO"),
+		    Navegação1 = Fonte{0}[Content]
+		in
+		    Navegação1
+	lineageTag: 2ac66c5d-9791-429e-a871-17026b5224f2
+	queryGroup: 'Transformar Arquivo de Semanal FIFO\Consultas Auxiliares'
+
+	annotation PBI_ResultType = Binary
+
+expression 'Transformar Arquivo (4)' =
+		let
+		    Fonte = (Parâmetro4 as binary) => let
+		    Fonte = Excel.Workbook(Parâmetro4, null, true),
+		    Base_Sheet = Fonte{[Item="Base",Kind="Sheet"]}[Data],
+		    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Base_Sheet, [PromoteAllScalars=true])
+		in
+		    #"Cabeçalhos Promovidos"
+		in
+		    Fonte
+	lineageTag: a9d90fd8-57b5-4b46-8d6d-ded1fdf86870
+	queryGroup: 'Transformar Arquivo de Semanal FIFO\Consultas Auxiliares'
+
+	annotation PBI_ResultType = Function
+
+	annotation PBI_NavigationStepName = Navegação
+
+expression 'Erros em Consolidado_Abono' =
+		let
+		Fonte = Consolidado_Abono,
+		  #"Incompatibilidades de Tipo Detectadas" = let
+		    tableWithOnlyPrimitiveTypes = Table.SelectColumns(Fonte, Table.ColumnsOfType(Fonte, {type nullable number, type nullable text, type nullable logical, type nullable date, type nullable datetime, type nullable datetimezone, type nullable time, type nullable duration})),
+		    recordTypeFields = Type.RecordFields(Type.TableRow(Value.Type(tableWithOnlyPrimitiveTypes))),
+		    fieldNames = Record.FieldNames(recordTypeFields),
+		    fieldTypes = List.Transform(Record.ToList(recordTypeFields), each [Type]),
+		    pairs = List.Transform(List.Positions(fieldNames), (i) => {fieldNames{i}, (v) => if v = null or Value.Is(v, fieldTypes{i}) then v else error [Message = "O tipo do valor não corresponde ao tipo da coluna.", Detail = v], fieldTypes{i}})
+		in
+		    Table.TransformColumns(Fonte, pairs),
+		  #"Índice Adicionado" = Table.AddIndexColumn(#"Incompatibilidades de Tipo Detectadas", "Número da Linha" ,1),
+		  #"Erros Mantidos" = Table.SelectRowsWithErrors(#"Índice Adicionado", {"OS_ID", "Nome da Origem", "ID Cliente", "Número WorFinity", "Polo", "cidade", "Técnico", "Novo Modelo", "Família", "Tipo de Serviço", "Abertura OS", "Data Limite Atendimento", "Fechamento OS", "Está no Prazo?", "Lead Time Dias Ùteis", "cep", "estado", "recebedor", "Data Ativação Equipamento", "Status da Ativação", "Carteira", "Tipo de Visita", "Origem de Venda", "MesRef", "Status da Justificativa", "Status do Abono", "Observação", "Justificativa do Prestador", "Fonte", "Status_Abono", "Retorno_Flag", "WF_Abono", "WF_Just_Prest", "WF_Observacao", "WF_Abono_Flag", "Cod_Polo", "Data_Fechamento_Limpa"}),
+		  #"Colunas Reordenadas" = Table.ReorderColumns(#"Erros Mantidos", {"Número da Linha", "OS_ID", "Nome da Origem", "ID Cliente", "Número WorFinity", "Polo", "cidade", "Técnico", "Novo Modelo", "Família", "Tipo de Serviço", "Abertura OS", "Data Limite Atendimento", "Fechamento OS", "Está no Prazo?", "Lead Time Dias Ùteis", "cep", "estado", "recebedor", "Data Ativação Equipamento", "Status da Ativação", "Carteira", "Tipo de Visita", "Origem de Venda", "MesRef", "Status da Justificativa", "Status do Abono", "Observação", "Justificativa do Prestador", "Fonte", "Status_Abono", "Retorno_Flag", "WF_Abono", "WF_Just_Prest", "WF_Observacao", "WF_Abono_Flag", "Cod_Polo", "Data_Fechamento_Limpa"})
+		in
+		  #"Colunas Reordenadas"
+	lineageTag: e1e0b559-e347-43f6-af6a-330fd6882e85
+	queryGroup: 'Erros na Consulta - 03/11/2025 17:54:33'
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+
+expression 'Erros em Consolidado_Abono (2)' =
+		let
+		Fonte = Consolidado_Abono,
+		  #"Incompatibilidades de Tipo Detectadas" = let
+		    tableWithOnlyPrimitiveTypes = Table.SelectColumns(Fonte, Table.ColumnsOfType(Fonte, {type nullable number, type nullable text, type nullable logical, type nullable date, type nullable datetime, type nullable datetimezone, type nullable time, type nullable duration})),
+		    recordTypeFields = Type.RecordFields(Type.TableRow(Value.Type(tableWithOnlyPrimitiveTypes))),
+		    fieldNames = Record.FieldNames(recordTypeFields),
+		    fieldTypes = List.Transform(Record.ToList(recordTypeFields), each [Type]),
+		    pairs = List.Transform(List.Positions(fieldNames), (i) => {fieldNames{i}, (v) => if v = null or Value.Is(v, fieldTypes{i}) then v else error [Message = "O tipo do valor não corresponde ao tipo da coluna.", Detail = v], fieldTypes{i}})
+		in
+		    Table.TransformColumns(Fonte, pairs),
+		  #"Índice Adicionado" = Table.AddIndexColumn(#"Incompatibilidades de Tipo Detectadas", "Número da Linha" ,1),
+		  #"Erros Mantidos" = Table.SelectRowsWithErrors(#"Índice Adicionado", {"Nome da Origem", "ID Cliente", "Número WorFinity", "Polo", "Técnico", "Novo Modelo", "Abertura OS", "Data Limite Atendimento", "Fechamento OS", "Está no Prazo?", "Data Ativação Equipamento", "Status da Ativação", "Carteira", "Tipo de Visita", "Origem de Venda", "Cidade", "Familia", "Cep", "Estado", "Recebedor", "Column16", "Data e Hora Abertura", "Status Serial", "Tipo de Serviço", "Família", "Lead Time Dias Ùteis", "cep", "estado", "recebedor", "cidade", "MesRef", "Data_Snapshot", "OS_ID", "FechamentoOS_Date", "Status_Prazo_Original", "Data_Fechamento_Limpa", "Data_SLA", "Status da Justificativa", "Status do Abono", "Observação", "Justificativa do Prestador", "RET_WF_Just_Prest", "RET_WF_Observacao", "RET_WF_Abono", "WF_Abono", "WF_Just_Prest", "WF_Observacao", "Fonte", "Status_Abono", "WF_Abono_Flag", "Cod_Polo"}),
+		  #"Colunas Reordenadas" = Table.ReorderColumns(#"Erros Mantidos", {"Número da Linha", "Nome da Origem", "ID Cliente", "Número WorFinity", "Polo", "Técnico", "Novo Modelo", "Abertura OS", "Data Limite Atendimento", "Fechamento OS", "Está no Prazo?", "Data Ativação Equipamento", "Status da Ativação", "Carteira", "Tipo de Visita", "Origem de Venda", "Cidade", "Familia", "Cep", "Estado", "Recebedor", "Column16", "Data e Hora Abertura", "Status Serial", "Tipo de Serviço", "Família", "Lead Time Dias Ùteis", "cep", "estado", "recebedor", "cidade", "MesRef", "Data_Snapshot", "OS_ID", "FechamentoOS_Date", "Status_Prazo_Original", "Data_Fechamento_Limpa", "Data_SLA", "Status da Justificativa", "Status do Abono", "Observação", "Justificativa do Prestador", "RET_WF_Just_Prest", "RET_WF_Observacao", "RET_WF_Abono", "WF_Abono", "WF_Just_Prest", "WF_Observacao", "Fonte", "Status_Abono", "WF_Abono_Flag", "Cod_Polo"})
+		in
+		  #"Colunas Reordenadas"
+	lineageTag: 0ecdf3d8-568a-4bed-a4f5-b4513f510872
+	queryGroup: 'Erros na Consulta - 12/12/2025 12:11:18'
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Exception
+
+expression 'Erros em Retorno_Consolidado' =
+		let
+		Fonte = Retorno_Consolidado,
+		  #"Incompatibilidades de Tipo Detectadas" = let
+		    tableWithOnlyPrimitiveTypes = Table.SelectColumns(Fonte, Table.ColumnsOfType(Fonte, {type nullable number, type nullable text, type nullable logical, type nullable date, type nullable datetime, type nullable datetimezone, type nullable time, type nullable duration})),
+		    recordTypeFields = Type.RecordFields(Type.TableRow(Value.Type(tableWithOnlyPrimitiveTypes))),
+		    fieldNames = Record.FieldNames(recordTypeFields),
+		    fieldTypes = List.Transform(Record.ToList(recordTypeFields), each [Type]),
+		    pairs = List.Transform(List.Positions(fieldNames), (i) => {fieldNames{i}, (v) => if v = null or Value.Is(v, fieldTypes{i}) then v else error [Message = "O tipo do valor não corresponde ao tipo da coluna.", Detail = v], fieldTypes{i}})
+		in
+		    Table.TransformColumns(Fonte, pairs),
+		  #"Índice Adicionado" = Table.AddIndexColumn(#"Incompatibilidades de Tipo Detectadas", "Número da Linha" ,1),
+		  #"Erros Mantidos" = Table.SelectRowsWithErrors(#"Índice Adicionado", {"OS_ID", "Nome da Origem", "Número WorFinity", "Polo", "cidade", "Técnico", "Novo Modelo", "Família", "Tipo de Serviço", "Abertura OS", "Data Limite Atendimento", "Fechamento OS", "Está no Prazo?", "Lead Time Dias Ùteis", "cep", "estado", "WF_Just_Prest", "WF_Observacao", "WF_Abono", "MesRef"}),
+		  #"Colunas Reordenadas" = Table.ReorderColumns(#"Erros Mantidos", {"Número da Linha", "OS_ID", "Nome da Origem", "Número WorFinity", "Polo", "cidade", "Técnico", "Novo Modelo", "Família", "Tipo de Serviço", "Abertura OS", "Data Limite Atendimento", "Fechamento OS", "Está no Prazo?", "Lead Time Dias Ùteis", "cep", "estado", "WF_Just_Prest", "WF_Observacao", "WF_Abono", "MesRef"})
+		in
+		  #"Colunas Reordenadas"
+	lineageTag: 98b61af1-44cc-45e0-84b5-69c77eb57930
+	queryGroup: 'Erros na Consulta - 12/12/2025 12:11:18'
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+
+expression 'Erros em FactOS' =
+		let
+		Fonte = FactOS,
+		  #"Incompatibilidades de Tipo Detectadas" = let
+		    tableWithOnlyPrimitiveTypes = Table.SelectColumns(Fonte, Table.ColumnsOfType(Fonte, {type nullable number, type nullable text, type nullable logical, type nullable date, type nullable datetime, type nullable datetimezone, type nullable time, type nullable duration})),
+		    recordTypeFields = Type.RecordFields(Type.TableRow(Value.Type(tableWithOnlyPrimitiveTypes))),
+		    fieldNames = Record.FieldNames(recordTypeFields),
+		    fieldTypes = List.Transform(Record.ToList(recordTypeFields), each [Type]),
+		    pairs = List.Transform(List.Positions(fieldNames), (i) => {fieldNames{i}, (v) => if v = null or Value.Is(v, fieldTypes{i}) then v else error [Message = "O tipo do valor não corresponde ao tipo da coluna.", Detail = v], fieldTypes{i}})
+		in
+		    Table.TransformColumns(Fonte, pairs),
+		  #"Índice Adicionado" = Table.AddIndexColumn(#"Incompatibilidades de Tipo Detectadas", "Número da Linha" ,1),
+		  #"Erros Mantidos" = Table.SelectRowsWithErrors(#"Índice Adicionado", {"cod_service_order", "des_service_provider", "des_closed_by_user", "cidade", "serial_novo", "novo_equipamento", "motivo_saida", "qtd_ordens", "qtd_ordens_dentro_do_prazo_calculado", "pct_ordens_dentro_do_prazo_calculado", "qtd_ativacoes", "pct_ordens_com_ativacao", "data_abertura", "data_limite", "data_fechamento", "diferenca_sla_horas_fechamento", "status_dentro_fora_prazo", "Data Ativação", "Codigo Polo", "Coordenador.Coordenador", "Líder", "Matricula", "Cargo", "JUSTIFICATIVA ATIVAÇÃO", "ATIVAÇÃO", "Justificativa", "Observação", "FINAL JUSTIFICATIVA", "SLA_Dentro_Prazo", "Ativacao_Flag"}),
+		  #"Colunas Reordenadas" = Table.ReorderColumns(#"Erros Mantidos", {"Número da Linha", "cod_service_order", "des_service_provider", "des_closed_by_user", "cidade", "serial_novo", "novo_equipamento", "motivo_saida", "qtd_ordens", "qtd_ordens_dentro_do_prazo_calculado", "pct_ordens_dentro_do_prazo_calculado", "qtd_ativacoes", "pct_ordens_com_ativacao", "data_abertura", "data_limite", "data_fechamento", "diferenca_sla_horas_fechamento", "status_dentro_fora_prazo", "Data Ativação", "Codigo Polo", "Coordenador.Coordenador", "Líder", "Matricula", "Cargo", "JUSTIFICATIVA ATIVAÇÃO", "ATIVAÇÃO", "Justificativa", "Observação", "FINAL JUSTIFICATIVA", "SLA_Dentro_Prazo", "Ativacao_Flag"}),
+		    Cargo = #"Colunas Reordenadas"{0}[Cargo]
+		in
+		  Cargo
+	lineageTag: b03681c0-8685-409e-a7ec-ebdbc7fcc9af
+	queryGroup: 'Erros na Consulta - 08/02/2026 15:31:04'
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Exception
+
+expression 'Erros em FactCSAT' =
+		let
+		Fonte = FactCSAT,
+		  #"Incompatibilidades de Tipo Detectadas" = let
+		    tableWithOnlyPrimitiveTypes = Table.SelectColumns(Fonte, Table.ColumnsOfType(Fonte, {type nullable number, type nullable text, type nullable logical, type nullable date, type nullable datetime, type nullable datetimezone, type nullable time, type nullable duration})),
+		    recordTypeFields = Type.RecordFields(Type.TableRow(Value.Type(tableWithOnlyPrimitiveTypes))),
+		    fieldNames = Record.FieldNames(recordTypeFields),
+		    fieldTypes = List.Transform(Record.ToList(recordTypeFields), each [Type]),
+		    pairs = List.Transform(List.Positions(fieldNames), (i) => {fieldNames{i}, (v) => if v = null or Value.Is(v, fieldTypes{i}) then v else error [Message = "O tipo do valor não corresponde ao tipo da coluna.", Detail = v], fieldTypes{i}})
+		in
+		    Table.TransformColumns(Fonte, pairs),
+		  #"Índice Adicionado" = Table.AddIndexColumn(#"Incompatibilidades de Tipo Detectadas", "Número da Linha" ,1),
+		  #"Erros Mantidos" = Table.SelectRowsWithErrors(#"Índice Adicionado", {"data_resposta", "nota_pesquisa", "resposta_pesquisa", "ID WorkFinity", "des_service_provider", "des_closed_by_user", "Matricula", "Codigo_Polo", "Coordenador", "Líder", "Matricula2", "STATUS", "Column13", "Column14", "Column15", "Column16", "Column17"}),
+		  #"Colunas Reordenadas" = Table.ReorderColumns(#"Erros Mantidos", {"Número da Linha", "data_resposta", "nota_pesquisa", "resposta_pesquisa", "ID WorkFinity", "des_service_provider", "des_closed_by_user", "Matricula", "Codigo_Polo", "Coordenador", "Líder", "Matricula2", "STATUS", "Column13", "Column14", "Column15", "Column16", "Column17"})
+		in
+		  #"Colunas Reordenadas"
+	lineageTag: bcc3edaa-d370-463c-bad0-1f82cdc8e9b5
+	queryGroup: 'Erros na Consulta - 08/02/2026 15:31:04'
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+
+expression 'Erros em FactOS (2)' =
+		let
+		Fonte = FactOS,
+		  #"Incompatibilidades de Tipo Detectadas" = let
+		    tableWithOnlyPrimitiveTypes = Table.SelectColumns(Fonte, Table.ColumnsOfType(Fonte, {type nullable number, type nullable text, type nullable logical, type nullable date, type nullable datetime, type nullable datetimezone, type nullable time, type nullable duration})),
+		    recordTypeFields = Type.RecordFields(Type.TableRow(Value.Type(tableWithOnlyPrimitiveTypes))),
+		    fieldNames = Record.FieldNames(recordTypeFields),
+		    fieldTypes = List.Transform(Record.ToList(recordTypeFields), each [Type]),
+		    pairs = List.Transform(List.Positions(fieldNames), (i) => {fieldNames{i}, (v) => if v = null or Value.Is(v, fieldTypes{i}) then v else error [Message = "O tipo do valor não corresponde ao tipo da coluna.", Detail = v], fieldTypes{i}})
+		in
+		    Table.TransformColumns(Fonte, pairs),
+		  #"Índice Adicionado" = Table.AddIndexColumn(#"Incompatibilidades de Tipo Detectadas", "Número da Linha" ,1),
+		  #"Erros Mantidos" = Table.SelectRowsWithErrors(#"Índice Adicionado", {"cod_service_order", "des_service_provider", "des_closed_by_user", "cidade", "serial_novo", "novo_equipamento", "motivo_saida", "qtd_ordens", "qtd_ordens_dentro_do_prazo_calculado", "pct_ordens_dentro_do_prazo_calculado", "qtd_ativacoes", "pct_ordens_com_ativacao", "data_abertura", "data_limite", "data_fechamento", "diferenca_sla_horas_fechamento", "status_dentro_fora_prazo", "Data Ativação", "Codigo Polo", "Coordenador.Coordenador", "Líder", "Matricula", "Cargo", "JUSTIFICATIVA ATIVAÇÃO", "ATIVAÇÃO", "Justificativa", "Observação", "FINAL JUSTIFICATIVA", "SLA_Dentro_Prazo", "Ativacao_Flag"}),
+		  #"Colunas Reordenadas" = Table.ReorderColumns(#"Erros Mantidos", {"Número da Linha", "cod_service_order", "des_service_provider", "des_closed_by_user", "cidade", "serial_novo", "novo_equipamento", "motivo_saida", "qtd_ordens", "qtd_ordens_dentro_do_prazo_calculado", "pct_ordens_dentro_do_prazo_calculado", "qtd_ativacoes", "pct_ordens_com_ativacao", "data_abertura", "data_limite", "data_fechamento", "diferenca_sla_horas_fechamento", "status_dentro_fora_prazo", "Data Ativação", "Codigo Polo", "Coordenador.Coordenador", "Líder", "Matricula", "Cargo", "JUSTIFICATIVA ATIVAÇÃO", "ATIVAÇÃO", "Justificativa", "Observação", "FINAL JUSTIFICATIVA", "SLA_Dentro_Prazo", "Ativacao_Flag"})
+		in
+		  #"Colunas Reordenadas"
+	lineageTag: 8f70ed69-c012-499e-b717-0893432f609f
+	queryGroup: 'Erros na Consulta - 12/02/2026 23:08:01'
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+
+expression 'Erros em FactOS (3)' =
+		let
+		Fonte = FactOS,
+		  #"Incompatibilidades de Tipo Detectadas" = let
+		    tableWithOnlyPrimitiveTypes = Table.SelectColumns(Fonte, Table.ColumnsOfType(Fonte, {type nullable number, type nullable text, type nullable logical, type nullable date, type nullable datetime, type nullable datetimezone, type nullable time, type nullable duration})),
+		    recordTypeFields = Type.RecordFields(Type.TableRow(Value.Type(tableWithOnlyPrimitiveTypes))),
+		    fieldNames = Record.FieldNames(recordTypeFields),
+		    fieldTypes = List.Transform(Record.ToList(recordTypeFields), each [Type]),
+		    pairs = List.Transform(List.Positions(fieldNames), (i) => {fieldNames{i}, (v) => if v = null or Value.Is(v, fieldTypes{i}) then v else error [Message = "O tipo do valor não corresponde ao tipo da coluna.", Detail = v], fieldTypes{i}})
+		in
+		    Table.TransformColumns(Fonte, pairs),
+		  #"Índice Adicionado" = Table.AddIndexColumn(#"Incompatibilidades de Tipo Detectadas", "Número da Linha" ,1),
+		  #"Erros Mantidos" = Table.SelectRowsWithErrors(#"Índice Adicionado", {"des_service_provider", "des_closed_by_user", "cod_service_order", "cidade", "serial_novo", "novo_equipamento", "motivo_saida", "qtd_ordens", "qtd_ordens_dentro_do_prazo_calculado", "pct_ordens_dentro_do_prazo_calculado", "qtd_ativacoes", "pct_ordens_com_ativacao", "data_abertura", "data_limite", "data_fechamento", "diferenca_sla_horas_fechamento", "status_dentro_fora_prazo", "Data Ativação", "Codigo Polo", "Coordenador.Coordenador", "Líder", "Matricula", "JUSTIFICATIVA ATIVAÇÃO", "ATIVO", "ATIVAÇÃO", "JUSTIFICATIVA", "OBSERVAÇÃO", "FINAL JUSTIFICATIVA", "SLA_Dentro_Prazo", "Ativacao_Flag"})
+		in
+		    #"Erros Mantidos"
+	lineageTag: e79d0b8c-051a-44b0-a22d-98a729cbf435
+	queryGroup: 'Erros na Consulta - 23/02/2026 16:28:34'
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+
+expression 'Erros em Retorno_Consolidado (2)' =
+		let
+		Fonte = Retorno_Consolidado,
+		  #"Incompatibilidades de Tipo Detectadas" = let
+		    tableWithOnlyPrimitiveTypes = Table.SelectColumns(Fonte, Table.ColumnsOfType(Fonte, {type nullable number, type nullable text, type nullable logical, type nullable date, type nullable datetime, type nullable datetimezone, type nullable time, type nullable duration})),
+		    recordTypeFields = Type.RecordFields(Type.TableRow(Value.Type(tableWithOnlyPrimitiveTypes))),
+		    fieldNames = Record.FieldNames(recordTypeFields),
+		    fieldTypes = List.Transform(Record.ToList(recordTypeFields), each [Type]),
+		    pairs = List.Transform(List.Positions(fieldNames), (i) => {fieldNames{i}, (v) => if v = null or Value.Is(v, fieldTypes{i}) then v else error [Message = "O tipo do valor não corresponde ao tipo da coluna.", Detail = v], fieldTypes{i}})
+		in
+		    Table.TransformColumns(Fonte, pairs),
+		  #"Índice Adicionado" = Table.AddIndexColumn(#"Incompatibilidades de Tipo Detectadas", "Número da Linha" ,1),
+		  #"Erros Mantidos" = Table.SelectRowsWithErrors(#"Índice Adicionado", {"OS_ID", "Nome da Origem", "Número WorFinity", "Polo", "cidade", "Técnico", "Novo Modelo", "Família", "Tipo de Serviço", "Abertura OS", "Data Limite Atendimento", "Fechamento OS", "Está no Prazo?", "Lead Time Dias Ùteis", "cep", "estado", "WF_Just_Prest", "WF_Observacao", "WF_Abono", "MesRef"}),
+		  #"Colunas Reordenadas" = Table.ReorderColumns(#"Erros Mantidos", {"Número da Linha", "OS_ID", "Nome da Origem", "Número WorFinity", "Polo", "cidade", "Técnico", "Novo Modelo", "Família", "Tipo de Serviço", "Abertura OS", "Data Limite Atendimento", "Fechamento OS", "Está no Prazo?", "Lead Time Dias Ùteis", "cep", "estado", "WF_Just_Prest", "WF_Observacao", "WF_Abono", "MesRef"})
+		in
+		  #"Colunas Reordenadas"
+	lineageTag: 1a10399a-70c9-4869-93d6-3ca6c3a705b8
+	queryGroup: 'Erros na Consulta - 24/02/2026 13:06:51'
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+
+expression 'Erros em FactOS (4)' =
+		let
+		Fonte = FactOS,
+		  #"Incompatibilidades de Tipo Detectadas" = let
+		    tableWithOnlyPrimitiveTypes = Table.SelectColumns(Fonte, Table.ColumnsOfType(Fonte, {type nullable number, type nullable text, type nullable logical, type nullable date, type nullable datetime, type nullable datetimezone, type nullable time, type nullable duration})),
+		    recordTypeFields = Type.RecordFields(Type.TableRow(Value.Type(tableWithOnlyPrimitiveTypes))),
+		    fieldNames = Record.FieldNames(recordTypeFields),
+		    fieldTypes = List.Transform(Record.ToList(recordTypeFields), each [Type]),
+		    pairs = List.Transform(List.Positions(fieldNames), (i) => {fieldNames{i}, (v) => if v = null or Value.Is(v, fieldTypes{i}) then v else error [Message = "O tipo do valor não corresponde ao tipo da coluna.", Detail = v], fieldTypes{i}})
+		in
+		    Table.TransformColumns(Fonte, pairs),
+		  #"Índice Adicionado" = Table.AddIndexColumn(#"Incompatibilidades de Tipo Detectadas", "Número da Linha" ,1),
+		  #"Erros Mantidos" = Table.SelectRowsWithErrors(#"Índice Adicionado", {"des_service_provider", "des_closed_by_user", "cod_service_order", "cidade", "serial_novo", "novo_equipamento", "motivo_saida", "qtd_ordens", "qtd_ordens_dentro_do_prazo_calculado", "pct_ordens_dentro_do_prazo_calculado", "qtd_ativacoes", "pct_ordens_com_ativacao", "data_abertura", "data_limite", "data_fechamento", "diferenca_sla_horas_fechamento", "status_dentro_fora_prazo", "Data Ativação", "Codigo Polo", "Coordenador.Coordenador", "Líder", "Matricula", "JUSTIFICATIVA ATIVAÇÂO", "ATIVO", "ATIVAÇÃO", "JUSTIFICATIVA", "OBSERVAÇÃO", "FINAL JUSTIFICATIVA", "Revisita", "SLA_Dentro_Prazo", "Ativacao_Flag"}),
+		  #"Colunas Reordenadas" = Table.ReorderColumns(#"Erros Mantidos", {"Número da Linha", "des_service_provider", "des_closed_by_user", "cod_service_order", "cidade", "serial_novo", "novo_equipamento", "motivo_saida", "qtd_ordens", "qtd_ordens_dentro_do_prazo_calculado", "pct_ordens_dentro_do_prazo_calculado", "qtd_ativacoes", "pct_ordens_com_ativacao", "data_abertura", "data_limite", "data_fechamento", "diferenca_sla_horas_fechamento", "status_dentro_fora_prazo", "Data Ativação", "Codigo Polo", "Coordenador.Coordenador", "Líder", "Matricula", "JUSTIFICATIVA ATIVAÇÂO", "ATIVO", "ATIVAÇÃO", "JUSTIFICATIVA", "OBSERVAÇÃO", "FINAL JUSTIFICATIVA", "Revisita", "SLA_Dentro_Prazo", "Ativacao_Flag"})
+		in
+		  #"Colunas Reordenadas"
+	lineageTag: 6e7e8fa7-3418-4243-bee8-63e5fe7d3238
+	queryGroup: 'Erros na Consulta - 12/03/2026 21:56:57'
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+
+expression DimMatriculaWFT =
+		let
+		    Fonte = Excel.Workbook(
+		        File.Contents("C:\Users\sbahia\OneDrive - UNIVERSO ONLINE S.A\Área de Trabalho\Ambiente PY\logins\Dash Fifo\AUT RV\RV_JANEIRO26\Dados_RV_Janeiro_2026_1.xlsx"),
+		        null,
+		        false
+		    ),
+		
+		    Base02_Sheet = Fonte{[Item="02 - Dados Matricula WFT", Kind="Sheet"]}[Data],
+		    Cabecalhos = Table.PromoteHeaders(Base02_Sheet, [PromoteAllScalars=true]),
+		
+		    // Limpa #N/A e #N/A! em todas as colunas
+		    LimpaNA1 = Table.ReplaceValue(Cabecalhos, "#N/A", null, Replacer.ReplaceValue, Table.ColumnNames(Cabecalhos)),
+		    LimpaNA2 = Table.ReplaceValue(LimpaNA1, "#N/A!", null, Replacer.ReplaceValue, Table.ColumnNames(LimpaNA1)),
+		
+		    // Mantém apenas o necessário (ajuste os nomes caso diferem)
+		    Seleciona = Table.SelectColumns(LimpaNA2, {"Matricula", "Polo"}, MissingField.Ignore),
+		
+		    // Normaliza
+		    Normaliza = Table.TransformColumns(
+		        Seleciona,
+		        {
+		            {"Matricula", each if _ = null then null else Text.Clean(Text.Trim(Text.From(_))), type text},
+		            {"Polo", each if _ = null then null else Text.Clean(Text.Trim(Text.From(_))), type text}
+		        }
+		    ),
+		
+		    // Remove linhas sem matricula
+		    FiltraMatricula = Table.SelectRows(Normaliza, each [Matricula] <> null and [Matricula] <> ""),
+		
+		    // Remove duplicidades por Matricula (mantém primeira ocorrência)
+		    Distinta = Table.Distinct(FiltraMatricula, {"Matricula"}),
+		
+		    // Renomeia 'Polo' -> 'Polo_Base' para padronizar
+		    Renomeia = Table.RenameColumns(Distinta, {{"Polo", "Polo_Base"}})
+		in
+		    Renomeia
+	lineageTag: 1aea56d6-c23a-4265-ae45-ca8464df284b
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+
+expression 'Erros em FactOS (5)' =
+		let
+		Fonte = FactOS,
+		  #"Incompatibilidades de Tipo Detectadas" = let
+		    tableWithOnlyPrimitiveTypes = Table.SelectColumns(Fonte, Table.ColumnsOfType(Fonte, {type nullable number, type nullable text, type nullable logical, type nullable date, type nullable datetime, type nullable datetimezone, type nullable time, type nullable duration})),
+		    recordTypeFields = Type.RecordFields(Type.TableRow(Value.Type(tableWithOnlyPrimitiveTypes))),
+		    fieldNames = Record.FieldNames(recordTypeFields),
+		    fieldTypes = List.Transform(Record.ToList(recordTypeFields), each [Type]),
+		    pairs = List.Transform(List.Positions(fieldNames), (i) => {fieldNames{i}, (v) => if v = null or Value.Is(v, fieldTypes{i}) then v else error [Message = "O tipo do valor não corresponde ao tipo da coluna.", Detail = v], fieldTypes{i}})
+		in
+		    Table.TransformColumns(Fonte, pairs),
+		  #"Índice Adicionado" = Table.AddIndexColumn(#"Incompatibilidades de Tipo Detectadas", "Número da Linha" ,1),
+		  #"Erros Mantidos" = Table.SelectRowsWithErrors(#"Índice Adicionado", {"des_service_provider", "des_closed_by_user", "cod_service_order", "cidade", "serial_novo", "novo_equipamento", "motivo_saida", "qtd_ordens", "qtd_ordens_dentro_do_prazo_calculado", "pct_ordens_dentro_do_prazo_calculado", "qtd_ativacoes", "pct_ordens_com_ativacao", "data_abertura", "data_limite", "data_fechamento", "diferenca_sla_horas_fechamento", "status_dentro_fora_prazo", "Data Ativação", "Codigo Polo", "Coordenador.Coordenador", "Líder", "Matricula", "JUSTIFICATIVA ATIVAÇÂO", "ATIVO", "ATIVAÇÃO", "JUSTIFICATIVA", "OBSERVAÇÃO", "FINAL JUSTIFICATIVA", "REVISITA", "SLA_Dentro_Prazo", "Ativacao_Flag"}),
+		  #"Colunas Reordenadas" = Table.ReorderColumns(#"Erros Mantidos", {"Número da Linha", "des_service_provider", "des_closed_by_user", "cod_service_order", "cidade", "serial_novo", "novo_equipamento", "motivo_saida", "qtd_ordens", "qtd_ordens_dentro_do_prazo_calculado", "pct_ordens_dentro_do_prazo_calculado", "qtd_ativacoes", "pct_ordens_com_ativacao", "data_abertura", "data_limite", "data_fechamento", "diferenca_sla_horas_fechamento", "status_dentro_fora_prazo", "Data Ativação", "Codigo Polo", "Coordenador.Coordenador", "Líder", "Matricula", "JUSTIFICATIVA ATIVAÇÂO", "ATIVO", "ATIVAÇÃO", "JUSTIFICATIVA", "OBSERVAÇÃO", "FINAL JUSTIFICATIVA", "REVISITA", "SLA_Dentro_Prazo", "Ativacao_Flag"})
+		in
+		  #"Colunas Reordenadas"
+	lineageTag: 9fcdfc87-0a9a-4c88-a402-ceabff874275
+	queryGroup: 'Erros na Consulta - 08/05/2026 16:04:58'
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+
+expression 'Erros em FactOS (6)' =
+		let
+		Fonte = FactOS,
+		  #"Incompatibilidades de Tipo Detectadas" = let
+		    tableWithOnlyPrimitiveTypes = Table.SelectColumns(Fonte, Table.ColumnsOfType(Fonte, {type nullable number, type nullable text, type nullable logical, type nullable date, type nullable datetime, type nullable datetimezone, type nullable time, type nullable duration})),
+		    recordTypeFields = Type.RecordFields(Type.TableRow(Value.Type(tableWithOnlyPrimitiveTypes))),
+		    fieldNames = Record.FieldNames(recordTypeFields),
+		    fieldTypes = List.Transform(Record.ToList(recordTypeFields), each [Type]),
+		    pairs = List.Transform(List.Positions(fieldNames), (i) => {fieldNames{i}, (v) => if v = null or Value.Is(v, fieldTypes{i}) then v else error [Message = "O tipo do valor não corresponde ao tipo da coluna.", Detail = v], fieldTypes{i}})
+		in
+		    Table.TransformColumns(Fonte, pairs),
+		  #"Índice Adicionado" = Table.AddIndexColumn(#"Incompatibilidades de Tipo Detectadas", "Número da Linha" ,1),
+		  #"Erros Mantidos" = Table.SelectRowsWithErrors(#"Índice Adicionado", {"des_service_provider", "des_closed_by_user", "cod_service_order", "cidade", "serial_novo", "novo_equipamento", "motivo_saida", "qtd_ordens", "qtd_ordens_dentro_do_prazo_calculado", "pct_ordens_dentro_do_prazo_calculado", "qtd_ativacoes", "pct_ordens_com_ativacao", "data_abertura", "data_limite", "data_fechamento", "diferenca_sla_horas_fechamento", "status_dentro_fora_prazo", "Data Ativação", "Codigo Polo", "Coordenador.Coordenador", "Líder", "Matricula", "JUSTIFICATIVA ATIVAÇÂO", "ATIVO", "ATIVAÇÃO", "JUSTIFICATIVA", "OBSERVAÇÃO", "FINAL JUSTIFICATIVA", "REVISITA", "SLA_Dentro_Prazo", "Ativacao_Flag"}),
+		  #"Colunas Reordenadas" = Table.ReorderColumns(#"Erros Mantidos", {"Número da Linha", "des_service_provider", "des_closed_by_user", "cod_service_order", "cidade", "serial_novo", "novo_equipamento", "motivo_saida", "qtd_ordens", "qtd_ordens_dentro_do_prazo_calculado", "pct_ordens_dentro_do_prazo_calculado", "qtd_ativacoes", "pct_ordens_com_ativacao", "data_abertura", "data_limite", "data_fechamento", "diferenca_sla_horas_fechamento", "status_dentro_fora_prazo", "Data Ativação", "Codigo Polo", "Coordenador.Coordenador", "Líder", "Matricula", "JUSTIFICATIVA ATIVAÇÂO", "ATIVO", "ATIVAÇÃO", "JUSTIFICATIVA", "OBSERVAÇÃO", "FINAL JUSTIFICATIVA", "REVISITA", "SLA_Dentro_Prazo", "Ativacao_Flag"})
+		in
+		  #"Colunas Reordenadas"
+	lineageTag: 19f3adba-a62a-402b-8715-b6935df64d81
+	queryGroup: 'Erros na Consulta - 11/05/2026 17:56:50'
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+

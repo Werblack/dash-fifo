@@ -1,0 +1,159 @@
+model Model
+	culture: pt-BR
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: pt-BR
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+queryGroup 'Transformar Arquivo de Dados Mensais'
+
+	annotation PBI_QueryGroupOrder = 0
+
+queryGroup 'Transformar Arquivo de Dados Mensais\Consultas Auxiliares'
+
+	annotation PBI_QueryGroupOrder = 0
+
+queryGroup 'Transformar Arquivo de Analitico_OS_Consolidado (2)'
+
+	annotation PBI_QueryGroupOrder = 2
+
+queryGroup 'Transformar Arquivo de Analitico_OS_Consolidado (2)\Consultas Auxiliares'
+
+	annotation PBI_QueryGroupOrder = 0
+
+queryGroup 'Transformar Arquivo de Analitico_OS_Consolidado (3)'
+
+	annotation PBI_QueryGroupOrder = 4
+
+queryGroup 'Transformar Arquivo de Analitico_OS_Consolidado (3)\Consultas Auxiliares'
+
+	annotation PBI_QueryGroupOrder = 0
+
+queryGroup 'Transformar Arquivo de Semanal FIFO'
+
+	annotation PBI_QueryGroupOrder = 6
+
+queryGroup 'Transformar Arquivo de Semanal FIFO\Consultas Auxiliares'
+
+	annotation PBI_QueryGroupOrder = 0
+
+/// Erros nas consultas que foram carregadas em 03/11/2025 17:54:33.
+queryGroup 'Erros na Consulta - 03/11/2025 17:54:33'
+
+	annotation PBI_QueryGroupOrder = 8
+
+/// Erros nas consultas que foram carregadas em 12/12/2025 12:11:18.
+queryGroup 'Erros na Consulta - 12/12/2025 12:11:18'
+
+	annotation PBI_QueryGroupOrder = 9
+
+/// Erros nas consultas que foram carregadas em 19/01/2026 08:59:45.
+queryGroup 'Erros na Consulta - 19/01/2026 08:59:45'
+
+	annotation PBI_QueryGroupOrder = 10
+
+/// Erros nas consultas que foram carregadas em 08/02/2026 15:31:04.
+queryGroup 'Erros na Consulta - 08/02/2026 15:31:04'
+
+	annotation PBI_QueryGroupOrder = 11
+
+/// Erros nas consultas que foram carregadas em 12/02/2026 23:08:01.
+queryGroup 'Erros na Consulta - 12/02/2026 23:08:01'
+
+	annotation PBI_QueryGroupOrder = 12
+
+/// Erros nas consultas que foram carregadas em 23/02/2026 16:28:34.
+queryGroup 'Erros na Consulta - 23/02/2026 16:28:34'
+
+	annotation PBI_QueryGroupOrder = 13
+
+/// Erros nas consultas que foram carregadas em 24/02/2026 13:06:51.
+queryGroup 'Erros na Consulta - 24/02/2026 13:06:51'
+
+	annotation PBI_QueryGroupOrder = 14
+
+/// Erros nas consultas que foram carregadas em 12/03/2026 21:56:57.
+queryGroup 'Erros na Consulta - 12/03/2026 21:56:57'
+
+	annotation PBI_QueryGroupOrder = 15
+
+/// Erros nas consultas que foram carregadas em 08/05/2026 16:04:58.
+queryGroup 'Erros na Consulta - 08/05/2026 16:04:58'
+
+	annotation PBI_QueryGroupOrder = 16
+
+/// Erros nas consultas que foram carregadas em 11/05/2026 17:56:50.
+queryGroup 'Erros na Consulta - 11/05/2026 17:56:50'
+
+	annotation PBI_QueryGroupOrder = 17
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_QueryOrder = ["Modelo","pagresolve_regionais","Analitico_OS_Consolidado","Parâmetro1","Transformar o Arquivo de Exemplo","Arquivo de Amostra","Transformar Arquivo","Justificativa_Consolidada","Arquivo de Amostra (2)","Parâmetro2","Transformar o Arquivo de Exemplo (2)","Transformar Arquivo (2)","Consolidado_Abono","Retorno_Consolidado","Parâmetro3","Transformar o Arquivo de Exemplo (3)","Arquivo de Amostra (3)","Transformar Arquivo (3)","DimCalendario","Semanal FIFO","Parâmetro4","Transformar o Arquivo de Exemplo (4)","Arquivo de Amostra (4)","Transformar Arquivo (4)","Erros em Consolidado_Abono","UltimaAtualizacao","Erros em Consolidado_Abono (2)","Erros em Retorno_Consolidado","Revisita_Consolidado","DimColaboradores","FactOS","FactCSAT","DimMatriculaWFT","Erros em FactOS","Erros em FactCSAT","Erros em FactOS (2)","Org","Erros em FactOS (3)","Erros em Retorno_Consolidado (2)","Erros em FactOS (4)","Consolidado_Abono_HISTORICO","Consolidado_Abono_ATUAL","Revisita_HISTORICO","Revisita_ATUAL","Erros em FactOS (5)","Erros em FactOS (6)"]
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table DateTableTemplate_89abd864-136c-413b-be85-983ff1754008
+ref table Modelo
+ref table pagresolve_regionais
+ref table Analitico_OS_Consolidado
+ref table Justificativa_Consolidada
+ref table LocalDateTable_a931b3ab-9706-4373-8854-93589fc60959
+ref table LocalDateTable_c550e610-a402-40f7-8ce8-b8eaef688370
+ref table Consolidado_Abono
+ref table Retorno_Consolidado
+ref table LocalDateTable_6706cbee-c893-4347-afcd-2b161bf105dc
+ref table LocalDateTable_4551e65f-a3aa-416e-bba2-58ea3a55c151
+ref table LocalDateTable_f3d7c977-9d64-470f-a157-bfd0ea512994
+ref table LocalDateTable_286b0e69-8d13-4dfd-a9c4-a9d3846f2503
+ref table DimCalendario
+ref table LocalDateTable_4eb6e002-2108-478b-945b-026e1db05419
+ref table LocalDateTable_d862aeca-9371-4027-85af-7d7917f2fb5c
+ref table LocalDateTable_78346c65-b008-4fd6-8d0a-72df0719f7bc
+ref table 'Semanal FIFO'
+ref table LocalDateTable_1f2ed29e-d61b-4460-860e-2e222df00d9e
+ref table LocalDateTable_df4e0dc3-e409-4848-8f4b-22d7315bc77d
+ref table LocalDateTable_af3fb3c5-e10e-487b-a617-7fbeedd05049
+ref table LocalDateTable_3816ae34-5a15-47cf-99ae-c60b00bf11b0
+ref table LocalDateTable_ff11914c-e1b9-4338-85da-22037026d814
+ref table LocalDateTable_71854807-17b0-4cf1-8c4b-4f976f23e99c
+ref table LocalDateTable_d2166511-d4e5-40a5-bf4a-e91fa95269eb
+ref table UltimaAtualizacao
+ref table Revisita_Consolidado
+ref table DimColaboradores
+ref table LocalDateTable_af28834a-218c-4f01-a6e0-656809eeb1e0
+ref table LocalDateTable_10c69be4-3481-40a6-b46c-0ed9ba72f84f
+ref table LocalDateTable_c05450e2-3893-4460-9006-3c31d99bfd5b
+ref table FactOS
+ref table FactCSAT
+ref table Eixo_Colaboradores
+ref table DimHierarquiaSlicer
+ref table _DiagEixo
+ref table Org
+ref table Consolidado_Abono_HISTORICO
+ref table LocalDateTable_cfe9b495-ff56-41e0-a1b9-2b0b775f55bc
+ref table LocalDateTable_dd0fd5ff-bcae-4103-a1ea-d53477b7da41
+ref table LocalDateTable_44324d17-45fc-4ed4-94a1-f07ce7c6f460
+ref table LocalDateTable_b2691c41-1ee0-4c61-9774-540df3fe2404
+ref table LocalDateTable_03be963f-e7a0-4a9d-9891-6a9197b48fa9
+ref table Consolidado_Abono_ATUAL
+ref table LocalDateTable_bb7b3549-a21e-4f4e-977f-578ab2425cb8
+ref table LocalDateTable_e0e1af73-6d08-46eb-a998-7e9849e7e12f
+ref table LocalDateTable_e3dea9e1-cb05-4de0-a797-fc0b693d0238
+ref table LocalDateTable_087a4af0-5be3-4a89-b07e-ee14e4966053
+ref table LocalDateTable_ec6af7e2-c1c2-49de-884b-8aef70e09042
+ref table Revisita_HISTORICO
+ref table Revisita_ATUAL
+ref table LocalDateTable_5df248b4-d940-449f-9be9-63b526d91eb7
+ref table LocalDateTable_27a92a1b-b109-479d-a857-e56fd626332a
+ref table LocalDateTable_a80bd418-5643-41ff-9292-1a40b9921a19
+ref table LocalDateTable_49d15049-2294-4eda-b939-f6d20d452f06
+ref table LocalDateTable_e346c3a9-e74b-405e-aff1-7d247d97c11c
+ref table LocalDateTable_c3e375b2-49c0-4f38-89ed-e45c5b1c7ef8
+ref table LocalDateTable_2b85783e-5e1b-4838-8ee8-e6e199126ce6
+ref table LocalDateTable_19c3c024-f6fa-4637-a75d-1e84eba47d3e
+ref table LocalDateTable_006cbf2c-eee3-4053-a31f-f794f3539484
+
+ref cultureInfo pt-BR
+

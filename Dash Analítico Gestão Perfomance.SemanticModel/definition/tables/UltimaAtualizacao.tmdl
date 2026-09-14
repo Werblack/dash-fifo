@@ -1,0 +1,26 @@
+table UltimaAtualizacao
+	lineageTag: 53c817da-51ac-4518-b997-61d5e1cadc41
+
+	column DataHoraAtualizacao
+		dataType: string
+		lineageTag: 84a1b9c9-b3f7-44f5-8ff9-3eb5906a400e
+		summarizeBy: none
+		sourceColumn: DataHoraAtualizacao
+
+		annotation SummarizationSetBy = Automatic
+
+	partition UltimaAtualizacao = m
+		mode: import
+		source =
+				let
+				       Fonte = #table(
+				           {"DataHoraAtualizacao"},
+				           {{ DateTime.LocalNow() }}
+				       )
+				   in
+				       Fonte
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+

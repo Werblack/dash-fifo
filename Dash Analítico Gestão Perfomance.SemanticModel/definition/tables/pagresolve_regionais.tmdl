@@ -1,0 +1,125 @@
+table pagresolve_regionais
+	excludeFromModelRefresh
+	lineageTag: a557570b-52df-406c-b8ee-f0d8a86a0a28
+
+	column 'Polo + SAP'
+		dataType: string
+		lineageTag: 27143657-b6a6-4eac-ac83-42d83cc5d8e1
+		summarizeBy: none
+		sourceColumn: Polo + SAP
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Cód. SAP'
+		dataType: string
+		lineageTag: bcb26965-4430-455a-afa0-4525f65fafa0
+		summarizeBy: none
+		sourceColumn: Cód. SAP
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Polo
+		dataType: string
+		lineageTag: 9a0ec1ed-c50b-4349-8dbc-b143778af3fc
+		summarizeBy: none
+		sourceColumn: Polo
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Cidade UF'
+		dataType: string
+		lineageTag: 74038f11-de62-4764-b3a1-fc6fec01ba4e
+		summarizeBy: none
+		sourceColumn: Cidade UF
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column UF
+		dataType: string
+		lineageTag: 02d7879e-86a6-4d6c-bd64-87e735fdb08f
+		summarizeBy: none
+		sourceColumn: UF
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Região
+		dataType: string
+		lineageTag: 1f4afbe3-1bc9-4aa3-a695-b371de313cbf
+		summarizeBy: none
+		sourceColumn: Região
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Coordenador PagResolve'
+		dataType: string
+		lineageTag: 9167c21d-9165-48c5-844f-c5f765448184
+		summarizeBy: none
+		sourceColumn: Coordenador PagResolve
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Líder PagResolve'
+		dataType: string
+		lineageTag: 5d5de9c1-aa92-4795-99bf-b68c95adbeb3
+		summarizeBy: none
+		sourceColumn: Líder PagResolve
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Cod_Polo
+		dataType: string
+		lineageTag: 6072d88f-d31e-4336-aa1d-279a9557c0d2
+		summarizeBy: none
+		sourceColumn: Cod_Polo
+
+		annotation SummarizationSetBy = Automatic
+
+	partition pagresolve_regionais = m
+		mode: import
+		source =
+				let
+				    Caminho = "C:\Users\sbahia\OneDrive - UNIVERSO ONLINE S.A\Área de Trabalho\Ambiente PY\logins\Dash Fifo\pagresolve_regionais.xlsx",
+				    Fonte = Excel.Workbook(File.Contents(Caminho), null, true),
+				
+				    // tenta pegar por nome de Tabela; se não existir, por nome de Aba; senão, a primeira
+				    Dados =
+				        try Fonte{[Item="pagresolve_regionais", Kind="Table"]}[Data]
+				        otherwise try Fonte{[Item="pagresolve_regionais", Kind="Sheet"]}[Data]
+				        otherwise Fonte{0}[Data],
+				
+				    Cab = Table.PromoteHeaders(Dados, [PromoteAllScalars=true]),
+				
+				    // mantém as colunas exatamente como estão; apenas saneia 'Polo'
+				    PoloLimpo = Table.TransformColumns(Cab, {{"Polo", each Text.Trim(Text.Clean(Text.From(_))), type text}}),
+				
+				    // se você usa Cod_Polo na relação, garantimos a coluna; senão, ignora (não quebra)
+				    ComCod =
+				        if List.Contains(Table.ColumnNames(PoloLimpo), "Cod_Polo")
+				        then PoloLimpo
+				        else Table.AddColumn(PoloLimpo, "Cod_Polo", each Text.AfterDelimiter([Polo], "- ", {0, RelativePosition.FromEnd}), type text),
+				
+				    // remove linhas vazias que causam “duplicado” no lado 1
+				    Resultado = Table.SelectRows(ComCod, each [Polo] <> null and [Polo] <> "")
+				in
+				    Resultado
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+

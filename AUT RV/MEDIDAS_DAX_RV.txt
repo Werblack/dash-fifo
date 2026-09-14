@@ -1,0 +1,288 @@
+===============================================
+MEDIDAS DAX PARA DASHBOARD DE RV
+===============================================
+
+Lógica: Técnico (individual) → Polo (média técnicos) → Assistente (herda polo) 
+→ Líder (média polos) → Coordenador (média líderes) → Total Geral (média coordenadores)
+
+
+-----------------------------------------------
+1. MEDIDAS BASE - NÍVEL TÉCNICO
+-----------------------------------------------
+
+// CSAT Individual (média das notas CSAT do técnico)
+CSAT_Individual = 
+VAR MatriculaAtual = SELECTEDVALUE(DimColaboradores[Matricula])
+VAR CargoAtual = SELECTEDVALUE(DimColaboradores[Cargo])
+RETURN
+    IF(
+        CargoAtual = "Técnico",
+        CALCULATE(
+            AVERAGE(FactCSAT[nota_pesquisa]),
+            FactCSAT[Matricula] = MatriculaAtual
+        ),
+        BLANK()
+    )
+
+
+// % Dentro do Prazo - Individual (OS dentro do prazo / Total OS do técnico)
+SLA_Dentro_Prazo_Individual = 
+VAR MatriculaAtual = SELECTEDVALUE(DimColaboradores[Matricula])
+VAR CargoAtual = SELECTEDVALUE(DimColaboradores[Cargo])
+VAR OS_DentroPrazo = 
+    CALCULATE(
+        COUNTROWS(FactOS),
+        FactOS[Matricula] = MatriculaAtual,
+        FactOS[SLA_Dentro_Prazo] = 1
+    )
+VAR Total_OS = 
+    CALCULATE(
+        COUNTROWS(FactOS),
+        FactOS[Matricula] = MatriculaAtual
+    )
+RETURN
+    IF(
+        CargoAtual = "Técnico",
+        DIVIDE(OS_DentroPrazo, Total_OS, 0),
+        BLANK()
+    )
+
+
+// % Ativação - Individual (OS ativadas / Total OS do técnico)
+Ativacao_Percentual_Individual = 
+VAR MatriculaAtual = SELECTEDVALUE(DimColaboradores[Matricula])
+VAR CargoAtual = SELECTEDVALUE(DimColaboradores[Cargo])
+VAR OS_Ativadas = 
+    CALCULATE(
+        COUNTROWS(FactOS),
+        FactOS[Matricula] = MatriculaAtual,
+        FactOS[Ativacao_Flag] = 1
+    )
+VAR Total_OS = 
+    CALCULATE(
+        COUNTROWS(FactOS),
+        FactOS[Matricula] = MatriculaAtual
+    )
+RETURN
+    IF(
+        CargoAtual = "Técnico",
+        DIVIDE(OS_Ativadas, Total_OS, 0),
+        BLANK()
+    )
+
+
+-----------------------------------------------
+2. MEDIDAS DE POLO (média dos técnicos do polo)
+-----------------------------------------------
+
+// Polo do colaborador atual (extraído do campo "Polo RH Site" ou "Polo")
+VAR PoloAtual = SELECTEDVALUE(DimColaboradores[Polo RH Site])
+
+// Lista de matrículas dos TÉCNICOS do polo
+VAR TecnicosDoPolo = 
+    FILTER(
+        DimColaboradores,
+        DimColaboradores[Polo RH Site] = PoloAtual
+            && DimColaboradores[Cargo] = "Técnico"
+    )
+
+
+// CSAT do Polo = média do CSAT dos técnicos do polo
+CSAT_Polo = 
+VAR PoloAtual = SELECTEDVALUE(DimColaboradores[Polo RH Site])
+VAR MatriculasTecnicos = 
+    CALCULATETABLE(
+        VALUES(DimColaboradores[Matricula]),
+        DimColaboradores[Polo RH Site] = PoloAtual,
+        DimColaboradores[Cargo] = "Técnico"
+    )
+VAR CSAT_Tecnicos = 
+    ADDCOLUMNS(
+        MatriculasTecnicos,
+        "@CSAT", 
+            CALCULATE(AVERAGE(FactCSAT[nota_pesquisa]))
+    )
+RETURN
+    AVERAGEX(CSAT_Tecnicos, [@CSAT])
+
+
+// SLA do Polo = média do SLA dos técnicos do polo
+SLA_Dentro_Prazo_Polo = 
+VAR PoloAtual = SELECTEDVALUE(DimColaboradores[Polo RH Site])
+VAR MatriculasTecnicos = 
+    CALCULATETABLE(
+        VALUES(DimColaboradores[Matricula]),
+        DimColaboradores[Polo RH Site] = PoloAtual,
+        DimColaboradores[Cargo] = "Técnico"
+    )
+VAR SLA_Tecnicos = 
+    ADDCOLUMNS(
+        MatriculasTecnicos,
+        "@SLA",
+            VAR OS_Dentro = CALCULATE(COUNTROWS(FactOS), FactOS[SLA_Dentro_Prazo] = 1)
+            VAR OS_Total = CALCULATE(COUNTROWS(FactOS))
+            RETURN DIVIDE(OS_Dentro, OS_Total, 0)
+    )
+RETURN
+    AVERAGEX(SLA_Tecnicos, [@SLA])
+
+
+// Ativação do Polo = média da ativação dos técnicos do polo
+Ativacao_Percentual_Polo = 
+VAR PoloAtual = SELECTEDVALUE(DimColaboradores[Polo RH Site])
+VAR MatriculasTecnicos = 
+    CALCULATETABLE(
+        VALUES(DimColaboradores[Matricula]),
+        DimColaboradores[Polo RH Site] = PoloAtual,
+        DimColaboradores[Cargo] = "Técnico"
+    )
+VAR Ativacao_Tecnicos = 
+    ADDCOLUMNS(
+        MatriculasTecnicos,
+        "@Ativacao",
+            VAR OS_Ativadas = CALCULATE(COUNTROWS(FactOS), FactOS[Ativacao_Flag] = 1)
+            VAR OS_Total = CALCULATE(COUNTROWS(FactOS))
+            RETURN DIVIDE(OS_Ativadas, OS_Total, 0)
+    )
+RETURN
+    AVERAGEX(Ativacao_Tecnicos, [@Ativacao])
+
+
+-----------------------------------------------
+3. MEDIDAS FINAIS - COM LÓGICA DE CARGO
+-----------------------------------------------
+
+// CSAT Final (calcula conforme cargo: Técnico=Individual, Assistente=herda Polo, etc.)
+CSAT_Final = 
+VAR CargoAtual = SELECTEDVALUE(DimColaboradores[Cargo])
+VAR MatriculaAtual = SELECTEDVALUE(DimColaboradores[Matricula])
+VAR PoloAtual = SELECTEDVALUE(DimColaboradores[Polo RH Site])
+VAR LiderAtual = SELECTEDVALUE(FactOS[Líder])
+VAR CoordenadorAtual = SELECTEDVALUE(FactOS[Coordenador])
+RETURN
+    SWITCH(
+        TRUE(),
+        // TÉCNICO: resultado individual
+        CargoAtual = "Técnico",
+            CALCULATE(AVERAGE(FactCSAT[nota_pesquisa]), FactCSAT[Matricula] = MatriculaAtual),
+        
+        // ASSISTENTE: herda do polo
+        CargoAtual = "Assistente",
+            [CSAT_Polo],
+        
+        // LÍDER: média dos polos do líder
+        CargoAtual = "Líder" || CargoAtual = "Lider",
+            VAR PolosDoLider = 
+                CALCULATETABLE(
+                    DISTINCT(FactOS[Polo]),
+                    FactOS[Líder] = LiderAtual
+                )
+            VAR CSAT_Polos = 
+                ADDCOLUMNS(
+                    PolosDoLider,
+                    "@CSAT_Polo", [CSAT_Polo]
+                )
+            RETURN
+                AVERAGEX(CSAT_Polos, [@CSAT_Polo]),
+        
+        // COORDENADOR: média dos líderes do coordenador
+        CargoAtual = "Coordenador",
+            VAR LideresDoCoordenador = 
+                CALCULATETABLE(
+                    DISTINCT(FactOS[Líder]),
+                    FactOS[Coordenador] = CoordenadorAtual
+                )
+            VAR CSAT_Lideres = 
+                ADDCOLUMNS(
+                    LideresDoCoordenador,
+                    "@CSAT_Lider", [CSAT_Final]  // Usa a própria medida recursivamente (ajustar conforme necessário)
+                )
+            RETURN
+                AVERAGEX(CSAT_Lideres, [@CSAT_Lider]),
+        
+        // MATRIZ/ADMIN: total geral
+        CargoAtual = "Matriz" || CargoAtual = "Admin" || CargoAtual = "Administrativo",
+            AVERAGE(FactCSAT[nota_pesquisa]),
+        
+        BLANK()
+    )
+
+
+// SLA Final (% Dentro do Prazo)
+SLA_Dentro_Prazo_Final = 
+VAR CargoAtual = SELECTEDVALUE(DimColaboradores[Cargo])
+VAR MatriculaAtual = SELECTEDVALUE(DimColaboradores[Matricula])
+VAR PoloAtual = SELECTEDVALUE(DimColaboradores[Polo RH Site])
+VAR LiderAtual = SELECTEDVALUE(FactOS[Líder])
+VAR CoordenadorAtual = SELECTEDVALUE(FactOS[Coordenador])
+RETURN
+    SWITCH(
+        TRUE(),
+        // TÉCNICO: individual
+        CargoAtual = "Técnico",
+            [SLA_Dentro_Prazo_Individual],
+        
+        // ASSISTENTE: herda do polo
+        CargoAtual = "Assistente",
+            [SLA_Dentro_Prazo_Polo],
+        
+        // LÍDER: média dos polos
+        CargoAtual = "Líder" || CargoAtual = "Lider",
+            VAR PolosDoLider = CALCULATETABLE(DISTINCT(FactOS[Polo]), FactOS[Líder] = LiderAtual)
+            VAR SLA_Polos = ADDCOLUMNS(PolosDoLider, "@SLA", [SLA_Dentro_Prazo_Polo])
+            RETURN AVERAGEX(SLA_Polos, [@SLA]),
+        
+        // COORDENADOR: média dos líderes
+        CargoAtual = "Coordenador",
+            VAR LideresDoCoordenador = CALCULATETABLE(DISTINCT(FactOS[Líder]), FactOS[Coordenador] = CoordenadorAtual)
+            VAR SLA_Lideres = ADDCOLUMNS(LideresDoCoordenador, "@SLA", [SLA_Dentro_Prazo_Final])
+            RETURN AVERAGEX(SLA_Lideres, [@SLA]),
+        
+        // MATRIZ/ADMIN: total geral
+        CargoAtual = "Matriz" || CargoAtual = "Admin",
+            VAR OS_Dentro = CALCULATE(COUNTROWS(FactOS), FactOS[SLA_Dentro_Prazo] = 1)
+            VAR OS_Total = CALCULATE(COUNTROWS(FactOS))
+            RETURN DIVIDE(OS_Dentro, OS_Total, 0),
+        
+        BLANK()
+    )
+
+
+// Ativação Final (% Ativação)
+Ativacao_Percentual_Final = 
+VAR CargoAtual = SELECTEDVALUE(DimColaboradores[Cargo])
+VAR MatriculaAtual = SELECTEDVALUE(DimColaboradores[Matricula])
+VAR PoloAtual = SELECTEDVALUE(DimColaboradores[Polo RH Site])
+VAR LiderAtual = SELECTEDVALUE(FactOS[Líder])
+VAR CoordenadorAtual = SELECTEDVALUE(FactOS[Coordenador])
+RETURN
+    SWITCH(
+        TRUE(),
+        // TÉCNICO: individual
+        CargoAtual = "Técnico",
+            [Ativacao_Percentual_Individual],
+        
+        // ASSISTENTE: herda do polo
+        CargoAtual = "Assistente",
+            [Ativacao_Percentual_Polo],
+        
+        // LÍDER: média dos polos
+        CargoAtual = "Líder" || CargoAtual = "Lider",
+            VAR PolosDoLider = CALCULATETABLE(DISTINCT(FactOS[Polo]), FactOS[Líder] = LiderAtual)
+            VAR Ativacao_Polos = ADDCOLUMNS(PolosDoLider, "@Ativacao", [Ativacao_Percentual_Polo])
+            RETURN AVERAGEX(Ativacao_Polos, [@Ativacao]),
+        
+        // COORDENADOR: média dos líderes
+        CargoAtual = "Coordenador",
+            VAR LideresDoCoordenador = CALCULATETABLE(DISTINCT(FactOS[Líder]), FactOS[Coordenador] = CoordenadorAtual)
+            VAR Ativacao_Lideres = ADDCOLUMNS(LideresDoCoordenador, "@Ativacao", [Ativacao_Percentual_Final])
+            RETURN AVERAGEX(Ativacao_Lideres, [@Ativacao]),
+        
+        // MATRIZ/ADMIN: total geral
+        CargoAtual = "Matriz" || CargoAtual = "Admin",
+            VAR OS_Ativadas = CALCULATE(COUNTROWS(FactOS), FactOS[Ativacao_Flag] = 1)
+            VAR OS_Total = CALCULATE(COUNTROWS(FactOS))
+            RETURN DIVIDE(OS_Ativadas, OS_Total, 0),
+        
+        BLANK()
+    )

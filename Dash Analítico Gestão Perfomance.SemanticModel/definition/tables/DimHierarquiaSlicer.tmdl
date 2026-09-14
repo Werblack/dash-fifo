@@ -1,0 +1,78 @@
+table DimHierarquiaSlicer
+	lineageTag: 0ff97bd4-4c3e-47fb-8654-fd9636c94e1c
+
+	column Coordenador
+		lineageTag: aade3283-b4f7-4b1d-afc0-e26a50b95eee
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Coordenador]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Líder
+		lineageTag: 95e51b5e-fa04-466a-b031-449f3deb73c5
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Líder]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Polo
+		lineageTag: 69fac6e6-67a9-4375-a3a9-32ac11a6a453
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Polo]
+
+		annotation SummarizationSetBy = Automatic
+
+	column KeyHierarquia
+		lineageTag: 172c308a-15ae-4169-bd4b-c24b1ee49072
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [KeyHierarquia]
+
+		annotation SummarizationSetBy = Automatic
+
+	hierarchy 'Coordenador Hierarquia'
+		lineageTag: ecc89462-32f4-4fbf-a239-e24e7554d69d
+
+		level Coordenador
+			lineageTag: 4ab6668b-3139-4c02-8914-0eca39868165
+			column: Coordenador
+
+		level Líder
+			lineageTag: 5d9b93f2-5522-4404-9ffb-97cb0ab93130
+			column: Líder
+
+		level Polo
+			lineageTag: fea16119-b0f6-403a-ac83-05b466f74eb5
+			column: Polo
+
+	partition DimHierarquiaSlicer = calculated
+		mode: import
+		source =
+				
+				VAR Base =
+				    DISTINCT(
+				        SELECTCOLUMNS(
+				            FactOS,
+				            "Coordenador", TRIM( FactOS[Coordenador.Coordenador] ),
+				            "Líder",       TRIM( FactOS[Líder] ),
+				            "Polo",        TRIM( FactOS[des_service_provider] )
+				        )
+				    )
+				VAR SemVazios =
+				    FILTER(
+				        Base,
+				        NOT ISBLANK( [Coordenador] ) && [Coordenador] <> ""
+				    )
+				VAR ComChave =
+				    ADDCOLUMNS(
+				        SemVazios,
+				        "KeyHierarquia",
+				            [Coordenador] & "|" & [Líder] & "|" & [Polo]
+				    )
+				RETURN ComChave
+
+	annotation PBI_Id = 367fb10aafef4380b2f4e0949ea1e082
+

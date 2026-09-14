@@ -1,0 +1,645 @@
+table 'Semanal FIFO'
+	excludeFromModelRefresh
+	lineageTag: 896e5b50-99aa-403c-a1c5-916e33ded316
+
+	measure Total_Estoque = ```
+			
+			     COUNTROWS ( 'Semanal FIFO' )
+			```
+		formatString: 0
+		lineageTag: 1cfbf05e-68ad-4965-88cb-4c6f6fa491a1
+
+	measure Estoque_Cluster_120 =
+			
+			CALCULATE (
+			    [Total_Estoque],
+			    KEEPFILTERS (
+			        FILTER (
+			            'Semanal FIFO',
+			            UPPER ( TRIM ( 'Semanal FIFO'[Cluster] ) ) = "MAIS DE 120D"
+			        )
+			    )
+			)
+		formatString: 0
+		lineageTag: 00e445f2-a6ec-4a2f-a459-70624070254d
+
+	measure Pct_Estoque_120 =
+			
+			DIVIDE ( [Estoque_Cluster_120], [Total_Estoque] )
+		lineageTag: 14978fbe-a4fb-4217-ad9f-65da84e1c600
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Estoque_Polo_Aging30 =
+			
+			CALCULATE (
+			    [Total_Estoque],
+			    KEEPFILTERS (
+			        FILTER (
+			            'Semanal FIFO',
+			            UPPER ( TRIM ( 'Semanal FIFO'[Cluster] ) ) IN { "31 A 120D", "MAIS DE 120D" }
+			        )
+			    )
+			)
+		formatString: 0
+		lineageTag: 4e1cbfbc-c607-4898-bda8-b6e3076b7b55
+
+	measure Total_Estoque_Familia =
+			
+			CALCULATE ( [Total_Estoque], VALUES ( Modelo[Família de Produtos] ) )
+		formatString: 0
+		lineageTag: 23aae801-bdf2-42dd-90bc-f8f590279a49
+
+	measure Modelo_Maior_Quantidade =
+			
+			VAR TabelaModelos =
+			    FILTER(
+			        SUMMARIZECOLUMNS(
+			            Modelo[Código],
+			            "NomeModelo", MAX(Modelo[Nome]),
+			            "Quantidade", [Total_Estoque]
+			        ),
+			        [Quantidade] > 0
+			    )
+			VAR TopLinha =
+			    TOPN(
+			        1,
+			        TabelaModelos,
+			        [Quantidade],
+			        DESC,
+			        [NomeModelo]
+			    )
+			RETURN
+			    COALESCE(
+			        MAXX(TopLinha, [NomeModelo]),
+			        "—"
+			    )
+		lineageTag: bd776e77-a0b6-453c-9ae9-e26f18fb9500
+
+	measure Quantidade_Modelo_Top =
+			
+			VAR TabelaModelos =
+			    FILTER(
+			        SUMMARIZECOLUMNS(
+			            Modelo[Código],
+			            "NomeModelo", MAX(Modelo[Nome]),
+			            "Quantidade", [Total_Estoque]
+			        ),
+			        [Quantidade] > 0
+			    )
+			VAR TopLinha =
+			    TOPN(
+			        1,
+			        TabelaModelos,
+			        [Quantidade],
+			        DESC,
+			        [NomeModelo]
+			    )
+			RETURN
+			    COALESCE(
+			        MAXX(TopLinha, [Quantidade]),
+			        0
+			    )
+		formatString: 0
+		lineageTag: e7cbba00-44ec-46da-9fe5-35897aecfa04
+
+	measure Data_Ultima_Semana =
+			
+			CALCULATE (
+			    MAX ( 'Semanal FIFO'[DataReferencia] ),
+			    ALL ( 'Semanal FIFO' )
+			)
+		formatString: General Date
+		lineageTag: 2dba9dcc-bf7e-4019-a11d-2d52dcf22d8f
+
+	measure Data_Semana_Anterior =
+			
+			CALCULATE (
+			    MAX ( 'Semanal FIFO'[DataReferencia] ),
+			    FILTER (
+			        ALL ( 'Semanal FIFO' ),
+			        'Semanal FIFO'[DataReferencia] < [Data_Ultima_Semana]
+			    )
+			)
+		formatString: General Date
+		lineageTag: e3086b7f-438b-4db1-badf-f64d01a4f583
+
+	measure Arquivo_Snapshot_Atual =
+			
+			VAR MaxIndice =
+			    CALCULATE ( MAX ( 'Semanal FIFO'[ArquivoIndice] ), ALL ( 'Semanal FIFO' ) )
+			RETURN
+			    CALCULATE (
+			        MAX ( 'Semanal FIFO'[Arquivo_Origem] ),
+			        FILTER ( ALL ( 'Semanal FIFO' ), 'Semanal FIFO'[ArquivoIndice] = MaxIndice )
+			    )
+		lineageTag: b9958c80-fff3-41a4-bdb4-14244eea1a3b
+
+	measure Arquivo_Snapshot_Anterior =
+			
+			VAR MaxIndice =
+			    CALCULATE ( MAX ( 'Semanal FIFO'[ArquivoIndice] ), ALL ( 'Semanal FIFO' ) )
+			VAR IndiceAnterior =
+			    CALCULATE (
+			        MAX ( 'Semanal FIFO'[ArquivoIndice] ),
+			        FILTER ( ALL ( 'Semanal FIFO' ), 'Semanal FIFO'[ArquivoIndice] < MaxIndice )
+			    )
+			RETURN
+			    CALCULATE (
+			        MAX ( 'Semanal FIFO'[Arquivo_Origem] ),
+			        FILTER ( ALL ( 'Semanal FIFO' ), 'Semanal FIFO'[ArquivoIndice] = IndiceAnterior )
+			    )
+		lineageTag: 9de7e321-a351-43ff-aaf3-1cc2e751fcc3
+
+	measure Estoque_Snapshot_Atual =
+			
+			VAR MaxIndice =
+			    CALCULATE ( MAX ( 'Semanal FIFO'[ArquivoIndice] ), ALL ( 'Semanal FIFO' ) )
+			RETURN
+			    CALCULATE (
+			        [Total_Estoque],
+			        FILTER ( ALL ( 'Semanal FIFO' ), 'Semanal FIFO'[ArquivoIndice] = MaxIndice )
+			    )
+		formatString: 0
+		lineageTag: a8fb9178-7268-4bcc-bd04-a349b77b80bb
+
+	measure Estoque_Snapshot_Anterior =
+			
+			VAR MaxIndice =
+			    CALCULATE ( MAX ( 'Semanal FIFO'[ArquivoIndice] ), ALL ( 'Semanal FIFO' ) )
+			VAR IndiceAnterior =
+			    CALCULATE (
+			        MAX ( 'Semanal FIFO'[ArquivoIndice] ),
+			        FILTER ( ALL ( 'Semanal FIFO' ), 'Semanal FIFO'[ArquivoIndice] < MaxIndice )
+			    )
+			RETURN
+			    CALCULATE (
+			        [Total_Estoque],
+			        FILTER ( ALL ( 'Semanal FIFO' ), 'Semanal FIFO'[ArquivoIndice] = IndiceAnterior )
+			    )
+		formatString: 0
+		lineageTag: 33a0f7d4-3571-463d-9bd0-d221d8cb7335
+
+	measure Diferenca_Semanal =
+			
+			[Estoque_Snapshot_Atual] - [Estoque_Snapshot_Anterior]
+		formatString: 0
+		lineageTag: 9d3b7507-a7e9-48ed-8821-68eecb3ccb01
+
+	measure Diferenca_Semanal_% =
+			
+			DIVIDE ( [Diferenca_Semanal], [Estoque_Snapshot_Anterior] )
+		formatString: "+0,0%;-0,0%;0,0% "
+		lineageTag: 1798c461-911b-442d-89ff-65e153420dd9
+
+		annotation PBI_FormatHint = {"isCustom":true}
+
+	column Arquivo_Origem
+		dataType: string
+		lineageTag: 91497f9f-170c-4803-ad6a-d398b382e07a
+		summarizeBy: none
+		sourceColumn: Arquivo_Origem
+
+		annotation SummarizationSetBy = Automatic
+
+	column DataModificacao
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 38f0282f-be8a-493c-a043-2aa47c6180f6
+		summarizeBy: none
+		sourceColumn: DataModificacao
+
+		variation Variation
+			isDefault
+			relationship: 46945550-39b0-4c66-9725-fcca36b05d99
+			defaultHierarchy: LocalDateTable_1f2ed29e-d61b-4460-860e-2e222df00d9e.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column DataArquivo
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 1cee2c84-90b1-443e-8bfa-096c236bb181
+		summarizeBy: none
+		sourceColumn: DataArquivo
+
+		variation Variation
+			isDefault
+			relationship: 6171cc7a-cfd4-4a48-89ca-6895d804d90b
+			defaultHierarchy: LocalDateTable_df4e0dc3-e409-4848-8f4b-22d7315bc77d.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column Material
+		dataType: string
+		lineageTag: 71d73848-1928-413b-bc82-751aa60d6b26
+		summarizeBy: none
+		sourceColumn: Material
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Descrição Material'
+		dataType: string
+		lineageTag: b739aa07-ed36-496a-9c6c-620c8ea980a4
+		summarizeBy: none
+		sourceColumn: Descrição Material
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Nº de Série'
+		dataType: string
+		lineageTag: 69dda0f4-0a94-4d0f-8651-10db2bc1a143
+		summarizeBy: none
+		sourceColumn: Nº de Série
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Status Sistema'
+		dataType: string
+		lineageTag: 1dd83fa4-b582-48dd-9cbd-70284c4f6f2b
+		summarizeBy: none
+		sourceColumn: Status Sistema
+
+		annotation SummarizationSetBy = Automatic
+
+	column Fornecedor
+		dataType: string
+		lineageTag: 38d10b7c-09ce-4490-8647-218c8512d0fb
+		summarizeBy: none
+		sourceColumn: Fornecedor
+
+		annotation SummarizationSetBy = Automatic
+
+	column Cliente
+		dataType: string
+		lineageTag: c32717ce-166f-4477-ae18-c389e0be6c98
+		summarizeBy: none
+		sourceColumn: Cliente
+
+		annotation SummarizationSetBy = Automatic
+
+	column Centro
+		dataType: string
+		lineageTag: ad3b44ad-69d5-406b-b641-95a6d5e3e0d4
+		summarizeBy: none
+		sourceColumn: Centro
+
+		annotation SummarizationSetBy = Automatic
+
+	column Depósito
+		dataType: string
+		lineageTag: 0dbce317-638c-4973-a7e4-02117370157c
+		summarizeBy: none
+		sourceColumn: Depósito
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Criado por'
+		dataType: string
+		lineageTag: 97ac95bd-4748-431f-afcc-ab9c29947e52
+		summarizeBy: none
+		sourceColumn: Criado por
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Dt.Criação'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 11d7aafb-c5ab-4ca0-a80e-8325137a17b3
+		summarizeBy: none
+		sourceColumn: Dt.Criação
+
+		variation Variation
+			isDefault
+			relationship: 9f4bffd4-9557-400e-a626-4cfba59d298b
+			defaultHierarchy: LocalDateTable_af3fb3c5-e10e-487b-a617-7fbeedd05049.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Modificado em'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 4ae8a69a-0d65-4017-ac8d-546645632fc8
+		summarizeBy: none
+		sourceColumn: Modificado em
+
+		variation Variation
+			isDefault
+			relationship: 2b4923a7-ba6c-48d9-aeb8-c3c374f19027
+			defaultHierarchy: LocalDateTable_3816ae34-5a15-47cf-99ae-c60b00bf11b0.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Modificado por'
+		dataType: string
+		lineageTag: 2f1b7040-aa0b-430d-8bc0-7c35ef2371b1
+		summarizeBy: none
+		sourceColumn: Modificado por
+
+		annotation SummarizationSetBy = Automatic
+
+	column POLO
+		dataType: string
+		lineageTag: 7b28644f-1a25-4826-9a64-80fdda795ee5
+		summarizeBy: none
+		sourceColumn: POLO
+
+		annotation SummarizationSetBy = Automatic
+
+	column FAMILIA
+		dataType: string
+		lineageTag: 6d628e59-a2d2-4556-8e06-b70a8e053d77
+		summarizeBy: none
+		sourceColumn: FAMILIA
+
+		annotation SummarizationSetBy = Automatic
+
+	column MÊS
+		dataType: string
+		lineageTag: e06d73b5-3d29-4bdd-a411-e84a2f77d797
+		summarizeBy: none
+		sourceColumn: MÊS
+
+		annotation SummarizationSetBy = Automatic
+
+	column ANO
+		dataType: int64
+		formatString: 0
+		lineageTag: 7a5f1550-9623-49a0-94f7-1127ee47fd28
+		summarizeBy: sum
+		sourceColumn: ANO
+
+		annotation SummarizationSetBy = Automatic
+
+	column AnoMes
+		dataType: string
+		lineageTag: 9dfb655f-b8f6-4354-b632-7687bb5c8764
+		summarizeBy: none
+		sourceColumn: AnoMes
+
+		annotation SummarizationSetBy = Automatic
+
+	column DataReferencia
+		dataType: dateTime
+		formatString: dd/mm/yyyy
+		lineageTag: 1896d3ad-8949-4c44-acd8-97b341e04555
+		summarizeBy: none
+		sourceColumn: DataReferencia
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column Dias_Estoque
+		dataType: int64
+		formatString: 0
+		lineageTag: 3cfb9869-7057-47db-8593-75475ce3c913
+		summarizeBy: sum
+		sourceColumn: Dias_Estoque
+
+		annotation SummarizationSetBy = Automatic
+
+	column Cluster
+		dataType: string
+		lineageTag: f8d3e2db-dd95-4163-bf1d-b2d2e04cd33d
+		summarizeBy: none
+		sourceColumn: Cluster
+
+		annotation SummarizationSetBy = Automatic
+
+	column ArquivoIndice
+		dataType: int64
+		formatString: 0
+		lineageTag: 70b41e54-39ab-4528-a4c1-cd1dfaed720e
+		summarizeBy: sum
+		sourceColumn: ArquivoIndice
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Semanal FIFO' = m
+		mode: import
+		source =
+				let
+				    PastaSAP = "C:\Users\sbahia\OneDrive - UNIVERSO ONLINE S.A\Área de Trabalho\Ambiente PY\logins\Dash Fifo\Semanal FIFO",
+				
+				    Fonte =
+				        Folder.Files(PastaSAP),
+				
+				    #"Arquivos Visiveis" =
+				        Table.SelectRows(
+				            Fonte,
+				            each [Attributes]?[Hidden]? <> true
+				        ),
+				
+				    #"Arquivos Filtrados" =
+				        Table.SelectRows(
+				            #"Arquivos Visiveis",
+				            each Text.Contains(Text.Lower([Name]), "estoque_sap")
+				        ),
+				
+				    #"Colunas Selecionadas" =
+				        Table.SelectColumns(
+				            #"Arquivos Filtrados",
+				            {"Content","Name","Date created","Date modified"}
+				        ),
+				
+				    LimpaTexto = (valor as any) as nullable text =>
+				        if valor = null then
+				            null
+				        else if Value.Is(valor, type text) then
+				            Text.Trim(valor)
+				        else
+				            Text.Trim(Text.From(valor, "pt-BR")),
+				
+				    ConverteData = (valor as any) as nullable datetime =>
+				        if valor = null then
+				            null
+				        else if Value.Is(valor, type datetime) then
+				            valor
+				        else if Value.Is(valor, type date) then
+				            DateTime.From(valor)
+				        else if Value.Is(valor, type text) and Text.Trim(valor) = "" then
+				            null
+				        else
+				            DateTime.FromText(Text.From(valor, "pt-BR"), "pt-BR"),
+				
+				    #"Tabela Transformada" =
+				        Table.AddColumn(
+				            #"Colunas Selecionadas",
+				            "Tabela",
+				            each
+				                let
+				                    ObjetoExcel  = Excel.Workbook([Content], null, true),
+				                    PlanilhaBase = Table.SelectRows(ObjetoExcel, each [Kind] = "Sheet" and [Name] = "Base"){0}[Data],
+				                    Cabecalho    = Table.PromoteHeaders(PlanilhaBase, [PromoteAllScalars = true]),
+				                    CabecTrim    = Table.TransformColumnNames(Cabecalho, Text.Trim),
+				                    LinhasOk     = Table.SelectRows(CabecTrim, each List.NonNullCount(Record.FieldValues(_)) > 0)
+				                in
+				                    LinhasOk
+				        ),
+				
+				    #"SomenteTabela" =
+				        Table.SelectColumns(
+				            #"Tabela Transformada",
+				            {"Name","Date created","Date modified","Tabela"}
+				        ),
+				
+				    #"Tabela Expandida" =
+				        Table.ExpandTableColumn(
+				            #"SomenteTabela",
+				            "Tabela",
+				            {
+				                "Material","Descrição Material","Nº de Série","Status Sistema",
+				                "Fornecedor","Cliente","Centro","Depósito","Criado por","Dt.Criação",
+				                "Modificado em","Modificado por","POLO","FAMILIA","MÊS","ANO","Cluster"
+				            },
+				            {
+				                "Material","Descrição Material","Nº de Série","Status Sistema",
+				                "Fornecedor","Cliente","Centro","Depósito","Criado por","Dt.Criação",
+				                "Modificado em","Modificado por","POLO","FAMILIA","MÊS","ANO","Cluster"
+				            }
+				        ),
+				
+				    #"Campos Textuais Normalizados" =
+				        Table.TransformColumns(
+				            #"Tabela Expandida",
+				            {
+				                {"Material", LimpaTexto, type text},
+				                {"Descrição Material", LimpaTexto, type text},
+				                {"Nº de Série", LimpaTexto, type text},
+				                {"Status Sistema", LimpaTexto, type text},
+				                {"Fornecedor", LimpaTexto, type text},
+				                {"Cliente", LimpaTexto, type text},
+				                {"Centro", LimpaTexto, type text},
+				                {"Depósito", LimpaTexto, type text},
+				                {"Criado por", LimpaTexto, type text},
+				                {"Modificado por", LimpaTexto, type text},
+				                {"POLO", LimpaTexto, type text},
+				                {"FAMILIA", LimpaTexto, type text},
+				                {"MÊS", LimpaTexto, type text},
+				                {"Cluster", LimpaTexto, type text}
+				            }
+				        ),
+				
+				    #"Datas Convertidas" =
+				        Table.TransformColumns(
+				            #"Campos Textuais Normalizados",
+				            {
+				                {"Dt.Criação", ConverteData, type datetime},
+				                {"Modificado em", ConverteData, type datetime}
+				            }
+				        ),
+				
+				    #"Tipos Ajustados" =
+				        Table.TransformColumnTypes(
+				            #"Datas Convertidas",
+				            {{"ANO", Int64.Type}},
+				            "pt-BR"
+				        ),
+				
+				    #"Linhas Úteis" =
+				        Table.SelectRows(
+				            #"Tipos Ajustados",
+				            each not List.IsEmpty(List.RemoveNulls({[Material]}))
+				        ),
+				
+				    #"Data Referencia" =
+				        Table.AddColumn(
+				            #"Linhas Úteis",
+				            "DataReferencia",
+				            each
+				                let
+				                    dataMod = [Modificado em],
+				                    dataCri = [Dt.Criação]
+				                in
+				                    if dataMod <> null then
+				                        Date.From(dataMod)
+				                    else if dataCri <> null then
+				                        Date.From(dataCri)
+				                    else
+				                        null,
+				            type date
+				        ),
+				
+				    #"AnoMes" =
+				        Table.AddColumn(
+				            #"Data Referencia",
+				            "AnoMes",
+				            each
+				                if [DataReferencia] = null then
+				                    null
+				                else
+				                    Text.Combine(
+				                        {
+				                            Text.From(Date.Year([DataReferencia])),
+				                            Text.PadStart(Text.From(Date.Month([DataReferencia])), 2, "0")
+				                        },
+				                        "-"
+				                    ),
+				            type text
+				        ),
+				
+				    #"Dias em Estoque" =
+				        Table.AddColumn(
+				            #"AnoMes",
+				            "Dias_Estoque",
+				            each
+				                if [Dt.Criação] = null then
+				                    null
+				                else
+				                    Duration.Days(Date.From(DateTime.LocalNow()) - Date.From([Dt.Criação])),
+				            Int64.Type
+				        ),
+				
+				    #"Metadados em DataTime" =
+				        Table.TransformColumns(
+				            #"Dias em Estoque",
+				            {
+				                {"Date created", each DateTime.From(_), type datetime},
+				                {"Date modified", each DateTime.From(_), type datetime}
+				            }
+				        ),
+				
+				    #"Colunas Renomeadas" =
+				        Table.RenameColumns(
+				            #"Metadados em DataTime",
+				            {
+				                {"Name","Arquivo_Origem"},
+				                {"Date created","DataArquivo"},
+				                {"Date modified","DataModificacao"}
+				            }
+				        ),
+				
+				    // <<< NOVA ETAPA >>>
+				    #"Coluna ArquivoIndice" =
+				        Table.AddColumn(
+				            #"Colunas Renomeadas",
+				            "ArquivoIndice",
+				            each
+				                let
+				                    numeros = Text.Select([Arquivo_Origem], {"0".."9"})
+				                in
+				                    try Number.From(numeros) otherwise null,
+				            Int64.Type
+				        ),
+				
+				    #"Colunas Reordenadas" =
+				        Table.ReorderColumns(
+				            #"Coluna ArquivoIndice",
+				            {
+				                "Arquivo_Origem","ArquivoIndice","DataArquivo","DataModificacao",
+				                "Material","Descrição Material","Nº de Série","Status Sistema",
+				                "Fornecedor","Cliente","Centro","Depósito","Criado por","Dt.Criação",
+				                "Modificado em","Modificado por","POLO","FAMILIA","MÊS","ANO",
+				                "AnoMes","DataReferencia","Dias_Estoque","Cluster"
+				            }
+				        )
+				in
+				    #"Colunas Reordenadas"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navegação
+

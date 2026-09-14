@@ -1,0 +1,28 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
+  "name": "1955497e17d63988624e",
+  "displayName": "Analítico Justifiticativa",
+  "displayOption": "FitToWidth",
+  "height": 1670,
+  "width": 1920,
+  "pageBinding": {
+    "name": "98c0179321282c20387b",
+    "type": "Default",
+    "parameters": []
+  },
+  "objects": {
+    "displayArea": [
+      {
+        "properties": {
+          "verticalAlignment": {
+            "expr": {
+              "Literal": {
+                "Value": "'Middle'"
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}

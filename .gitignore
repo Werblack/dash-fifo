@@ -1,0 +1,9 @@
+*.pbix
+
+**/.pbi/
+*.pbix
+*.pbit
+
+**/.pbi/
+*.pbix
+*.pbit

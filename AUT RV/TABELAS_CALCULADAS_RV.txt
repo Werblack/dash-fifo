@@ -1,0 +1,435 @@
+===============================================
+TABELAS CALCULADAS DAX - DASH RV (COMPLETO)
+===============================================
+Dependências: DimColaboradores, FactOS, FactCSAT.
+FactOS: Coordenador.Coordenador, Líder, des_service_provider, Matricula.
+FactCSAT: Matricula2 (obrigatório para Eixo_Colaboradores - técnicos dos fatos).
+DimColaboradores: Nome, Cargo, Matricula, Polo_Base, IsMatriz.
+
+-----------------------------------------------
+1. DIMHIERARQUIA
+-----------------------------------------------
+Gera estrutura Coordenador → Líder → Polo → (Assistente OU Técnico/MatriculaTec).
+Usada para navegação hierárquica (matriz/árvore). Todas as comparações por nome/polo usam versão normalizada (sem acentos).
+
+- CLP: distinct(Coordenador, Líder, Polo) de FactOS, normalizados.
+- AssistDIM: DimColaboradores onde Cargo=ASSISTENTE, com Polo_Base normalizado.
+- TecDIM: DimColaboradores onde Cargo=TECNICO, com Polo_Base e Nome normalizados + MatriculaTec.
+- TecFatoPorPolo: FactOS → distinct(Polo norm, Matricula) para técnicos.
+- TecFatoComNome: técnicos do fato; nome = nome na DIM ou "MAT-"&Matricula.
+- Saída: linhas (Coordenador, Lider, Polo, Assistente | Técnico, MatriculaTec).
+
+-----------------------------------------------
+2. EIXO_COLABORADORES
+-----------------------------------------------
+Tabela de “eixo” do relatório: quem aparece nas linhas e com qual regra (Polo Base (Regra), Nome_Normalizado, IsMatriz).
+Usada por todas as medidas “(Regra Cargo)”.
+
+Origens:
+1) Operação DIM: Técnicos e Assistentes da DimColaboradores → Polo Base (Regra) = Polo_Base, IsMatriz=FALSE, Fonte=DIM.
+2) Gestores Matriz: Líder/Coordenador da DIM com IsMatriz=TRUE (ou Polo_Base=MATRIZ) → Polo Base (Regra)=Matriz, IsMatriz=TRUE, Fonte=DIM (Matriz).
+3) Gestores 03: Líder/Coordenador que aparecem na FactOS mas NÃO são Matriz na DIM → Polo Base (Regra)=BLANK(), Fonte=03 (não Matriz).
+4) Técnicos dos fatos: Matrículas que existem em FactOS ou FactCSAT[Matricula2] e NÃO estão na DIM como Técnico → Polo Base (Regra)=Polo_Base (DIM) ou polo mais frequente na 03, Fonte=Fato (03/04 sem DIM).
+
+Colunas finais: Nome, Nome_Normalizado, Cargo, Matricula, Polo_Base, Polo Base (Regra), IsMatriz, Grupo, Fonte.
+
+-----------------------------------------------
+CÓDIGO 1: DimHierarquia
+-----------------------------------------------
+
+DimHierarquia = 
+VAR _normText =
+    1
+
+VAR CLP =
+    DISTINCT(
+        SELECTCOLUMNS(
+            ADDCOLUMNS(
+                FactOS,
+                "__Coord",
+                    VAR t = UPPER(TRIM(FactOS[Coordenador.Coordenador]))
+                    VAR t1 = SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(t,
+                           "Á","A"),"À","A"),"Â","A"),"Ã","A"),"É","E"),"Ê","E"),"Í","I"),"Ó","O"),"Ô","O"),"Õ","O")
+                    RETURN SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(t1,"Ú","U"),"Ü","U"),"Ç","C"),
+                "__Lider",
+                    VAR l = UPPER(TRIM(FactOS[Líder]))
+                    VAR l1 = SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(l,
+                           "Á","A"),"À","A"),"Â","A"),"Ã","A"),"É","E"),"Ê","E"),"Í","I"),"Ó","O"),"Ô","O"),"Õ","O")
+                    RETURN SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(l1,"Ú","U"),"Ü","U"),"Ç","C"),
+                "__Polo",
+                    VAR p = UPPER(TRIM(FactOS[des_service_provider]))
+                    VAR p1 = SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(p,
+                           "Á","A"),"À","A"),"Â","A"),"Ã","A"),"É","E"),"Ê","E"),"Í","I"),"Ó","O"),"Ô","O"),"Õ","O")
+                    RETURN SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(p1,"Ú","U"),"Ü","U"),"Ç","C")
+            ),
+            "Coordenador", [__Coord],
+            "Lider",       [__Lider],
+            "Polo",        [__Polo]
+        )
+    )
+
+VAR AssistDIM =
+    SELECTCOLUMNS(
+        FILTER(
+            ADDCOLUMNS(
+                DimColaboradores,
+                "__CargoNorm",
+                    VAR c = UPPER(TRIM(DimColaboradores[Cargo]))
+                    VAR c1 = SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(c,
+                           "Á","A"),"À","A"),"Â","A"),"Ã","A"),"É","E"),"Ê","E"),"Í","I"),"Ó","O"),"Ô","O"),"Õ","O")
+                    RETURN SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(c1,"Ú","U"),"Ü","U"),"Ç","C"),
+                "__Polo",
+                    VAR p = UPPER(TRIM(DimColaboradores[Polo_Base]))
+                    VAR p1 = SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(p,
+                           "Á","A"),"À","A"),"Â","A"),"Ã","A"),"É","E"),"Ê","E"),"Í","I"),"Ó","O"),"Ô","O"),"Õ","O")
+                    RETURN SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(p1,"Ú","U"),"Ü","U"),"Ç","C"),
+                "__NomeAss",
+                    VAR n = UPPER(TRIM(DimColaboradores[Nome]))
+                    VAR n1 = SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(n,
+                           "Á","A"),"À","A"),"Â","A"),"Ã","A"),"É","E"),"Ê","E"),"Í","I"),"Ó","O"),"Ô","O"),"Õ","O")
+                    RETURN SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(n1,"Ú","U"),"Ü","U"),"Ç","C")
+            ),
+            [__CargoNorm] = "ASSISTENTE"
+                && NOT ISBLANK(DimColaboradores[Polo_Base])
+        ),
+        "Polo",        [__Polo],
+        "Assistente",  [__NomeAss]
+    )
+
+VAR TecDIM =
+    SELECTCOLUMNS(
+        FILTER(
+            ADDCOLUMNS(
+                DimColaboradores,
+                "__CargoNorm",
+                    VAR c = UPPER(TRIM(DimColaboradores[Cargo]))
+                    VAR c1 = SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(c,
+                           "Á","A"),"À","A"),"Â","A"),"Ã","A"),"É","E"),"Ê","E"),"Í","I"),"Ó","O"),"Ô","O"),"Õ","O")
+                    RETURN SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(c1,"Ú","U"),"Ü","U"),"Ç","C"),
+                "__Polo",
+                    VAR p = UPPER(TRIM(DimColaboradores[Polo_Base]))
+                    VAR p1 = SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(p,
+                           "Á","A"),"À","A"),"Â","A"),"Ã","A"),"É","E"),"Ê","E"),"Í","I"),"Ó","O"),"Ô","O"),"Õ","O")
+                    RETURN SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(p1,"Ú","U"),"Ü","U"),"Ç","C"),
+                "__TecNome",
+                    VAR n = UPPER(TRIM(DimColaboradores[Nome]))
+                    VAR n1 = SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(n,
+                           "Á","A"),"À","A"),"Â","A"),"Ã","A"),"É","E"),"Ê","E"),"Í","I"),"Ó","O"),"Ô","O"),"Õ","O")
+                    RETURN SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(n1,"Ú","U"),"Ü","U"),"Ç","C")
+            ),
+            [__CargoNorm] = "TECNICO"
+        ),
+        "Polo",            [__Polo],
+        "Tecnico",         [__TecNome],
+        "MatriculaTec",    FORMAT(DimColaboradores[Matricula], "")
+    )
+
+VAR TecFatoPorPolo =
+    DISTINCT(
+        SELECTCOLUMNS(
+            ADDCOLUMNS(
+                FactOS,
+                "__Polo",
+                    VAR p = UPPER(TRIM(FactOS[des_service_provider]))
+                    VAR p1 = SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(p,
+                           "Á","A"),"À","A"),"Â","A"),"Ã","A"),"É","E"),"Ê","E"),"Í","I"),"Ó","O"),"Ô","O"),"Õ","O")
+                    RETURN SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(p1,"Ú","U"),"Ü","U"),"Ç","C")
+            ),
+            "Polo",         [__Polo],
+            "MatriculaTec", FORMAT(FactOS[Matricula], "")
+        )
+    )
+
+VAR TecDIM_Map =
+    DISTINCT(
+        SELECTCOLUMNS(
+            TecDIM,
+            "MatriculaTec", [MatriculaTec],
+            "TecnicoDIM",   [Tecnico]
+        )
+    )
+
+VAR TecFatoComNome =
+    SELECTCOLUMNS(
+        ADDCOLUMNS(
+            NATURALLEFTOUTERJOIN(
+                TecFatoPorPolo,
+                TecDIM_Map
+            ),
+            "__TecNome", COALESCE([TecnicoDIM], "MAT-" & [MatriculaTec])
+        ),
+        "Polo",         [Polo],
+        "Tecnico",      [__TecNome],
+        "MatriculaTec", [MatriculaTec]
+    )
+
+VAR CLP_Assist =
+    NATURALINNERJOIN(CLP, AssistDIM)
+
+VAR CLP_Tec =
+    NATURALINNERJOIN(
+        CLP,
+        DISTINCT(
+            UNION(
+                SELECTCOLUMNS(TecDIM,        "Polo", [Polo], "Tecnico", [Tecnico], "MatriculaTec", [MatriculaTec]),
+                SELECTCOLUMNS(TecFatoComNome,"Polo", [Polo], "Tecnico", [Tecnico], "MatriculaTec", [MatriculaTec])
+            )
+        )
+    )
+
+VAR Out_Ass =
+    SELECTCOLUMNS(
+        CLP_Assist,
+        "Coordenador", [Coordenador],
+        "Lider",       [Lider],
+        "Polo",        [Polo],
+        "Assistente",  [Assistente],
+        "Tecnico",     BLANK(),
+        "MatriculaTec", BLANK()
+    )
+
+VAR Out_Tec =
+    SELECTCOLUMNS(
+        CLP_Tec,
+        "Coordenador", [Coordenador],
+        "Lider",       [Lider],
+        "Polo",        [Polo],
+        "Assistente",  BLANK(),
+        "Tecnico",     [Tecnico],
+        "MatriculaTec",[MatriculaTec]
+    )
+
+RETURN
+    DISTINCT( UNION(Out_Ass, Out_Tec) )
+
+
+-----------------------------------------------
+CÓDIGO 2: Eixo_Colaboradores
+-----------------------------------------------
+
+Eixo_Colaboradores = 
+VAR _ops_dim =
+    SELECTCOLUMNS(
+        FILTER(
+            ADDCOLUMNS(
+                DimColaboradores,
+                "__CargoNorm", SUBSTITUTE( UPPER(TRIM(DimColaboradores[Cargo])), "Í","I" ),
+                "__EhMatrizPolo",
+                    VAR x = UPPER(TRIM(COALESCE(DimColaboradores[Polo_Base], "")))
+                    RETURN x = "MATRIZ" || x = "PAGRESOLVE MATRIZ SP"
+            ),
+            [__CargoNorm] IN {"TECNICO","ASSISTENTE"}
+        ),
+        "Nome",                DimColaboradores[Nome],
+        "Nome_Normalizado",
+            VAR n = UPPER(TRIM(DimColaboradores[Nome]))
+            VAR n1 = SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(n,
+                    "Á","A"),"À","A"),"Â","A"),"Ã","A"),"É","E"),"Ê","E"),"Í","I"),"Ó","O"),"Ô","O"),"Õ","O")
+            RETURN SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(n1,"Ú","U"),"Ü","U"),"Ç","C"),
+        "Cargo",               DimColaboradores[Cargo],
+        "Matricula",           DimColaboradores[Matricula],
+        "Polo_Base",           DimColaboradores[Polo_Base],
+        "Polo Base (Regra)",   IF([__EhMatrizPolo], "Matriz", DimColaboradores[Polo_Base]),
+        "IsMatriz",            FALSE(),
+        "Grupo",               "Operação",
+        "Fonte",               "DIM"
+    )
+
+VAR _gest_matriz_dim =
+    SELECTCOLUMNS(
+        FILTER(
+            ADDCOLUMNS(
+                DimColaboradores,
+                "__CargoNorm", SUBSTITUTE( UPPER(TRIM(DimColaboradores[Cargo])), "Í","I" ),
+                "__EhMatriz",
+                    VAR _raw   = FORMAT(DimColaboradores[IsMatriz], "")
+                    VAR _norm  = UPPER(TRIM(COALESCE(_raw, "")))
+                    VAR _txt   = _norm IN {"TRUE","VERDADEIRO","SIM","YES","1"}
+                    VAR _polo  = UPPER(TRIM(COALESCE(DimColaboradores[Polo_Base], "")))
+                    RETURN _txt || _polo = "MATRIZ" || _polo = "PAGRESOLVE MATRIZ SP"
+            ),
+            [__CargoNorm] IN {"LIDER","COORDENADOR"} && [__EhMatriz]
+        ),
+        "Nome",                DimColaboradores[Nome],
+        "Nome_Normalizado",
+            VAR n2 = UPPER(TRIM(DimColaboradores[Nome]))
+            VAR n2a = SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(n2,
+                    "Á","A"),"À","A"),"Â","A"),"Ã","A"),"É","E"),"Ê","E"),"Í","I"),"Ó","O"),"Ô","O"),"Õ","O")
+            RETURN SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(n2a,"Ú","U"),"Ü","U"),"Ç","C"),
+        "Cargo",               DimColaboradores[Cargo],
+        "Matricula",           DimColaboradores[Matricula],
+        "Polo_Base",           "Matriz",
+        "Polo Base (Regra)",   "Matriz",
+        "IsMatriz",            TRUE(),
+        "Grupo",               "Gestor",
+        "Fonte",               "DIM (Matriz)"
+    )
+
+VAR _leaders_os_raw =
+    SELECTCOLUMNS(
+        FILTER(
+            ADDCOLUMNS(FactOS, "__NomeNorm", UPPER(TRIM(FactOS[Líder])) ),
+            NOT ISBLANK(FactOS[Líder]) &&
+            [__NomeNorm] <> "MATRIZ"
+        ),
+        "Nome",  FactOS[Líder],
+        "Cargo", "Líder"
+    )
+
+VAR _coords_os_raw =
+    SELECTCOLUMNS(
+        FILTER(
+            ADDCOLUMNS(FactOS, "__NomeNorm", UPPER(TRIM(FactOS[Coordenador.Coordenador])) ),
+            NOT ISBLANK(FactOS[Coordenador.Coordenador]) &&
+            [__NomeNorm] <> "MATRIZ"
+        ),
+        "Nome",  FactOS[Coordenador.Coordenador],
+        "Cargo", "Coordenador"
+    )
+
+VAR _gestores03_raw = DISTINCT( UNION(_leaders_os_raw, _coords_os_raw) )
+
+VAR _gestores03_nm_join =
+    ADDCOLUMNS(
+        _gestores03_raw,
+        "__NomeNorm",  UPPER(TRIM([Nome])),
+        "__CargoNorm", SUBSTITUTE( UPPER(TRIM([Cargo])), "Í","I" )
+    )
+
+VAR _dim_gestores_matriz_norm =
+    SELECTCOLUMNS(
+        FILTER(
+            ADDCOLUMNS(
+                DimColaboradores,
+                "__CargoNorm", SUBSTITUTE( UPPER(TRIM(DimColaboradores[Cargo])), "Í","I" ),
+                "__EhMatriz",
+                    VAR _raw   = FORMAT(DimColaboradores[IsMatriz], "")
+                    VAR _norm  = UPPER(TRIM(COALESCE(_raw, "")))
+                    VAR _txt   = _norm IN {"TRUE","VERDADEIRO","SIM","YES","1"}
+                    VAR _polo  = UPPER(TRIM(COALESCE(DimColaboradores[Polo_Base], "")))
+                    RETURN _txt || _polo = "MATRIZ" || _polo = "PAGRESOLVE MATRIZ SP"
+            ),
+            [__CargoNorm] IN {"LIDER","COORDENADOR"} && [__EhMatriz]
+        ),
+        "__NomeNorm",  UPPER(TRIM(DimColaboradores[Nome])),
+        "__CargoNorm", SUBSTITUTE( UPPER(TRIM(DimColaboradores[Cargo])), "Í","I" )
+    )
+
+VAR _gestores03_nm_norm_only =
+    SELECTCOLUMNS(_gestores03_nm_join, "__NomeNorm", [__NomeNorm], "__CargoNorm", [__CargoNorm])
+
+VAR _gestores03_nm_norm =
+    EXCEPT(_gestores03_nm_norm_only, _dim_gestores_matriz_norm)
+
+VAR _gestores03_nm_sel =
+    SELECTCOLUMNS(
+        NATURALINNERJOIN(_gestores03_nm_norm, _gestores03_nm_join),
+        "Nome",                [Nome],
+        "Nome_Normalizado",
+            VAR n3 = UPPER(TRIM([Nome]))
+            VAR n3a = SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(n3,
+                    "Á","A"),"À","A"),"Â","A"),"Ã","A"),"É","E"),"Ê","E"),"Í","I"),"Ó","O"),"Ô","O"),"Õ","O")
+            RETURN SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(n3a,"Ú","U"),"Ü","U"),"Ç","C"),
+        "Cargo",               [Cargo],
+        "Matricula",           BLANK(),
+        "Polo_Base",           BLANK(),
+        "Polo Base (Regra)",   BLANK(),
+        "IsMatriz",            FALSE(),
+        "Grupo",               "Gestor",
+        "Fonte",               "03 (não Matriz)"
+    )
+
+VAR _dim_tecs_mats =
+    SELECTCOLUMNS(
+        FILTER(
+            ADDCOLUMNS(DimColaboradores,
+                "__CargoNorm", SUBSTITUTE( UPPER(TRIM(DimColaboradores[Cargo])), "Í","I" )
+            ),
+            [__CargoNorm] = "TECNICO"
+        ),
+        "Matricula", DimColaboradores[Matricula]
+    )
+
+VAR _dim_assistentes_mats =
+    SELECTCOLUMNS(
+        FILTER(
+            ADDCOLUMNS(
+                DimColaboradores,
+                "__CargoNorm", SUBSTITUTE( UPPER(TRIM(DimColaboradores[Cargo])), "Í","I" )
+            ),
+            [__CargoNorm] = "ASSISTENTE"
+        ),
+        "Matricula", DimColaboradores[Matricula]
+    )
+
+VAR _mats_fact_os =
+    SELECTCOLUMNS(
+        FILTER(FactOS, NOT ISBLANK(FactOS[Matricula])),
+        "Matricula", FactOS[Matricula]
+    )
+
+VAR _mats_fact_csat =
+    SELECTCOLUMNS(
+        FILTER(FactCSAT, NOT ISBLANK(FactCSAT[Matricula2])),
+        "Matricula", FactCSAT[Matricula2]
+    )
+
+VAR _mats_fact_all =
+    DISTINCT( UNION(_mats_fact_os, _mats_fact_csat) )
+
+VAR _mats_to_add =
+    EXCEPT(
+        EXCEPT(_mats_fact_all, _dim_tecs_mats),
+        _dim_assistentes_mats
+    )
+
+VAR _tecnicos_fatos_add_base =
+    ADDCOLUMNS(
+        _mats_to_add,
+        "__NomeDIM", LOOKUPVALUE(DimColaboradores[Nome],      DimColaboradores[Matricula], [Matricula]),
+        "__PoloDIM", LOOKUPVALUE(DimColaboradores[Polo_Base], DimColaboradores[Matricula], [Matricula]),
+        "__Polo03",
+            VAR m = [Matricula]
+            VAR t_top =
+                CALCULATETABLE(
+                    TOPN(
+                        1,
+                        ADDCOLUMNS(
+                            SUMMARIZE(FactOS, FactOS[des_service_provider]),
+                            "__Qtd", COUNTROWS(FactOS)
+                        ),
+                        [__Qtd], DESC
+                    ),
+                    FactOS[Matricula] = m
+                )
+            RETURN MAXX(t_top, FactOS[des_service_provider])
+    )
+
+VAR _tecnicos_fatos_add =
+    SELECTCOLUMNS(
+        _tecnicos_fatos_add_base,
+        "Nome",                [__NomeDIM],
+        "Nome_Normalizado",
+            VAR base = COALESCE([__NomeDIM], "MAT-" & [Matricula])
+            VAR n4 = UPPER(TRIM(base))
+            VAR n4a = SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(n4,
+                    "Á","A"),"À","A"),"Â","A"),"Ã","A"),"É","E"),"Ê","E"),"Í","I"),"Ó","O"),"Ô","O"),"Õ","O")
+            RETURN SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(n4a,"Ú","U"),"Ü","U"),"Ç","C"),
+        "Cargo",               "Técnico",
+        "Matricula",           [Matricula],
+        "Polo_Base",           [__PoloDIM],
+        "Polo Base (Regra)",   IF( UPPER(TRIM(COALESCE([__PoloDIM],[__Polo03],""))) IN {"MATRIZ","PAGRESOLVE MATRIZ SP"}, "Matriz", COALESCE([__PoloDIM], [__Polo03]) ),
+        "IsMatriz",            FALSE(),
+        "Grupo",               "Operação",
+        "Fonte",               "Fato (03/04 sem DIM)"
+    )
+
+VAR _union_all =
+    UNION(
+        _ops_dim,
+        _gest_matriz_dim,
+        _gestores03_nm_sel,
+        _tecnicos_fatos_add
+    )
+RETURN
+DISTINCT(_union_all)

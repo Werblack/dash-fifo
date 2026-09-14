@@ -1,0 +1,306 @@
+===============================================
+CÓDIGOS M - DASH RV (COMPLETO - ENVIADOS PELO USUÁRIO)
+===============================================
+Base: Dados_RV_Janeiro_2026_1.xlsx
+Ordem de dependência: DimMatriculaWFT (1) → DimColaboradores (2). FactOS (3) e FactCSAT (4) independentes.
+
+-----------------------------------------------
+1. DIMMATRICULAWFT (Base 02 - Dados Matricula WFT)
+-----------------------------------------------
+Fonte: aba "02 - Dados Matricula WFT". Saída: Matricula, Polo_Base. Usada no merge da DimColaboradores.
+
+let
+    Fonte = Excel.Workbook(
+        File.Contents("C:\Users\sbahia\OneDrive - UNIVERSO ONLINE S.A\Área de Trabalho\Ambiente PY\logins\Dash Fifo\AUT RV\RV_JANEIRO26\Dados_RV_Janeiro_2026_1.xlsx"),
+        null,
+        false
+    ),
+
+    Base02_Sheet = Fonte{[Item="02 - Dados Matricula WFT", Kind="Sheet"]}[Data],
+    Cabecalhos = Table.PromoteHeaders(Base02_Sheet, [PromoteAllScalars=true]),
+
+    // Limpa #N/A e #N/A! em todas as colunas
+    LimpaNA1 = Table.ReplaceValue(Cabecalhos, "#N/A", null, Replacer.ReplaceValue, Table.ColumnNames(Cabecalhos)),
+    LimpaNA2 = Table.ReplaceValue(LimpaNA1, "#N/A!", null, Replacer.ReplaceValue, Table.ColumnNames(LimpaNA1)),
+
+    // Mantém apenas o necessário (ajuste os nomes caso diferem)
+    Seleciona = Table.SelectColumns(LimpaNA2, {"Matricula", "Polo"}, MissingField.Ignore),
+
+    // Normaliza
+    Normaliza = Table.TransformColumns(
+        Seleciona,
+        {
+            {"Matricula", each if _ = null then null else Text.Clean(Text.Trim(Text.From(_))), type text},
+            {"Polo", each if _ = null then null else Text.Clean(Text.Trim(Text.From(_))), type text}
+        }
+    ),
+
+    // Remove linhas sem matricula
+    FiltraMatricula = Table.SelectRows(Normaliza, each [Matricula] <> null and [Matricula] <> ""),
+
+    // Remove duplicidades por Matricula (mantém primeira ocorrência)
+    Distinta = Table.Distinct(FiltraMatricula, {"Matricula"}),
+
+    // Renomeia 'Polo' -> 'Polo_Base' para padronizar
+    Renomeia = Table.RenameColumns(Distinta, {{"Polo", "Polo_Base"}})
+in
+    Renomeia
+
+
+-----------------------------------------------
+2. DIMCOLABORADORES
+-----------------------------------------------
+Depende de: DimMatriculaWFT (merge LeftOuter por Matricula → coluna Polo_Base)
+
+let
+    Fonte = Excel.Workbook(
+        File.Contents("C:\Users\sbahia\OneDrive - UNIVERSO ONLINE S.A\Área de Trabalho\Ambiente PY\logins\Dash Fifo\AUT RV\RV_JANEIRO26\Dados_RV_Janeiro_2026_1.xlsx"),
+        null,
+        false
+    ),
+
+    Base01_Sheet = Fonte{[Item="01 - Colaboradores Elegiveis", Kind="Sheet"]}[Data],
+    Cabecalhos = Table.PromoteHeaders(Base01_Sheet, [PromoteAllScalars=true]),
+
+    // Limpa #N/A/#N/A! em todas as colunas
+    LimpaNA1 = Table.ReplaceValue(Cabecalhos, "#N/A", null, Replacer.ReplaceValue, Table.ColumnNames(Cabecalhos)),
+    LimpaNA2 = Table.ReplaceValue(LimpaNA1, "#N/A!", null, Replacer.ReplaceValue, Table.ColumnNames(LimpaNA1)),
+
+    // Converte tipos principais (cultura pt-BR)
+    Tipos = Table.TransformColumnTypes(
+        LimpaNA2,
+        {
+            {"Periodo", type date},
+            {"Matricula", type text},
+            {"Nome", type text},
+            {"Polo RH Site", type text},
+            {"Cargo", type text},
+            {"DATA ADMISSÃO", type date},
+            {"DATA DEMISSÃO", type date}
+        },
+        "pt-BR"
+    ),
+
+    // Normaliza Matricula e textos principais
+    NormalizaTextos = Table.TransformColumns(
+        Tipos,
+        {
+            {"Matricula", each if _ = null then null else Text.Clean(Text.Trim(Text.From(_))), type text},
+            {"Nome", each if _ = null then null else Text.Clean(Text.Trim(Text.From(_))), type text},
+            {"Polo RH Site", each if _ = null then null else Text.Clean(Text.Trim(Text.From(_))), type text},
+            {"Cargo", each if _ = null then null else Text.Clean(Text.Trim(Text.From(_))), type text}
+        }
+    ),
+
+    // Remove linhas sem matricula
+    FiltraMatricula = Table.SelectRows(NormalizaTextos, each [Matricula] <> null and [Matricula] <> ""),
+
+    // Ordena por Periodo desc para manter o registro mais recente por Matricula
+    OrdenaPeriodoDesc = Table.Sort(FiltraMatricula, {{"Periodo", Order.Descending}}),
+    UnicoPorMatricula = Table.Distinct(OrdenaPeriodoDesc, {"Matricula"}),
+
+    // Merge com a 02 - DimMatriculaWFT (consulta já criada)
+    MergeWFT = Table.NestedJoin(UnicoPorMatricula, {"Matricula"}, DimMatriculaWFT, {"Matricula"}, "WFT", JoinKind.LeftOuter),
+    ExpandeWFT = Table.ExpandTableColumn(MergeWFT, "WFT", {"Polo_Base"}, {"Polo_Base"}),
+
+    // Flag Matriz (Polo RH Site = 'PagResolve Matriz SP')
+    AddIsMatriz = Table.AddColumn(
+        ExpandeWFT,
+        "IsMatriz",
+        each
+            let
+                poloSite = [Polo RH Site]
+            in
+                if poloSite <> null and Text.Upper(Text.Trim(poloSite)) = "PAGRESOLVE MATRIZ SP" then true else false,
+        type logical
+    ),
+
+    // Tipagem final (garantia)
+    TipagemFinal = Table.TransformColumnTypes(
+        AddIsMatriz,
+        {
+            {"Matricula", type text},
+            {"Nome", type text},
+            {"Cargo", type text},
+            {"Polo RH Site", type text},
+            {"Polo_Base", type text},
+            {"Periodo", type date},
+            {"DATA ADMISSÃO", type date},
+            {"DATA DEMISSÃO", type date},
+            {"IsMatriz", type logical}
+        }
+    )
+in
+    TipagemFinal
+
+
+-----------------------------------------------
+3. FACTOS (Base 03 - Dados_Dentro_Fora_Ativação)
+-----------------------------------------------
+Fonte: aba "03 - Dados_Dentro_Fora_Ativação"
+Colunas criadas: des_service_provider (Polo/Codigo_Polo), SLA_Dentro_Prazo (1/0), Ativacao_Flag (1/0)
+
+let
+    Fonte = Excel.Workbook(
+        File.Contents("C:\Users\sbahia\OneDrive - UNIVERSO ONLINE S.A\Área de Trabalho\Ambiente PY\logins\Dash Fifo\AUT RV\RV_JANEIRO26\Dados_RV_Janeiro_2026_1.xlsx"),
+        null,
+        false
+    ),
+
+    Base03_Sheet = Fonte{[Item="03 - Dados_Dentro_Fora_Ativação", Kind="Sheet"]}[Data],
+    Cabecalhos = Table.PromoteHeaders(Base03_Sheet, [PromoteAllScalars=true]),
+
+    // Limpa #N/A/#N/A! em todas as colunas
+    LimpaNA1 = Table.ReplaceValue(Cabecalhos, "#N/A", null, Replacer.ReplaceValue, Table.ColumnNames(Cabecalhos)),
+    LimpaNA2 = Table.ReplaceValue(LimpaNA1, "#N/A!", null, Replacer.ReplaceValue, Table.ColumnNames(LimpaNA1)),
+
+    // Normaliza Matricula (não filtramos nulos aqui para não perder eventos do polo)
+    NormalizaMatricula = Table.TransformColumns(
+        LimpaNA2,
+        {{"Matricula", each try Text.Clean(Text.Trim(Text.From(_))) otherwise null, type text}}
+    ),
+
+    // Padroniza 'des_service_provider' (se já existir, mantém; senão renomeia de 'Polo' ou 'Codigo_Polo'; senão cria nulo)
+    Colunas = Table.ColumnNames(NormalizaMatricula),
+    GaranteDSP =
+        if List.Contains(Colunas, "des_service_provider") then
+            NormalizaMatricula
+        else if List.Contains(Colunas, "Polo") then
+            Table.RenameColumns(NormalizaMatricula, {{"Polo", "des_service_provider"}})
+        else if List.Contains(Colunas, "Codigo_Polo") then
+            Table.RenameColumns(NormalizaMatricula, {{"Codigo_Polo", "des_service_provider"}})
+        else
+            Table.AddColumn(NormalizaMatricula, "des_service_provider", each null, type text),
+
+    LimpaDSP = Table.TransformColumns(
+        GaranteDSP,
+        {{"des_service_provider", each if _ = null then null else Text.Clean(Text.Trim(Text.From(_))), type text}}
+    ),
+
+    // Cria SLA_Dentro_Prazo (1/0) a partir de colunas alternativas
+    AddSLA = Table.AddColumn(
+        LimpaDSP,
+        "SLA_Dentro_Prazo",
+        each
+            let
+                cols = Table.ColumnNames(LimpaDSP),
+                cand = {"Está no Prazo?", "Dentro do Prazo", "SLA"},
+                colName =
+                    if List.Contains(cols, "Está no Prazo?") then "Está no Prazo?"
+                    else if List.Contains(cols, "Dentro do Prazo") then "Dentro do Prazo"
+                    else if List.Contains(cols, "SLA") then "SLA"
+                    else null,
+                raw = if colName = null then null else Record.Field(_, colName),
+                txt = if raw = null then null else Text.Upper(Text.Trim(Text.From(raw))),
+                flag =
+                    if raw = null then null
+                    else if Value.Is(raw, Int64.Type) or Value.Is(raw, Number.Type) then (if Number.From(raw) <> 0 then 1 else 0)
+                    else if List.Contains({"SIM","S","TRUE","DENTRO","DENTRO DO PRAZO","OK","YES","Y","1"}, txt) then 1
+                    else if List.Contains({"NÃO","NAO","N","FALSE","FORA","FORA DO PRAZO","NO","0"}, txt) then 0
+                    else null
+            in
+                flag,
+        Int64.Type
+    ),
+
+    // Cria Ativacao_Flag (1/0) a partir de "Ativação" ou "Ativacao"
+    AddAtivacao = Table.AddColumn(
+        AddSLA,
+        "Ativacao_Flag",
+        each
+            let
+                cols = Table.ColumnNames(AddSLA),
+                colName = if List.Contains(cols, "Ativação") then "Ativação" else if List.Contains(cols, "Ativacao") then "Ativacao" else null,
+                raw = if colName = null then null else Record.Field(_, colName),
+                txt = if raw = null then null else Text.Upper(Text.Trim(Text.From(raw))),
+                flag =
+                    if raw = null then null
+                    else if Value.Is(raw, Int64.Type) or Value.Is(raw, Number.Type) then (if Number.From(raw) <> 0 then 1 else 0)
+                    else if List.Contains({"SIM","S","TRUE","OK","YES","Y","1"}, txt) then 1
+                    else if List.Contains({"NÃO","NAO","N","FALSE","NO","0"}, txt) then 0
+                    else null
+            in
+                flag,
+        Int64.Type
+    )
+in
+    AddAtivacao
+
+
+-----------------------------------------------
+4. FACTCSAT (Base 04 - Dados_CSAT)
+-----------------------------------------------
+Fonte: aba "04 - Dados_CSAT"
+Renomeia: Coordenador.Coordenador → Coordenador, Codigo Polo → Codigo_Polo
+Padroniza: des_service_provider (Polo/Codigo_Polo). Converte nota_pesquisa para Int64 (tolera "10", "10,0", "10.0").
+
+let
+    Fonte = Excel.Workbook(
+        File.Contents("C:\Users\sbahia\OneDrive - UNIVERSO ONLINE S.A\Área de Trabalho\Ambiente PY\logins\Dash Fifo\AUT RV\RV_JANEIRO26\Dados_RV_Janeiro_2026_1.xlsx"),
+        null,
+        false
+    ),
+
+    Base04_Sheet = Fonte{[Item="04 - Dados_CSAT", Kind="Sheet"]}[Data],
+    Cabecalhos = Table.PromoteHeaders(Base04_Sheet, [PromoteAllScalars=true]),
+
+    // Limpa #N/A/#N/A! em todas as colunas
+    LimpaNA1 = Table.ReplaceValue(Cabecalhos, "#N/A", null, Replacer.ReplaceValue, Table.ColumnNames(Cabecalhos)),
+    LimpaNA2 = Table.ReplaceValue(LimpaNA1, "#N/A!", null, Replacer.ReplaceValue, Table.ColumnNames(LimpaNA1)),
+
+    // Normaliza Matricula (mantemos linhas sem Matricula para cálculo por polo)
+    NormalizaMatricula = Table.TransformColumns(
+        LimpaNA2,
+        {{"Matricula", each try Text.Clean(Text.Trim(Text.From(_))) otherwise null, type text}}
+    ),
+
+    // Renomeia colunas conhecidas
+    RenomeiaColunas = Table.RenameColumns(
+        NormalizaMatricula,
+        {
+            {"Coordenador.Coordenador", "Coordenador"},
+            {"Codigo Polo", "Codigo_Polo"}
+        },
+        MissingField.Ignore
+    ),
+
+    // Garante/Padroniza 'des_service_provider'
+    Colunas = Table.ColumnNames(RenomeiaColunas),
+    GaranteDSP =
+        if List.Contains(Colunas, "des_service_provider") then
+            RenomeiaColunas
+        else if List.Contains(Colunas, "Polo") then
+            Table.RenameColumns(RenomeiaColunas, {{"Polo", "des_service_provider"}})
+        else if List.Contains(Colunas, "Codigo_Polo") then
+            Table.RenameColumns(RenomeiaColunas, {{"Codigo_Polo", "des_service_provider"}})
+        else
+            Table.AddColumn(RenomeiaColunas, "des_service_provider", each null, type text),
+
+    LimpaDSP = Table.TransformColumns(
+        GaranteDSP,
+        {{"des_service_provider", each if _ = null then null else Text.Clean(Text.Trim(Text.From(_))), type text}}
+    ),
+
+    // Converte nota_pesquisa para inteiro (tolerante a "10", "10,0", "10.0", texto)
+    ConverteNota = Table.TransformColumns(
+        LimpaDSP,
+        {
+            {"nota_pesquisa",
+                each
+                    let
+                        v = _
+                    in
+                        try Int64.From(v)
+                        otherwise
+                            try Int64.From(Number.FromText(Text.Replace(Text.From(v), ",", ".")))
+                            otherwise null
+                , Int64.Type}
+        }
+    )
+in
+    ConverteNota
+
+
+-----------------------------------------------
+(próximas consultas serão adicionadas aqui)
+-----------------------------------------------

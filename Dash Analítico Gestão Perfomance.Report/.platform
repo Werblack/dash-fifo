@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "Dash Analítico Gestão Perfomance"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "6a9e04f3-ca0e-413f-9c81-c3b165d1c96f"
+  }
+}

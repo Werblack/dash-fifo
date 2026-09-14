@@ -1,0 +1,69 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "57ffe4719d25e8a000c6",
+  "position": {
+    "x": 149.55223880597015,
+    "y": 390.44776119402985,
+    "z": 9000,
+    "height": 149.55223880597015,
+    "width": 280.29850746268659,
+    "tabOrder": 9000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Consolidado_Abono"
+                    }
+                  },
+                  "Property": "OS_ID"
+                }
+              },
+              "queryRef": "Consolidado_Abono.OS_ID",
+              "nativeQueryRef": "OS_ID"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Revisita_Consolidado"
+                    }
+                  },
+                  "Property": "2ª Visita foi no Prazo?"
+                }
+              },
+              "queryRef": "Revisita_Consolidado.2ª Visita foi no Prazo?",
+              "nativeQueryRef": "2ª Visita foi no Prazo?"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Revisita_Consolidado"
+                  }
+                },
+                "Property": "2ª Visita foi no Prazo?"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

@@ -1,0 +1,261 @@
+relationship b2564fa8-9200-4f55-a18f-b7f088905101
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Justificativa_Consolidada.'Data de Fechamento'
+	toColumn: LocalDateTable_a931b3ab-9706-4373-8854-93589fc60959.Date
+
+relationship 13a6553c-3eaa-4afa-a0d5-db1116b5bd67
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Justificativa_Consolidada.'Data Limite do Prestador de Serviço'
+	toColumn: LocalDateTable_c550e610-a402-40f7-8ce8-b8eaef688370.Date
+
+relationship c6fccf8b-8daa-4489-a1f5-18520c71b51c
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Retorno_Consolidado.'Abertura OS'
+	toColumn: LocalDateTable_6706cbee-c893-4347-afcd-2b161bf105dc.Date
+
+relationship 9d6aaf9d-4e5d-4929-a8bb-1cc1921a75c1
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Retorno_Consolidado.'Data Limite Atendimento'
+	toColumn: LocalDateTable_4551e65f-a3aa-416e-bba2-58ea3a55c151.Date
+
+relationship 01b7b0a3-c92d-43be-b17f-1ee4fb7315fd
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Retorno_Consolidado.'Fechamento OS'
+	toColumn: LocalDateTable_f3d7c977-9d64-470f-a157-bfd0ea512994.Date
+
+relationship AutoDetected_1bf50a07-059f-4ea7-b37d-64ba171a26d8
+	fromColumn: Analitico_OS_Consolidado.OS_ID
+	toColumn: Justificativa_Consolidada.OS_ID
+
+relationship AutoDetected_0f2cf6d3-c7f4-44bb-9a35-9fa203197f6d
+	fromColumn: Consolidado_Abono.OS_ID
+	toColumn: Justificativa_Consolidada.OS_ID
+
+relationship AutoDetected_b55935ad-8b19-4517-874a-47b55c7636a1
+	fromColumn: Retorno_Consolidado.OS_ID
+	toColumn: Justificativa_Consolidada.OS_ID
+
+relationship 7e376b9a-12ac-5779-0859-c2301553e161
+	fromColumn: Consolidado_Abono.Cod_Polo
+	toColumn: pagresolve_regionais.'Cód. SAP'
+
+relationship 97de29ff-6905-4f0e-9e82-b93db4da3511
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Consolidado_Abono.'Data Limite Atendimento'
+	toColumn: LocalDateTable_286b0e69-8d13-4dfd-a9c4-a9d3846f2503.Date
+
+relationship 98fc7cd5-6c8b-4ed0-a2d4-d91de4842026
+	joinOnDateBehavior: datePartOnly
+	fromColumn: DimCalendario.Date
+	toColumn: LocalDateTable_4eb6e002-2108-478b-945b-026e1db05419.Date
+
+relationship 0bf34dd9-0727-40f3-8d23-b83a1c2b37e7
+	joinOnDateBehavior: datePartOnly
+	fromColumn: DimCalendario.InicioSemana
+	toColumn: LocalDateTable_d862aeca-9371-4027-85af-7d7917f2fb5c.Date
+
+relationship 4f4c6df7-7e3d-4d9c-99df-28309420c5a8
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Consolidado_Abono.'Fechamento OS'
+	toColumn: LocalDateTable_78346c65-b008-4fd6-8d0a-72df0719f7bc.Date
+
+relationship 46945550-39b0-4c66-9725-fcca36b05d99
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Semanal FIFO'.DataModificacao
+	toColumn: LocalDateTable_1f2ed29e-d61b-4460-860e-2e222df00d9e.Date
+
+relationship 6171cc7a-cfd4-4a48-89ca-6895d804d90b
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Semanal FIFO'.DataArquivo
+	toColumn: LocalDateTable_df4e0dc3-e409-4848-8f4b-22d7315bc77d.Date
+
+relationship 9f4bffd4-9557-400e-a626-4cfba59d298b
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Semanal FIFO'.'Dt.Criação'
+	toColumn: LocalDateTable_af3fb3c5-e10e-487b-a617-7fbeedd05049.Date
+
+relationship 2b4923a7-ba6c-48d9-aeb8-c3c374f19027
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Semanal FIFO'.'Modificado em'
+	toColumn: LocalDateTable_3816ae34-5a15-47cf-99ae-c60b00bf11b0.Date
+
+relationship 4ec2f55b-4e38-e97f-0591-93be15dbeda6
+	fromColumn: 'Semanal FIFO'.DataReferencia
+	toColumn: DimCalendario.Date
+
+relationship 5190a239-46ee-f4a4-03d5-2230fb7f9f16
+	fromColumn: 'Semanal FIFO'.POLO
+	toColumn: pagresolve_regionais.Polo
+
+relationship 575d5890-5bc7-6eb5-06de-4ec38ab54ab6
+	fromColumn: 'Semanal FIFO'.Material
+	toColumn: Modelo.Código
+
+relationship c8745c01-dade-4ba2-b97d-d6e35b4fdc85
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Consolidado_Abono.Data_Snapshot
+	toColumn: LocalDateTable_ff11914c-e1b9-4338-85da-22037026d814.Date
+
+relationship d2005fa9-bfa3-4267-b8e7-83820ae7c141
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Consolidado_Abono.FechamentoOS_Date
+	toColumn: LocalDateTable_71854807-17b0-4cf1-8c4b-4f976f23e99c.Date
+
+relationship 9b002cd0-159e-45a3-ae80-181c6548b95b
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Consolidado_Abono.Data_Fechamento_Limpa
+	toColumn: LocalDateTable_d2166511-d4e5-40a5-bf4a-e91fa95269eb.Date
+
+relationship fef0f421-8c7c-4332-52c0-d6e7675ee0d5
+	fromColumn: Consolidado_Abono.Data_SLA
+	toColumn: DimCalendario.Date
+
+relationship 29847120-b9cd-3ebd-c337-f2139e9d203d
+	crossFilteringBehavior: bothDirections
+	fromCardinality: one
+	fromColumn: Revisita_Consolidado.OS_ID
+	toColumn: Consolidado_Abono.OS_ID
+
+relationship 588c3b76-d47b-4b4f-8bf4-b7a4c2ef2166
+	joinOnDateBehavior: datePartOnly
+	fromColumn: DimColaboradores.Periodo
+	toColumn: LocalDateTable_af28834a-218c-4f01-a6e0-656809eeb1e0.Date
+
+relationship 9a9f54ef-8745-443f-9ac1-df1d28d7b2d2
+	joinOnDateBehavior: datePartOnly
+	fromColumn: DimColaboradores.'DATA ADMISSÃO'
+	toColumn: LocalDateTable_10c69be4-3481-40a6-b46c-0ed9ba72f84f.Date
+
+relationship b1b0adec-e0ae-4bae-97c8-41c2df6c1332
+	joinOnDateBehavior: datePartOnly
+	fromColumn: DimColaboradores.'DATA DEMISSÃO'
+	toColumn: LocalDateTable_c05450e2-3893-4460-9006-3c31d99bfd5b.Date
+
+relationship 4d04cb4d-e752-9d2c-9641-3aabf6beb003
+	crossFilteringBehavior: bothDirections
+	fromColumn: FactOS.Matricula
+	toColumn: DimColaboradores.Matricula
+
+relationship 4bf93040-a975-1885-ae18-4853ad54302c
+	crossFilteringBehavior: bothDirections
+	fromColumn: FactCSAT.Matricula2
+	toColumn: DimColaboradores.Matricula
+
+relationship 782389be-3423-71c5-77c4-c1cddc2aafd3
+	fromColumn: FactOS.KeyHierarquia
+	toColumn: DimHierarquiaSlicer.KeyHierarquia
+
+relationship c0dbfa18-04cc-4d1f-bc82-50e995e58b63
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Consolidado_Abono_HISTORICO.'Fechamento OS'
+	toColumn: LocalDateTable_cfe9b495-ff56-41e0-a1b9-2b0b775f55bc.Date
+
+relationship e3f23459-2dda-4433-a97c-3d58c216106e
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Consolidado_Abono_HISTORICO.Data_Snapshot
+	toColumn: LocalDateTable_dd0fd5ff-bcae-4103-a1ea-d53477b7da41.Date
+
+relationship 4ed20439-3901-49bc-9491-99a2563b727b
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Consolidado_Abono_HISTORICO.FechamentoOS_Date
+	toColumn: LocalDateTable_44324d17-45fc-4ed4-94a1-f07ce7c6f460.Date
+
+relationship 80a91d2d-ff7d-4bb7-820e-7a77fcb081af
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Consolidado_Abono_HISTORICO.Data_Fechamento_Limpa
+	toColumn: LocalDateTable_b2691c41-1ee0-4c61-9774-540df3fe2404.Date
+
+relationship 49e18304-bc48-4a2b-a1dd-d355750bccd8
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Consolidado_Abono_HISTORICO.Data_SLA
+	toColumn: LocalDateTable_03be963f-e7a0-4a9d-9891-6a9197b48fa9.Date
+
+relationship 7e9582e0-d78d-4ea7-b304-b6137521f744
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Consolidado_Abono_ATUAL.'Fechamento OS'
+	toColumn: LocalDateTable_bb7b3549-a21e-4f4e-977f-578ab2425cb8.Date
+
+relationship 8ff1a34f-0a18-4309-9023-f40529a0536c
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Consolidado_Abono_ATUAL.Data_Snapshot
+	toColumn: LocalDateTable_e0e1af73-6d08-46eb-a998-7e9849e7e12f.Date
+
+relationship 66a12154-8e28-4efa-967a-16ac5b804ae0
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Consolidado_Abono_ATUAL.FechamentoOS_Date
+	toColumn: LocalDateTable_e3dea9e1-cb05-4de0-a797-fc0b693d0238.Date
+
+relationship 02580548-131e-49c8-b929-3975d8321e80
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Consolidado_Abono_ATUAL.Data_Fechamento_Limpa
+	toColumn: LocalDateTable_087a4af0-5be3-4a89-b07e-ee14e4966053.Date
+
+relationship 27151215-c2d4-4c82-a0ad-48721876c10a
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Consolidado_Abono_ATUAL.Data_SLA
+	toColumn: LocalDateTable_ec6af7e2-c1c2-49de-884b-8aef70e09042.Date
+
+relationship AutoDetected_20a93add-0965-4290-b06c-8d9e896c12fe
+	crossFilteringBehavior: bothDirections
+	fromCardinality: one
+	fromColumn: Consolidado_Abono_HISTORICO.'Número WorFinity'
+	toColumn: Consolidado_Abono.'Número WorFinity'
+
+relationship AutoDetected_b7052f62-c93f-439a-aa02-d8c7e2853f78
+	crossFilteringBehavior: bothDirections
+	fromCardinality: one
+	fromColumn: Consolidado_Abono_ATUAL.'Número WorFinity'
+	toColumn: Consolidado_Abono.'Número WorFinity'
+
+relationship AutoDetected_d55a8dfc-db41-4fee-b001-3b722c07b6f5
+	isActive: false
+	crossFilteringBehavior: bothDirections
+	fromCardinality: one
+	fromColumn: Consolidado_Abono_HISTORICO.OS_ID
+	toColumn: Justificativa_Consolidada.OS_ID
+
+relationship e72fafc6-9f17-4e1e-9abc-a12246e0b00b
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Revisita_Consolidado.'Date accessed'
+	toColumn: LocalDateTable_5df248b4-d940-449f-9be9-63b526d91eb7.Date
+
+relationship eaa5d5e2-17b0-488a-a725-afdaebe741b8
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Revisita_Consolidado.'Date modified'
+	toColumn: LocalDateTable_27a92a1b-b109-479d-a857-e56fd626332a.Date
+
+relationship e84fb956-fc01-4c90-a547-d6943e028b0a
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Revisita_Consolidado.'Date created'
+	toColumn: LocalDateTable_a80bd418-5643-41ff-9292-1a40b9921a19.Date
+
+relationship d2f1dc63-acec-45ba-be15-5b10fdfc100b
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Revisita_HISTORICO.'Date accessed'
+	toColumn: LocalDateTable_49d15049-2294-4eda-b939-f6d20d452f06.Date
+
+relationship d0d885e3-9053-4097-9a6f-9b5b5532dc2d
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Revisita_HISTORICO.'Date modified'
+	toColumn: LocalDateTable_e346c3a9-e74b-405e-aff1-7d247d97c11c.Date
+
+relationship 6802b97f-3ef7-4f1e-93ea-5ef11d2b572a
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Revisita_HISTORICO.'Date created'
+	toColumn: LocalDateTable_c3e375b2-49c0-4f38-89ed-e45c5b1c7ef8.Date
+
+relationship 103b5267-e171-49b4-9654-89b8f90339cb
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Revisita_ATUAL.'Date accessed'
+	toColumn: LocalDateTable_2b85783e-5e1b-4838-8ee8-e6e199126ce6.Date
+
+relationship 68153618-8b11-45f2-afb5-172faecbbdb7
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Revisita_ATUAL.'Date modified'
+	toColumn: LocalDateTable_19c3c024-f6fa-4637-a75d-1e84eba47d3e.Date
+
+relationship 974b329f-1566-4415-8935-fefe4727bb3f
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Revisita_ATUAL.'Date created'
+	toColumn: LocalDateTable_006cbf2c-eee3-4053-a31f-f794f3539484.Date
+

@@ -1,0 +1,172 @@
+table Revisita_ATUAL
+	lineageTag: ea153c31-fddc-4ce2-ab4f-c91adb9a26a2
+
+	column Name
+		dataType: string
+		lineageTag: 437c7f18-49d3-4306-813d-9e157b913082
+		summarizeBy: none
+		sourceColumn: Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column '2ª Visita foi no Prazo?'
+		dataType: string
+		lineageTag: 4d437743-169e-46f5-b860-97790d628fb3
+		summarizeBy: none
+		sourceColumn: 2ª Visita foi no Prazo?
+
+		annotation SummarizationSetBy = Automatic
+
+	column OS_ID
+		dataType: string
+		lineageTag: f77dc54d-5a75-4624-b5ae-6314a6edfc6d
+		summarizeBy: none
+		sourceColumn: OS_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Extension
+		dataType: string
+		lineageTag: b058e83b-e281-44d8-8929-ce34545fad7e
+		summarizeBy: none
+		sourceColumn: Extension
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Date accessed'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: cea47f03-d8f9-4b21-a5aa-019ad762c464
+		summarizeBy: none
+		sourceColumn: Date accessed
+
+		variation Variation
+			isDefault
+			relationship: 103b5267-e171-49b4-9654-89b8f90339cb
+			defaultHierarchy: LocalDateTable_2b85783e-5e1b-4838-8ee8-e6e199126ce6.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Date modified'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: cf856bd6-93af-4e3b-953f-1b420e52eb7e
+		summarizeBy: none
+		sourceColumn: Date modified
+
+		variation Variation
+			isDefault
+			relationship: 68153618-8b11-45f2-afb5-172faecbbdb7
+			defaultHierarchy: LocalDateTable_19c3c024-f6fa-4637-a75d-1e84eba47d3e.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Date created'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 556a74ec-d735-4507-9346-a2b7ccc87a35
+		summarizeBy: none
+		sourceColumn: Date created
+
+		variation Variation
+			isDefault
+			relationship: 974b329f-1566-4415-8935-fefe4727bb3f
+			defaultHierarchy: LocalDateTable_006cbf2c-eee3-4053-a31f-f794f3539484.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Folder Path'
+		dataType: string
+		lineageTag: e8cc61fc-170c-465e-bac5-61d4b1aa8207
+		summarizeBy: none
+		sourceColumn: Folder Path
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Revisita_ATUAL = m
+		mode: import
+		source =
+				let
+				    Fonte = Folder.Files("C:\Users\sbahia\OneDrive - UNIVERSO ONLINE S.A\Área de Trabalho\Ambiente PY\logins\Dash Fifo\Dados Mensais\ATUAL"),
+				
+				    FiltraNome =
+				        Table.SelectRows(
+				            Fonte,
+				            each [Extension] = ".xlsx"
+				                and Text.Contains([Name], "Revisita_")
+				        ),
+				
+				    FiltraOcultos =
+				        Table.SelectRows(FiltraNome, each [Attributes]?[Hidden]? <> true),
+				
+				    Transformar =
+				        Table.AddColumn(
+				            FiltraOcultos,
+				            "Dados",
+				            each
+				                let
+				                    wb = Excel.Workbook([Content], null, true),
+				                    sh = wb{[Item="Export", Kind="Sheet"]}[Data],
+				                    Cabecalhos = Table.PromoteHeaders(sh, [PromoteAllScalars=true]),
+				                    Tipos =
+				                        Table.TransformColumnTypes(
+				                            Cabecalhos,
+				                            {
+				                                {"ID WorkFinity", type text},
+				                                {"2ª Visita foi no Prazo?", type text}
+				                            }
+				                        ),
+				                    AddOSID =
+				                        Table.AddColumn(
+				                            Tipos,
+				                            "OS_ID",
+				                            each Text.Trim(Text.From([ID WorkFinity])),
+				                            type text
+				                        ),
+				                    FiltraOSID =
+				                        Table.SelectRows(
+				                            AddOSID,
+				                            each [OS_ID] <> null and Text.Trim([OS_ID]) <> ""
+				                        ),
+				                    Padroniza2a =
+				                        if List.Contains(Table.ColumnNames(FiltraOSID), "2ª Visita foi no Prazo?")
+				                        then
+				                            Table.TransformColumns(
+				                                FiltraOSID,
+				                                {
+				                                    {
+				                                        "2ª Visita foi no Prazo?",
+				                                        each
+				                                            let t = Text.Lower(Text.Trim(Text.From(_)))
+				                                            in
+				                                                if t = "sim" then "Sim"
+				                                                else if t = "não" or t = "nao" then "Não"
+				                                                else null,
+				                                        type text
+				                                    }
+				                                }
+				                            )
+				                        else
+				                            FiltraOSID,
+				                    Seleciona =
+				                        Table.SelectColumns(Padroniza2a, {"OS_ID", "2ª Visita foi no Prazo?"}),
+				                    Unico = Table.Distinct(Seleciona, {"OS_ID"})
+				                in
+				                    Unico,
+				            type table
+				        ),
+				
+				    Expandir =
+				        Table.ExpandTableColumn(
+				            Transformar,
+				            "Dados",
+				            {"OS_ID", "2ª Visita foi no Prazo?"},
+				            {"OS_ID", "2ª Visita foi no Prazo?"}
+				        )
+				in
+				    Expandir
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+

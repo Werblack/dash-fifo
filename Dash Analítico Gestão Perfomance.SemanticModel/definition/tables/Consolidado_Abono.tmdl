@@ -1,0 +1,878 @@
+table Consolidado_Abono
+	lineageTag: 497c4b41-90d3-433e-94b2-215fe189dfbe
+
+	measure Total_OS_FP =
+			
+			VAR TabelaFechadaForaPrazo =
+			    FILTER (
+			        Consolidado_Abono,
+			            NOT ISBLANK ( Consolidado_Abono[Data_SLA] )
+			        &&  UPPER ( TRIM ( Consolidado_Abono[Está no Prazo?] ) ) = "FORA DO PRAZO"
+			    )
+			RETURN
+			CALCULATE (
+			    DISTINCTCOUNT ( Consolidado_Abono[OS_ID] ),
+			    TabelaFechadaForaPrazo
+			)
+		formatString: 0
+		lineageTag: 43d2c5d2-de59-4444-89ed-8867f4e6219f
+
+	measure WF_Pendentes =
+			
+			CALCULATE(
+			    COUNTROWS(Consolidado_Abono),
+			    Consolidado_Abono[Fonte] = "Workfinity",
+			    Consolidado_Abono[Status da Justificativa] = "Aguardando Justificativa",
+			    ISBLANK(Consolidado_Abono[WF_Abono])
+			)
+		formatString: 0
+		lineageTag: 79004fbc-0f98-4997-bbc1-685c1186e0dd
+
+	measure Total_Abonadas =
+			
+			CALCULATE(
+			    COUNTROWS(Consolidado_Abono),
+			    Consolidado_Abono[WF_Abono] = "Abonada"
+			)
+		formatString: 0
+		lineageTag: d7448c17-89ed-43c9-823d-d57512c9d4d3
+
+	measure Total_Nao_Abonadas =
+			
+			CALCULATE(
+			    COUNTROWS(Consolidado_Abono),
+			    Consolidado_Abono[WF_Abono] = "Não Abonada"
+			)
+		formatString: 0
+		lineageTag: e35bc1bb-e93d-485e-bef5-dc9c3d9b04c4
+
+	measure OS_no_Workfinity =
+			
+			CALCULATE(
+			    COUNTROWS(Consolidado_Abono),
+			    Consolidado_Abono[Está no Prazo?] = "Fora do prazo",
+			    NOT ISBLANK(Consolidado_Abono[Status da Justificativa])
+			)
+		formatString: 0
+		lineageTag: fb696160-586a-492a-92c6-857b310f0337
+
+	measure WF_Atrasadas = ```
+			
+			CALCULATE(
+			    COUNTROWS(Consolidado_Abono),
+			    Consolidado_Abono[Fonte] = "Workfinity",
+			    Consolidado_Abono[Status da Justificativa] = "Aguardando Justificativa",
+			    Consolidado_Abono[Data Limite Atendimento] < TODAY()
+			)
+			
+			```
+		formatString: 0
+		lineageTag: f6a71060-7e2c-475f-a368-226481faf5fc
+
+	measure OS_Somente_BI =
+			
+			CALCULATE(
+			    COUNTROWS(Consolidado_Abono),
+			    Consolidado_Abono[Está no Prazo?] = "Fora do prazo",
+			    ISBLANK(Consolidado_Abono[Status da Justificativa])
+			)
+		formatString: 0
+		lineageTag: 271673b2-88ee-4343-95c6-4f7b2838fd2a
+
+	measure OS_Dentro_Prazo = ```
+			
+			CALCULATE(
+			    COUNTROWS(Consolidado_Abono),
+			    Consolidado_Abono[Está no Prazo?] = "Dentro do prazo"
+			)
+			
+			```
+		formatString: 0
+		lineageTag: 607a494c-476b-4fde-b3d3-0fcadb7cb190
+
+	measure OS_Fechadas_Fora_Prazo =
+			
+			CALCULATE (
+			    DISTINCTCOUNT ( Consolidado_Abono[OS_ID] ),
+			    KEEPFILTERS (
+			        UPPER ( TRIM ( Consolidado_Abono[Está no Prazo?] ) ) = "FORA DO PRAZO"
+			    )
+			)
+		formatString: 0
+		lineageTag: c44eb6ed-4e2a-4bbc-a3a3-df72424072f1
+
+		annotation PBI_FormatHint = {"isDecimal":true}
+
+	measure Total_OS = COUNTROWS(Consolidado_Abono)
+		formatString: 0
+		lineageTag: c9d6cc35-bba3-496f-91b4-4be1e204168d
+
+	measure SLA_Sem_Abono = ```
+			
+			VAR OSDentroPrazo = 
+			    CALCULATE(
+			        COUNTROWS(Consolidado_Abono),
+			        Consolidado_Abono[Está no Prazo?] = "Dentro do prazo"
+			    )
+			VAR TotalOS = 
+			    COUNTROWS(Consolidado_Abono)
+			RETURN
+			    DIVIDE(OSDentroPrazo, TotalOS, 0)
+			```
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 934e3f27-17cd-4ee5-8726-af65b3d26c56
+
+	measure SLA_Com_Abono = ```
+			
+			VAR OSDentroPrazo = 
+			    CALCULATE(
+			        COUNTROWS(Consolidado_Abono),
+			        Consolidado_Abono[Está no Prazo?] = "Dentro do prazo"
+			    )
+			VAR OSAbonadas = 
+			    CALCULATE(
+			        COUNTROWS(Consolidado_Abono),
+			        Consolidado_Abono[WF_Abono] = "Abonada"
+			    )
+			VAR TotalOS = 
+			    COUNTROWS(Consolidado_Abono)
+			RETURN
+			    DIVIDE(OSDentroPrazo + OSAbonadas, TotalOS, 0)
+			```
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 3f804412-296e-4697-b8ab-ac23f6c6efe3
+
+	measure Meta_SLA = 0.95
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 5bdc75f1-c0de-4f5f-bdec-8155cc64d97a
+
+	measure Ganho_Abono = [SLA_Com_Abono] - [SLA_Sem_Abono]
+		lineageTag: 2168c03a-c60f-4067-84d7-4ef33df6a697
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Qtd_Registros = COUNTROWS(Consolidado_Abono)
+		formatString: 0
+		lineageTag: f1bf5d4c-e1fd-4987-af2a-8dd8ef33cb97
+
+	measure Prazo_Em_Branco =
+			
+			CALCULATE(
+			    COUNTROWS(Consolidado_Abono),
+			    ISBLANK(Consolidado_Abono[Está no Prazo?])
+			)
+		formatString: 0
+		lineageTag: a398d610-22ca-4b55-8cde-675c6d51e29d
+
+	measure SLA_Real =
+			
+			DIVIDE([OS_Dentro_Prazo], [Total_OS], 0)
+		lineageTag: ee59aef1-57ef-44c1-b0e2-0b98c7d360ca
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Medida
+		lineageTag: 1141ce03-464e-45ba-957a-0890d57071bb
+
+		annotation 43dbc3e8-3a1c-4b6f-9923-b49ff7d6691c = True
+
+	measure Total_Abonadas_FP =
+			
+			CALCULATE(
+			    COUNTROWS(Consolidado_Abono),
+			    Consolidado_Abono[Está no Prazo?] = "Fora do prazo",
+			    NOT ISBLANK(Consolidado_Abono[WF_Abono])
+			)
+		formatString: 0
+		lineageTag: 012c898a-8628-4824-acc6-8c9082ab04e7
+
+	measure OS_Pendente_Abono =
+			
+			CALCULATE(
+			    COUNTROWS(Consolidado_Abono),
+			    Consolidado_Abono[Está no Prazo?] = "Fora do prazo",
+			    Consolidado_Abono[Status da Justificativa] = "Aguardando Justificativa"
+			)
+		formatString: 0
+		lineageTag: 99bfffed-7756-4150-8fb7-4e3ad8991b9c
+
+	measure Validacao =
+			[OS_Somente_BI] + [OS_Pendente_Abono] + [Total_Abonadas_FP]
+			// Deve ser igual a [Total_OS_FP]
+		formatString: 0
+		lineageTag: a90ec3cb-7e21-4c09-b9f0-ef8b034503ab
+
+	measure Teste_Aguardando =
+			
+			CALCULATE(
+			    COUNTROWS(Consolidado_Abono),
+			    Consolidado_Abono[Está no Prazo?] = "Fora do prazo",
+			    Consolidado_Abono[Status da Justificativa] = "Aguardando Justificativa"
+			)
+		formatString: 0
+		lineageTag: eac97770-edff-49f5-9b61-59f72769dc84
+
+	measure OS_Processadas =
+			
+			CALCULATE(
+			    COUNTROWS(Consolidado_Abono),
+			    Consolidado_Abono[Está no Prazo?] = "Fora do prazo",
+			    Consolidado_Abono[Status da Justificativa] <> "Aguardando Justificativa",
+			    NOT ISBLANK(Consolidado_Abono[Status da Justificativa])
+			)
+		formatString: 0
+		lineageTag: ba7719b7-a362-4ead-8f8c-87debf496892
+
+	measure Pendente_Justificativa =
+			
+			VAR OS_VisiveisComCondicao =
+			    FILTER (
+			        VALUES ( Consolidado_Abono[OS_ID] ),   -- só os OS_ID visíveis no contexto (matriz/tabela)
+			        CALCULATE (
+			            COUNTROWS (
+			                FILTER (
+			                    Consolidado_Abono,
+			                        Consolidado_Abono[Data_SLA] <> BLANK ()
+			                    &&  UPPER ( TRIM ( Consolidado_Abono[Está no Prazo?] ) ) = "FORA DO PRAZO"
+			                    &&  Consolidado_Abono[Fonte] = "Workfinity"
+			                    &&  TRIM ( Consolidado_Abono[Status da Justificativa] ) = "Aguardando Justificativa"
+			                )
+			            )
+			        ) > 0
+			    )
+			RETURN
+			COUNTROWS ( OS_VisiveisComCondicao )
+		formatString: 0
+		lineageTag: 8083040a-2f1c-4a91-98f2-4303397522f2
+
+	measure Just_Mais_Comum = ```
+			
+			VAR TabelaJustificativas = 
+			    ADDCOLUMNS(
+			        FILTER(
+			            VALUES(Consolidado_Abono[WF_Just_Prest]),
+			            NOT ISBLANK(Consolidado_Abono[WF_Just_Prest]) &&
+			            Consolidado_Abono[WF_Just_Prest] <> ""
+			        ),
+			        "Quantidade", CALCULATE(COUNTROWS(Consolidado_Abono))
+			    )
+			VAR MaxQuantidade = 
+			    MAXX(TabelaJustificativas, [Quantidade])
+			VAR JustificativaTop = 
+			    MAXX(
+			        FILTER(TabelaJustificativas, [Quantidade] = MaxQuantidade),
+			        Consolidado_Abono[WF_Just_Prest]
+			    )
+			RETURN
+			    JustificativaTop
+			```
+		lineageTag: f0de6cef-1f5b-4cc3-92e6-a072328f9695
+
+	measure Qtd_Just_Mais_Comum =
+			
+			VAR JustificativaTop = [Just_Mais_Comum]
+			RETURN
+			    CALCULATE(
+			        COUNTROWS(Consolidado_Abono),
+			        Consolidado_Abono[WF_Just_Prest] = JustificativaTop
+			    )
+		formatString: 0
+		lineageTag: 913b7ac1-b98e-4ece-adff-eaaf0d0d6fb2
+
+	measure Perc_Just_Mais_Comum = ```
+			
+			VAR TotalComJustificativa = 
+			    CALCULATE(
+			        COUNTROWS(Consolidado_Abono),
+			        NOT ISBLANK(Consolidado_Abono[WF_Just_Prest]),
+			        Consolidado_Abono[WF_Just_Prest] <> ""
+			    )
+			RETURN
+			    DIVIDE(
+			        [Qtd_Just_Mais_Comum],
+			        TotalComJustificativa,
+			        0
+			    )
+			```
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 7ec30402-7dde-45e8-aabc-81a38f3dcd1b
+
+	measure Total_Pendente_Abono =
+			
+			CALCULATE(
+			    COUNTROWS(Consolidado_Abono),
+			    Consolidado_Abono[Está no Prazo?] <> "Dentro do prazo",
+			    OR(
+			        ISBLANK(Consolidado_Abono[WF_Abono]),
+			        Consolidado_Abono[WF_Abono] = ""
+			    )
+			)
+		formatString: 0
+		lineageTag: cd8a618e-5a22-45f7-80d9-01bef2a5fa56
+
+	measure Abonos_Pendentes =
+			
+			VAR TabelaPendAbono =
+			    FILTER (
+			        Consolidado_Abono,
+			            NOT ISBLANK ( Consolidado_Abono[Data_SLA] )
+			        &&  UPPER ( TRIM ( Consolidado_Abono[Está no Prazo?] ) ) = "FORA DO PRAZO"
+			        &&  NOT ISBLANK ( Consolidado_Abono[Status da Justificativa] )
+			        &&  Consolidado_Abono[Status da Justificativa] <> "Aguardando Justificativa"
+			        &&  (
+			                ISBLANK ( Consolidado_Abono[WF_Abono] )
+			             || NOT (
+			                    UPPER ( TRIM ( Consolidado_Abono[WF_Abono] ) )
+			                        IN { "ABONADA", "NAO ABONADA", "NÃO ABONADA" }
+			                )
+			            )
+			    )
+			RETURN
+			CALCULATE (
+			    DISTINCTCOUNT ( Consolidado_Abono[OS_ID] ),
+			    TabelaPendAbono
+			)
+		formatString: 0
+		lineageTag: 0117148e-380f-47ae-a623-222bbf8f0e67
+
+	measure 'SLA Dif' =
+			
+			[SLA_Com_Abono] - [SLA_Sem_Abono]
+		formatString: +0,00%;-0,00%;0,00%
+		lineageTag: 7b8d938e-2c9a-4a70-acb9-de1c938908b4
+
+		annotation PBI_FormatHint = {"isCustom":true}
+
+	measure SLA_Resumo_Abono =
+			
+			VAR slaCom = [SLA_Com_Abono]
+			VAR slaSem = [SLA_Sem_Abono]
+			VAR dif    = [SLA Dif]
+			RETURN
+			    "SLA com abono: " & FORMAT(slaCom, "0,00%") &
+			    UNICHAR(10) &
+			    "SLA sem abono: " & FORMAT(slaSem, "0,00%") &
+			    UNICHAR(10) &
+			    "Diferença: " & FORMAT(dif, "+0,00%;-0,00%;0,00%")
+		lineageTag: e1d3df7f-76e6-4540-9b8b-1da74bf2083e
+
+	measure Pct_Pend_Just_FP =
+			
+			DIVIDE ( [Pendente_Justificativa], [Total_OS_FP] )
+		formatString: " 0.00%;-0.00%;0.00%"
+		lineageTag: a9278b79-5c0c-43ce-8e6f-9b63bc2d8430
+
+		annotation PBI_FormatHint = {"isCustom":true}
+
+	measure Pct_Pend_Just_FP_Media_Selecao =
+			
+			DIVIDE ( [Pendente_Justificativa], [Total_OS_FP] )  // mesma seleção atual
+		lineageTag: f2354745-18ed-42de-9b2f-252a7d6d399c
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Pct_Pend_Just_sobre_TotalOS =
+			
+			DIVIDE ( [Pendente_Justificativa], [Total_OS], 0 )
+		lineageTag: eada0a4a-5ff1-4e37-ad65-e01de7c968a9
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Total_OS_SLA_Base =
+			
+			VAR TabelaSLA =
+			    FILTER(
+			        Consolidado_Abono,
+			        NOT ISBLANK ( Consolidado_Abono[Data_SLA] )
+			    )
+			RETURN
+			CALCULATE(
+			    DISTINCTCOUNT ( Consolidado_Abono[OS_ID] ),
+			    TabelaSLA
+			)
+		formatString: 0
+		lineageTag: 71c3a1fa-054d-41c3-b784-6333f0b9329a
+
+	measure Qtd_OS_Justificado =
+			
+			VAR OS_VisiveisComCondicao =
+			    FILTER (
+			        VALUES ( Consolidado_Abono[OS_ID] ),
+			        CALCULATE (
+			            COUNTROWS (
+			                FILTER (
+			                    Consolidado_Abono,
+			                        Consolidado_Abono[Data_SLA] <> BLANK ()
+			                    &&  UPPER ( TRIM ( Consolidado_Abono[Está no Prazo?] ) ) = "FORA DO PRAZO"
+			                    &&  Consolidado_Abono[Fonte] = "Workfinity"
+			                    &&  NOT ISBLANK ( Consolidado_Abono[Status da Justificativa] )
+			                    &&  TRIM ( Consolidado_Abono[Status da Justificativa] ) <> "Aguardando Justificativa"
+			                )
+			            )
+			        ) > 0
+			    )
+			RETURN
+			COUNTROWS ( OS_VisiveisComCondicao )
+		formatString: 0
+		lineageTag: 43fc2f03-e4ce-450a-a7d6-60ee53efeb5c
+
+	measure Data_Ultima_Atualizacao_BI =
+			
+			FORMAT(
+			    MAX ( UltimaAtualizacao[DataHoraAtualizacao] ),
+			    "dd/MM/yyyy HH:mm"
+			)
+		lineageTag: 9d5fc0ba-4e21-46cb-9942-96df8317c3ec
+
+	measure Total_Abonos =
+			
+			CALCULATE (
+			    DISTINCTCOUNT ( Consolidado_Abono[OS_ID] ),
+			    KEEPFILTERS (
+			        UPPER ( TRIM ( Consolidado_Abono[WF_Abono] ) )
+			            IN { "ABONADA", "NAO ABONADA", "NÃO ABONADA" }
+			    )
+			)
+		formatString: 0
+		lineageTag: 6fca4249-291c-4625-b565-726bdae80118
+
+	column 'Nome da Origem'
+		dataType: string
+		lineageTag: bd5106d5-5fd9-4b9a-b25f-f2bbf0e1b09f
+		summarizeBy: none
+		sourceColumn: Nome da Origem
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'ID Cliente'
+		dataType: string
+		lineageTag: 3a244a64-57d2-46c6-92ac-17baec4f8b11
+		summarizeBy: none
+		sourceColumn: ID Cliente
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Número WorFinity'
+		dataType: string
+		lineageTag: 33d39b5c-8e7b-47fb-a46f-8108bc612331
+		summarizeBy: none
+		sourceColumn: Número WorFinity
+
+		annotation SummarizationSetBy = Automatic
+
+	column Polo
+		dataType: string
+		lineageTag: 3a4ad486-014f-414b-afb2-21bfb62bb34e
+		summarizeBy: none
+		sourceColumn: Polo
+
+		annotation SummarizationSetBy = Automatic
+
+	column cidade
+		dataType: string
+		lineageTag: 8436525f-8e68-440d-b1e5-29fcdb6433d2
+		summarizeBy: none
+		sourceColumn: cidade
+
+		annotation SummarizationSetBy = Automatic
+
+	column Técnico
+		dataType: string
+		lineageTag: 89c5fc00-02b5-4052-9b7b-5c9eb9c931c2
+		summarizeBy: none
+		sourceColumn: Técnico
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Novo Modelo'
+		dataType: string
+		lineageTag: 6eb28e33-b8a1-4964-a661-b038d417cf12
+		summarizeBy: none
+		sourceColumn: Novo Modelo
+
+		annotation SummarizationSetBy = Automatic
+
+	column Família
+		dataType: string
+		lineageTag: 430dff12-02ec-4b4a-b525-7b91a9d52f92
+		summarizeBy: none
+		sourceColumn: Família
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Tipo de Serviço'
+		dataType: string
+		lineageTag: 46ab7c4c-920a-41c7-97f3-35c7f0e292e6
+		summarizeBy: none
+		sourceColumn: Tipo de Serviço
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Data Limite Atendimento'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 10e20f5d-dccf-4e95-b06a-4c892bbed735
+		summarizeBy: none
+		sourceColumn: Data Limite Atendimento
+
+		variation Variation
+			isDefault
+			relationship: 97de29ff-6905-4f0e-9e82-b93db4da3511
+			defaultHierarchy: LocalDateTable_286b0e69-8d13-4dfd-a9c4-a9d3846f2503.'Hierarquia de datas'
+
+		changedProperty = DataType
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Fechamento OS'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 3ab4256f-d70d-45d1-87db-cf493c3561ec
+		summarizeBy: none
+		sourceColumn: Fechamento OS
+
+		variation Variation
+			isDefault
+			relationship: 4f4c6df7-7e3d-4d9c-99df-28309420c5a8
+			defaultHierarchy: LocalDateTable_78346c65-b008-4fd6-8d0a-72df0719f7bc.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Está no Prazo?'
+		dataType: string
+		lineageTag: 3e7ad5aa-f85c-4bb5-800a-86a55198ee35
+		summarizeBy: none
+		sourceColumn: Está no Prazo?
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Lead Time Dias Ùteis'
+		dataType: string
+		lineageTag: 5a976ed5-954d-47bf-8ec6-54039d4e6775
+		summarizeBy: none
+		sourceColumn: Lead Time Dias Ùteis
+
+		annotation SummarizationSetBy = Automatic
+
+	column cep
+		dataType: string
+		lineageTag: 5555678e-3bbc-4237-bcb6-b5a312fda344
+		summarizeBy: none
+		sourceColumn: cep
+
+		annotation SummarizationSetBy = Automatic
+
+	column estado
+		dataType: string
+		lineageTag: 46d5d163-ab0f-4dff-91b0-cf9e31bd1bbf
+		summarizeBy: none
+		sourceColumn: estado
+
+		annotation SummarizationSetBy = Automatic
+
+	column recebedor
+		dataType: string
+		lineageTag: 5442d5a0-0579-40ab-948c-72ee854c2a16
+		summarizeBy: none
+		sourceColumn: recebedor
+
+		annotation SummarizationSetBy = Automatic
+
+	column MesRef
+		dataType: string
+		lineageTag: 40aa1353-5544-4907-903c-9475efacfc4f
+		summarizeBy: none
+		sourceColumn: MesRef
+
+		annotation SummarizationSetBy = Automatic
+
+	column OS_ID
+		dataType: string
+		lineageTag: 83825723-674d-42e5-a18c-5dd66d1cf373
+		summarizeBy: none
+		sourceColumn: OS_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Status da Justificativa'
+		dataType: string
+		lineageTag: a653384c-a1b9-440b-bb17-cdf56116dab6
+		summarizeBy: none
+		sourceColumn: Status da Justificativa
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Status do Abono'
+		dataType: string
+		lineageTag: 2f272790-99b6-4246-8710-c43df5698584
+		summarizeBy: none
+		sourceColumn: Status do Abono
+
+		annotation SummarizationSetBy = Automatic
+
+	column Observação
+		dataType: string
+		lineageTag: f009546a-7729-4364-8bb4-1bead5ae71b8
+		summarizeBy: none
+		sourceColumn: Observação
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Justificativa do Prestador'
+		dataType: string
+		lineageTag: b13563a2-deff-425c-a335-1cbc3897a955
+		summarizeBy: none
+		sourceColumn: Justificativa do Prestador
+
+		annotation SummarizationSetBy = Automatic
+
+	column Fonte
+		dataType: string
+		lineageTag: a14cd15d-1536-4a45-939b-880058ac0b2e
+		summarizeBy: none
+		sourceColumn: Fonte
+
+		annotation SummarizationSetBy = Automatic
+
+	column Cod_Polo
+		dataType: string
+		lineageTag: 3f3c089a-b251-4bd4-b0cf-0d531805ee57
+		summarizeBy: none
+		sourceColumn: Cod_Polo
+
+		annotation SummarizationSetBy = Automatic
+
+	column Data_Fechamento_Limpa
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 5b0a9181-c343-4717-9953-45f8de6e1fb8
+		summarizeBy: none
+		sourceColumn: Data_Fechamento_Limpa
+
+		variation Variation
+			isDefault
+			relationship: 9b002cd0-159e-45a3-ae80-181c6548b95b
+			defaultHierarchy: LocalDateTable_d2166511-d4e5-40a5-bf4a-e91fa95269eb.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column WF_Abono_Flag
+		dataType: int64
+		formatString: 0
+		lineageTag: 987406e3-1ceb-42ac-91a2-5243c04264a9
+		summarizeBy: sum
+		sourceColumn: WF_Abono_Flag
+
+		annotation SummarizationSetBy = Automatic
+
+	column Categoria_Abono =
+			
+			IF(
+			    Consolidado_Abono[Está no Prazo?] = "Dentro do prazo",
+			    BLANK(),
+			    SWITCH(
+			        TRUE(),
+			        Consolidado_Abono[WF_Abono] = "Abonada", "Abonada",
+			        Consolidado_Abono[WF_Abono] = "Não Abonada", "Não Abonada",
+			        ISBLANK(Consolidado_Abono[WF_Abono]) || Consolidado_Abono[WF_Abono] = "", "Pendente de Abono",
+			        "Pendente de Abono"
+			    )
+			)
+		lineageTag: 22dd4bee-8fea-4693-8117-64d6e9501dec
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column Data_Snapshot
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 3e92a020-c700-4c47-b1b5-8f902fb8788c
+		summarizeBy: none
+		sourceColumn: Data_Snapshot
+
+		variation Variation
+			isDefault
+			relationship: c8745c01-dade-4ba2-b97d-d6e35b4fdc85
+			defaultHierarchy: LocalDateTable_ff11914c-e1b9-4338-85da-22037026d814.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column RET_WF_Just_Prest
+		dataType: string
+		lineageTag: 0873923b-c7f7-4711-a16b-15a9415999b9
+		summarizeBy: none
+		sourceColumn: RET_WF_Just_Prest
+
+		annotation SummarizationSetBy = Automatic
+
+	column RET_WF_Observacao
+		dataType: string
+		lineageTag: cbef35a5-1d25-4793-b4c2-11246cf4884c
+		summarizeBy: none
+		sourceColumn: RET_WF_Observacao
+
+		annotation SummarizationSetBy = Automatic
+
+	column RET_WF_Abono
+		dataType: string
+		lineageTag: e7a0cce1-2914-4b1a-b66c-f6ec4674420a
+		summarizeBy: none
+		sourceColumn: RET_WF_Abono
+
+		annotation SummarizationSetBy = Automatic
+
+	column WF_Abono
+		dataType: string
+		lineageTag: 73590f4e-c0b8-4819-8ef7-d9b035a477cc
+		summarizeBy: none
+		sourceColumn: WF_Abono
+
+		annotation SummarizationSetBy = Automatic
+
+	column WF_Just_Prest
+		dataType: string
+		lineageTag: 335b517d-efc8-4f46-a51a-4d22bf633aff
+		summarizeBy: none
+		sourceColumn: WF_Just_Prest
+
+		annotation SummarizationSetBy = Automatic
+
+	column WF_Observacao
+		dataType: string
+		lineageTag: b3a7837a-b8cb-4949-8653-7c7849f97ffa
+		summarizeBy: none
+		sourceColumn: WF_Observacao
+
+		annotation SummarizationSetBy = Automatic
+
+	column FechamentoOS_Date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 0f6f2b48-3311-4e3b-936c-acd433accbca
+		summarizeBy: none
+		sourceColumn: FechamentoOS_Date
+
+		variation Variation
+			isDefault
+			relationship: d2005fa9-bfa3-4267-b8e7-83820ae7c141
+			defaultHierarchy: LocalDateTable_71854807-17b0-4cf1-8c4b-4f976f23e99c.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Status Serial'
+		dataType: string
+		lineageTag: bc51fb7c-577f-4447-b27e-17de4d3f97f6
+		summarizeBy: none
+		sourceColumn: Status Serial
+
+		annotation SummarizationSetBy = Automatic
+
+	column Status_Prazo_Original
+		dataType: string
+		lineageTag: 85783b84-0603-4cfb-97cb-008e0023c8bb
+		summarizeBy: none
+		sourceColumn: Status_Prazo_Original
+
+		annotation SummarizationSetBy = Automatic
+
+	column Data_SLA
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 9cbbe7de-fce9-4d4b-b16e-2237a187bf61
+		summarizeBy: none
+		sourceColumn: Data_SLA
+
+		changedProperty = DataType
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Data e Hora Abertura'
+		dataType: string
+		lineageTag: ff87679b-f7cb-492f-8d35-e5702bea6d19
+		summarizeBy: none
+		sourceColumn: Data e Hora Abertura
+
+		annotation SummarizationSetBy = Automatic
+
+	column Revisita
+		dataType: string
+		lineageTag: 57d9fba5-f56d-4ddc-aa03-0ed2c492891d
+		summarizeBy: none
+		sourceColumn: Revisita
+
+		annotation SummarizationSetBy = Automatic
+
+	column Status_Abono
+		dataType: string
+		lineageTag: 5b1ff523-f8e0-4ea9-820f-bde4bf822cfb
+		summarizeBy: none
+		sourceColumn: Status_Abono
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Consolidado_Abono = m
+		mode: import
+		source =
+				let
+				    Base =
+				        Table.Combine({
+				            Consolidado_Abono_HISTORICO,
+				            Consolidado_Abono_ATUAL
+				        }),
+				
+				    JoinRevisita =
+				        Table.NestedJoin(
+				            Base,
+				            {"OS_ID"},
+				            Revisita_Consolidado,
+				            {"OS_ID"},
+				            "Rev",
+				            JoinKind.LeftOuter
+				        ),
+				
+				    ExpRevisita =
+				        Table.ExpandTableColumn(
+				            JoinRevisita,
+				            "Rev",
+				            {"2ª Visita foi no Prazo?"},
+				            {"Revisita"}
+				        ),
+				
+				    Status_Abono_Atualizado =
+				        Table.AddColumn(
+				            ExpRevisita,
+				            "__Status_Abono_Novo",
+				            each
+				                let
+				                    revSim = [Revisita] = "Sim",
+				                    fonteSomenteBI = [Fonte] = "Somente BI",
+				                    motivoRevisita =
+				                        Text.Trim([#"Justificativa do Prestador"]) = "Outros | Revisita"
+				                in
+				                    if revSim and (fonteSomenteBI or motivoRevisita)
+				                    then "Abonada"
+				                    else [Status_Abono],
+				            type text
+				        ),
+				
+				    RemoveStatusAntigo =
+				        Table.RemoveColumns(Status_Abono_Atualizado, {"Status_Abono"}),
+				
+				    RenomeiaStatus =
+				        Table.RenameColumns(
+				            RemoveStatusAntigo,
+				            {{"__Status_Abono_Novo", "Status_Abono"}}
+				        )
+				in
+				    RenomeiaStatus
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+

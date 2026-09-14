@@ -1,0 +1,204 @@
+===============================================
+CÓDIGOS M - POWER QUERY PARA DASH RV
+===============================================
+Base: Dados_RV_Janeiro_2026_1.xlsx (nova aba do Dash Justificativa de Abono)
+Se as abas do seu Excel tiverem outros nomes, altere em cada Fonte:
+  - DimColaboradores: aba "01 - Colaboradores Elegiveis"
+  - FactOS: aba "03 - Dados_Dentro_Fora_Ativação"
+  - FactCSAT: aba "04 - Dados_CSAT"
+
+-----------------------------------------------
+1. DIMCOLABORADORES (Base 01)
+-----------------------------------------------
+
+let
+    Fonte = Excel.Workbook(
+        File.Contents("C:\Users\sbahia\OneDrive - UNIVERSO ONLINE S.A\Área de Trabalho\Ambiente PY\logins\Dash Fifo\AUT RV\RV_JANEIRO26\Dados_RV_Janeiro_2026_1.xlsx"),
+        null,
+        true
+    ),
+    
+    Base01_Sheet = Fonte{[Item="01 - Colaboradores Elegiveis", Kind="Sheet"]}[Data],
+    
+    Cabecalhos = Table.PromoteHeaders(Base01_Sheet, [PromoteAllScalars=true]),
+    
+    // Normaliza tipos de dados
+    Tipos = Table.TransformColumnTypes(
+        Cabecalhos,
+        {
+            {"Periodo", type date},
+            {"Matricula", type text},
+            {"Nome", type text},
+            {"Polo RH Site", type text},
+            {"Cargo", type text},
+            {"DATA ADMISSÃO", type date},
+            {"DATA DEMISSÃO", type date}
+        },
+        "pt-BR"
+    ),
+    
+    // Limpa matrícula (remove espaços, padroniza)
+    LimpaMatricula = Table.TransformColumns(
+        Tipos,
+        {{"Matricula", each Text.Trim(Text.From(_)), type text}}
+    ),
+    
+    // Remove linhas sem matrícula
+    FiltraMatricula = Table.SelectRows(
+        LimpaMatricula,
+        each [Matricula] <> null and Text.Trim([Matricula]) <> ""
+    ),
+    
+    // Identifica se é Matriz/Admin (campo auxiliar para medidas)
+    AddTipoColaborador = Table.AddColumn(
+        FiltraMatricula,
+        "Tipo_Colaborador",
+        each
+            let
+                cargoUpper = Text.Upper(Text.Trim([Cargo]))
+            in
+                if cargoUpper = "TÉCNICO" then "Técnico"
+                else if cargoUpper = "ASSISTENTE" then "Assistente"
+                else if cargoUpper = "LÍDER" or cargoUpper = "LIDER" then "Líder"
+                else if cargoUpper = "COORDENADOR" then "Coordenador"
+                else if cargoUpper = "MATRIZ" or cargoUpper = "ADMIN" or cargoUpper = "ADMINISTRATIVO" then "Matriz/Admin"
+                else [Cargo],
+        type text
+    ),
+    
+    // Remove duplicatas por matrícula (manter o mais recente por período)
+    OrdenaPorPeriodo = Table.Sort(AddTipoColaborador, {{"Periodo", Order.Descending}}),
+    
+    UnicoPorMatricula = Table.Distinct(OrdenaPorPeriodo, {"Matricula"})
+    
+in
+    UnicoPorMatricula
+
+
+-----------------------------------------------
+2. FACTOS (Base 03 - Dados_Dentro_Fora_Ativação)
+-----------------------------------------------
+
+let
+    Fonte = Excel.Workbook(
+        File.Contents("C:\Users\sbahia\OneDrive - UNIVERSO ONLINE S.A\Área de Trabalho\Ambiente PY\logins\Dash Fifo\AUT RV\RV_JANEIRO26\Dados_RV_Janeiro_2026_1.xlsx"),
+        null,
+        true
+    ),
+    
+    Base03_Sheet = Fonte{[Item="03 - Dados_Dentro_Fora_Ativação", Kind="Sheet"]}[Data],
+    
+    Cabecalhos = Table.PromoteHeaders(Base03_Sheet, [PromoteAllScalars=true]),
+    
+    // Normaliza matrícula (pode estar como texto ou número)
+    NormalizaMatricula = Table.TransformColumns(
+        Cabecalhos,
+        {{"Matricula", each Text.Trim(Text.From(_)), type text}}
+    ),
+    
+    // Remove linhas sem matrícula
+    FiltraMatricula = Table.SelectRows(
+        NormalizaMatricula,
+        each [Matricula] <> null and Text.Trim([Matricula]) <> ""
+    ),
+    
+    // Padroniza campos de SLA e Ativação (ajustar nomes de colunas conforme sua base)
+    // Exemplo genérico - ajustar conforme nomes reais das colunas:
+    PadronizaSLA = 
+        if List.Contains(Table.ColumnNames(FiltraMatricula), "Está no Prazo?") 
+        or List.Contains(Table.ColumnNames(FiltraMatricula), "Dentro do Prazo")
+        or List.Contains(Table.ColumnNames(FiltraMatricula), "SLA")
+        then
+            Table.AddColumn(
+                FiltraMatricula,
+                "SLA_Dentro_Prazo",
+                each
+                    let
+                        colName = 
+                            if List.Contains(Table.ColumnNames(FiltraMatricula), "Está no Prazo?") then "Está no Prazo?"
+                            else if List.Contains(Table.ColumnNames(FiltraMatricula), "Dentro do Prazo") then "Dentro do Prazo"
+                            else "SLA",
+                        valor = try Text.Lower(Text.Trim(Text.From(Record.Field(_, colName)))) otherwise null
+                    in
+                        if valor = "sim" or valor = "dentro do prazo" or valor = "dentro" then 1
+                        else if valor = "não" or valor = "nao" or valor = "fora do prazo" or valor = "fora" then 0
+                        else null,
+                type number
+            )
+        else
+            FiltraMatricula,
+    
+    PadronizaAtivacao = 
+        if List.Contains(Table.ColumnNames(PadronizaSLA), "Ativação") 
+        or List.Contains(Table.ColumnNames(PadronizaSLA), "Ativacao")
+        then
+            Table.AddColumn(
+                PadronizaSLA,
+                "Ativacao_Flag",
+                each
+                    let
+                        colName = 
+                            if List.Contains(Table.ColumnNames(PadronizaSLA), "Ativação") then "Ativação"
+                            else "Ativacao",
+                        valor = try Text.Lower(Text.Trim(Text.From(Record.Field(_, colName)))) otherwise null
+                    in
+                        if valor = "sim" or valor = "s" then 1
+                        else if valor = "não" or valor = "nao" or valor = "n" then 0
+                        else null,
+                type number
+            )
+        else
+            PadronizaSLA
+    
+in
+    PadronizaAtivacao
+
+
+-----------------------------------------------
+3. FACTCSAT (Base 04 - Dados_CSAT)
+-----------------------------------------------
+
+let
+    Fonte = Excel.Workbook(
+        File.Contents("C:\Users\sbahia\OneDrive - UNIVERSO ONLINE S.A\Área de Trabalho\Ambiente PY\logins\Dash Fifo\AUT RV\RV_JANEIRO26\Dados_RV_Janeiro_2026_1.xlsx"),
+        null,
+        true
+    ),
+    
+    Base04_Sheet = Fonte{[Item="04 - Dados_CSAT", Kind="Sheet"]}[Data],
+    
+    Cabecalhos = Table.PromoteHeaders(Base04_Sheet, [PromoteAllScalars=true]),
+    
+    // Normaliza matrícula
+    TiposMatricula = Table.TransformColumnTypes(
+        Cabecalhos,
+        {{"nota_pesquisa", Int64.Type}},
+        "pt-BR"
+    ),
+    NormalizaMatricula = Table.TransformColumns(
+        TiposMatricula,
+        {{"Matricula", each Text.Trim(Text.From(_)), type text}}
+    ),
+    
+    // Remove linhas sem matrícula ou sem nota
+    FiltraValidos = Table.SelectRows(
+        NormalizaMatricula,
+        each [Matricula] <> null 
+            and Text.Trim([Matricula]) <> "" 
+            and [nota_pesquisa] <> null
+            and [nota_pesquisa] >= 1
+            and [nota_pesquisa] <= 5
+    ),
+    
+    // Renomeia colunas para padrão (ajustar conforme necessário)
+    RenomeiaColunas = Table.RenameColumns(
+        FiltraValidos,
+        {
+            {"Coordenador.Coordenador", "Coordenador"},
+            {"Codigo Polo", "Codigo_Polo"}
+        },
+        MissingField.Ignore
+    )
+    
+in
+    RenomeiaColunas

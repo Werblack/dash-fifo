@@ -1,0 +1,241 @@
+table Justificativa_Consolidada
+	lineageTag: f7b06fae-76ef-4095-8f95-4acab581242c
+
+	column 'Nome da Origem'
+		dataType: string
+		lineageTag: e11369c1-9d05-4d0a-8681-7512997e5cc8
+		summarizeBy: none
+		sourceColumn: Nome da Origem
+
+		annotation SummarizationSetBy = Automatic
+
+	column Código
+		dataType: int64
+		formatString: 0
+		lineageTag: f36da820-83b8-4475-a8b8-ee7f7192222c
+		summarizeBy: sum
+		sourceColumn: Código
+
+		annotation SummarizationSetBy = Automatic
+
+	column Cliente
+		dataType: int64
+		formatString: 0
+		lineageTag: fdc1fb20-6c02-437d-8766-6a980814ddfc
+		summarizeBy: sum
+		sourceColumn: Cliente
+
+		annotation SummarizationSetBy = Automatic
+
+	column Cidade
+		dataType: string
+		lineageTag: 708a46a8-2aba-47b1-9f70-56d6e72520e6
+		summarizeBy: none
+		sourceColumn: Cidade
+
+		annotation SummarizationSetBy = Automatic
+
+	column CEP
+		dataType: int64
+		formatString: 0
+		lineageTag: d2d588ea-727b-4689-a33d-a448868442d5
+		summarizeBy: sum
+		sourceColumn: CEP
+
+		annotation SummarizationSetBy = Automatic
+
+	column Estado
+		dataType: string
+		lineageTag: cabf67e1-2e41-4b1a-b03c-48c62f2f243a
+		summarizeBy: none
+		sourceColumn: Estado
+
+		annotation SummarizationSetBy = Automatic
+
+	column Cliente_1
+		dataType: string
+		lineageTag: f3e78b79-ce2e-4c30-a7ef-6b9fb10d6d0b
+		summarizeBy: none
+		sourceColumn: Cliente_1
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Cliente (Apelido)'
+		dataType: string
+		lineageTag: f7f15897-81f7-416d-8feb-d312f08cbefe
+		summarizeBy: none
+		sourceColumn: Cliente (Apelido)
+
+		annotation SummarizationSetBy = Automatic
+
+	column Contratante
+		dataType: string
+		lineageTag: 3709886c-26a3-41aa-80fd-491ebdfefeb8
+		summarizeBy: none
+		sourceColumn: Contratante
+
+		annotation SummarizationSetBy = Automatic
+
+	column Serviço
+		dataType: string
+		lineageTag: a3fed1e7-d156-410c-a36d-c9ee7bf29103
+		summarizeBy: none
+		sourceColumn: Serviço
+
+		annotation SummarizationSetBy = Automatic
+
+	column Status
+		dataType: string
+		lineageTag: e9499e8b-8141-4270-96d4-8e36f034fa7e
+		summarizeBy: none
+		sourceColumn: Status
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Data de Fechamento'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 48d37416-8cba-4327-b9f6-039b6fb7b0b4
+		summarizeBy: none
+		sourceColumn: Data de Fechamento
+
+		variation Variation
+			isDefault
+			relationship: b2564fa8-9200-4f55-a18f-b7f088905101
+			defaultHierarchy: LocalDateTable_a931b3ab-9706-4373-8854-93589fc60959.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Data Limite do Prestador de Serviço'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 07e18480-f49b-4cce-93e6-ecc696668f53
+		summarizeBy: none
+		sourceColumn: Data Limite do Prestador de Serviço
+
+		variation Variation
+			isDefault
+			relationship: 13a6553c-3eaa-4afa-a0d5-db1116b5bd67
+			defaultHierarchy: LocalDateTable_c550e610-a402-40f7-8ce8-b8eaef688370.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Status da Justificativa'
+		dataType: string
+		lineageTag: 1a1aa687-2759-47b5-a7e9-de940ed04744
+		summarizeBy: none
+		sourceColumn: Status da Justificativa
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Status do Abono'
+		dataType: string
+		lineageTag: 86f29276-4635-4d69-b001-17b6fdbca7f5
+		summarizeBy: none
+		sourceColumn: Status do Abono
+
+		annotation SummarizationSetBy = Automatic
+
+	column Observação
+		dataType: string
+		lineageTag: e3fc3447-1397-408c-a876-300faeb641fd
+		summarizeBy: none
+		sourceColumn: Observação
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Prestador de Serviço'
+		dataType: string
+		lineageTag: 5874843d-8114-4a7c-97e3-16d924dd3449
+		summarizeBy: none
+		sourceColumn: Prestador de Serviço
+
+		annotation SummarizationSetBy = Automatic
+
+	column Técnico
+		dataType: string
+		lineageTag: 77eafdbc-6b88-49d7-82ff-5c19fc920838
+		summarizeBy: none
+		sourceColumn: Técnico
+
+		annotation SummarizationSetBy = Automatic
+
+	column Modelo
+		dataType: string
+		lineageTag: acf4d2c4-0014-4fce-bc87-3ad13844b88c
+		summarizeBy: none
+		sourceColumn: Modelo
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Justificativa do Prestador'
+		dataType: string
+		lineageTag: 19dc94ba-3c57-4ed1-92f7-01925e17981b
+		summarizeBy: none
+		sourceColumn: Justificativa do Prestador
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Justificativa do Tenant'
+		dataType: string
+		lineageTag: a9bfd2b8-9447-486a-b80e-750f0332887f
+		summarizeBy: none
+		sourceColumn: Justificativa do Tenant
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Responsável pelo Abono'
+		dataType: string
+		lineageTag: 47c96655-7e97-4a84-b9f6-41561378bb8d
+		summarizeBy: none
+		sourceColumn: Responsável pelo Abono
+
+		annotation SummarizationSetBy = Automatic
+
+	column MesRef
+		dataType: string
+		lineageTag: 22484eff-ce49-4642-a767-32f45cf193f7
+		summarizeBy: none
+		sourceColumn: MesRef
+
+		annotation SummarizationSetBy = Automatic
+
+	column OS_ID
+		dataType: string
+		lineageTag: 292b16bb-8b4a-45b4-aa70-68a8d211f371
+		summarizeBy: none
+		sourceColumn: OS_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Justificativa_Consolidada = m
+		mode: import
+		source =
+				let
+				    Fonte = Folder.Files("C:\Users\sbahia\OneDrive - UNIVERSO ONLINE S.A\Área de Trabalho\Ambiente PY\logins\Dash Fifo\Dados Mensais"),
+				    #"Linhas Filtradas" = Table.SelectRows(Fonte, each Text.Contains([Name], "justificativa de abono")),
+				    #"Arquivos Ocultos Filtrados1" = Table.SelectRows(#"Linhas Filtradas", each [Attributes]?[Hidden]? <> true),
+				    #"Invocar Função Personalizada1" = Table.AddColumn(#"Arquivos Ocultos Filtrados1", "Transformar Arquivo (2)", each #"Transformar Arquivo (2)"([Content])),
+				    #"Colunas Renomeadas1" = Table.RenameColumns(#"Invocar Função Personalizada1", {"Name", "Nome da Origem"}),
+				    #"Outras Colunas Removidas1" = Table.SelectColumns(#"Colunas Renomeadas1", {"Nome da Origem", "Transformar Arquivo (2)"}),
+				    #"Coluna de Tabela Expandida1" = Table.ExpandTableColumn(#"Outras Colunas Removidas1", "Transformar Arquivo (2)", Table.ColumnNames(#"Transformar Arquivo (2)"(#"Arquivo de Amostra (2)"))),
+				    #"Linhas Filtradas1" = Table.SelectRows(#"Coluna de Tabela Expandida1", each true),
+				    #"Tipo Alterado" = Table.TransformColumnTypes(#"Linhas Filtradas1",{{"Nome da Origem", type text}, {"Código", Int64.Type}, {"Cliente", Int64.Type}, {"Cidade", type text}, {"CEP", Int64.Type}, {"Estado", type text}, {"Cliente_1", type text}, {"Cliente (Apelido)", type text}, {"Contratante", type text}, {"Serviço", type text}, {"Status", type text}, {"Data de Fechamento", type datetime}, {"Data Limite do Prestador de Serviço", type datetime}, {"Status da Justificativa", type text}, {"Status do Abono", type text}, {"Observação", type text}, {"Prestador de Serviço", type text}, {"Técnico", type text}, {"Modelo", type text}, {"Justificativa do Prestador", type text}, {"Justificativa do Tenant", type any}, {"Responsável pelo Abono", type any}}),
+				    #"Personalização Adicionada" = Table.AddColumn(#"Tipo Alterado", "MesRef", each Text.Range([Nome da Origem], Text.PositionOf([Nome da Origem], "2025-"), 7)),
+				    #"Personalização Adicionada1" = Table.AddColumn(#"Personalização Adicionada", "OS_ID", each Text.Trim(Text.From([Código]))),
+				    #"Tipo Alterado1" = Table.TransformColumnTypes(#"Personalização Adicionada1",{{"OS_ID", type text}}),
+				
+				    // Ordena pela data mais recente
+				    #"Linhas Ordenadas" = Table.Sort(#"Tipo Alterado1", {{"Data de Fechamento", Order.Descending}}),
+				
+				    // Remove duplicados mantendo somente a linha mais recente de cada OS_ID
+				    #"Removidas Duplicatas" = Table.Distinct(#"Linhas Ordenadas", {"OS_ID"}),
+				
+				    #"Colunas Reordenadas" = Table.ReorderColumns(#"Removidas Duplicatas",{"OS_ID", "Nome da Origem", "Código", "Cliente", "Cidade", "CEP", "Estado", "Cliente_1", "Cliente (Apelido)", "Contratante", "Serviço", "Status", "Data de Fechamento", "Data Limite do Prestador de Serviço", "Status da Justificativa", "Status do Abono", "Observação", "Prestador de Serviço", "Técnico", "Modelo", "Justificativa do Prestador", "Justificativa do Tenant", "Responsável pelo Abono", "MesRef"})
+				in
+				    #"Colunas Reordenadas"
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+

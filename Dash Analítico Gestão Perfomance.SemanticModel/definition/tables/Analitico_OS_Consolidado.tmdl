@@ -1,0 +1,202 @@
+table Analitico_OS_Consolidado
+	lineageTag: 3f3c6241-660b-4cd1-9ce5-d840e5fe0412
+
+	column 'Nome da Origem'
+		dataType: string
+		lineageTag: dafa4c6c-a807-4d31-b30e-2e8b4740ca44
+		summarizeBy: none
+		sourceColumn: Nome da Origem
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'ID Cliente'
+		dataType: string
+		lineageTag: 7d3ee999-1a97-4c98-852e-0dcf8e0efacc
+		summarizeBy: none
+		sourceColumn: ID Cliente
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Número WorFinity'
+		dataType: string
+		lineageTag: b484b811-5335-40cc-89fc-c4db71b9a6f6
+		summarizeBy: none
+		sourceColumn: Número WorFinity
+
+		annotation SummarizationSetBy = Automatic
+
+	column Polo
+		dataType: string
+		lineageTag: c1cc521a-3dd7-4069-947e-cf1619738a65
+		summarizeBy: none
+		sourceColumn: Polo
+
+		annotation SummarizationSetBy = Automatic
+
+	column cidade
+		dataType: string
+		lineageTag: ebf4cae1-33b7-4bd0-983e-5f8ff05b1d87
+		summarizeBy: none
+		sourceColumn: cidade
+
+		annotation SummarizationSetBy = Automatic
+
+	column Técnico
+		dataType: string
+		lineageTag: a2112ed6-9b9f-486c-944a-622bc653a59c
+		summarizeBy: none
+		sourceColumn: Técnico
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Novo Modelo'
+		dataType: string
+		lineageTag: 5e36838f-ef28-496a-a24e-0ab7d44d9a8a
+		summarizeBy: none
+		sourceColumn: Novo Modelo
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Data Limite Atendimento'
+		dataType: string
+		lineageTag: 3ac429a7-1189-4707-b5f7-9a85716970e8
+		summarizeBy: none
+		sourceColumn: Data Limite Atendimento
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Fechamento OS'
+		dataType: string
+		lineageTag: 27233e93-48d9-419a-bfb0-34fad16db27e
+		summarizeBy: none
+		sourceColumn: Fechamento OS
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Está no Prazo?'
+		dataType: string
+		lineageTag: 3e35161b-e953-4e72-89ad-60ff37909ed3
+		summarizeBy: none
+		sourceColumn: Está no Prazo?
+
+		annotation SummarizationSetBy = Automatic
+
+	column estado
+		dataType: string
+		lineageTag: 6396a694-1198-4dcb-b228-b72d9b52089e
+		summarizeBy: none
+		sourceColumn: estado
+
+		annotation SummarizationSetBy = Automatic
+
+	column recebedor
+		dataType: string
+		lineageTag: 63f397ed-f5b9-4949-a2c0-70f41f39b9dd
+		summarizeBy: none
+		sourceColumn: recebedor
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Tipo de Visita'
+		dataType: string
+		lineageTag: 6a87ff57-6530-4606-bab3-1a36afc5910e
+		summarizeBy: none
+		sourceColumn: Tipo de Visita
+
+		annotation SummarizationSetBy = Automatic
+
+	column MesRef
+		dataType: string
+		lineageTag: 6bc091fc-9e8c-49b7-8317-01c01f22c4e5
+		summarizeBy: none
+		sourceColumn: MesRef
+
+		annotation SummarizationSetBy = Automatic
+
+	column OS_ID
+		dataType: string
+		lineageTag: 783000e5-c39b-4195-a1bb-5a3ba0581efd
+		summarizeBy: none
+		sourceColumn: OS_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Familia
+		dataType: string
+		lineageTag: 57e54357-ecde-4ce4-b7d2-3fbb15055fa5
+		summarizeBy: none
+		sourceColumn: Familia
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Data e Hora Abertura'
+		dataType: string
+		lineageTag: e8f8e83c-8dcd-455a-9779-0cd6ffddf972
+		summarizeBy: none
+		sourceColumn: Data e Hora Abertura
+
+		annotation SummarizationSetBy = Automatic
+
+	column Cep
+		dataType: string
+		lineageTag: 5e65f82c-7f2b-410f-b527-119478631b68
+		summarizeBy: none
+		sourceColumn: Cep
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Status Serial'
+		dataType: string
+		lineageTag: d7af6fa6-8fc6-49d5-bd6f-c2a308d1f79e
+		summarizeBy: none
+		sourceColumn: Status Serial
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Analitico_OS_Consolidado = m
+		mode: import
+		source =
+				let
+				    Fonte = Folder.Files("C:\Users\sbahia\OneDrive - UNIVERSO ONLINE S.A\Área de Trabalho\Ambiente PY\logins\Dash Fifo\Dados Mensais"),
+				    #"Linhas Filtradas" = Table.SelectRows(Fonte, each Text.Contains([Name], "Analítico de OS's Finalizadas")),
+				    #"Arquivos Ocultos Filtrados1" = Table.SelectRows(#"Linhas Filtradas", each [Attributes]?[Hidden]? <> true),
+				    #"Invocar Função Personalizada1" = Table.AddColumn(#"Arquivos Ocultos Filtrados1", "Transformar Arquivo", each #"Transformar Arquivo"([Content])),
+				    #"Colunas Renomeadas1" = Table.RenameColumns(#"Invocar Função Personalizada1", {"Name", "Nome da Origem"}),
+				    #"Outras Colunas Removidas1" = Table.SelectColumns(#"Colunas Renomeadas1", {"Nome da Origem", "Transformar Arquivo"}),
+				    #"Coluna de Tabela Expandida1" = Table.ExpandTableColumn(#"Outras Colunas Removidas1", "Transformar Arquivo", Table.ColumnNames(#"Transformar Arquivo"(#"Arquivo de Amostra"))),
+				
+				    // normaliza cabeçalhos variáveis
+				    MapCols = {{"Cidade","cidade"},{"CEP","cep"},{"Estado","estado"},{"Recebedor","recebedor"},{"Está no Prazo","Está no Prazo?"},{"Esta no Prazo","Está no Prazo?"}},
+				    Normalizado = List.Accumulate(MapCols, #"Coluna de Tabela Expandida1",
+				                    (t, p) => if List.Contains(Table.ColumnNames(t), p{0}) then Table.RenameColumns(t, {p}, MissingField.Ignore) else t),
+				
+				    // padroniza valores (novo mês 10 e antigo)
+				    PrazoPadronizado =
+				        if List.Contains(Table.ColumnNames(Normalizado), "Está no Prazo?")
+				        then
+				            Table.TransformColumns(
+				                Normalizado,
+				                {{"Está no Prazo?",
+				                  each let v = Text.Lower(Text.Trim(Text.From(_)))
+				                       in  if v = "fechada dentro do prazo" or v = "dentro do prazo" then "Dentro do prazo"
+				                           else if v = "fechada fora do prazo" or v = "fora do prazo" then "Fora do prazo"
+				                           else _,
+				                  type text}}
+				            )
+				        else Normalizado,
+				
+				    #"Personalização Adicionada" = Table.AddColumn(PrazoPadronizado, "MesRef", each Text.Range([Nome da Origem], Text.PositionOf([Nome da Origem], "2025-"), 7)),
+				    #"Personalização Adicionada1" = Table.AddColumn(#"Personalização Adicionada", "OS_ID", each Text.Trim(Text.From([Número WorFinity]))),
+				    #"Tipo Alterado" = Table.TransformColumnTypes(#"Personalização Adicionada1",{{"OS_ID", type text}}),
+				    #"Colunas Reordenadas" = Table.ReorderColumns(#"Tipo Alterado",
+				        {"OS_ID","Nome da Origem","ID Cliente","Número WorFinity","Polo","cidade","Técnico","Novo Modelo","Família","Tipo de Serviço",
+				         "Abertura OS","Data Limite Atendimento","Fechamento OS","Está no Prazo?","Lead Time Dias Ùteis","cep","estado","recebedor",
+				         "Data Ativação Equipamento","Status da Ativação","Carteira","Tipo de Visita","Origem de Venda","MesRef"},
+				         MissingField.Ignore)
+				in
+				    #"Colunas Reordenadas"
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+

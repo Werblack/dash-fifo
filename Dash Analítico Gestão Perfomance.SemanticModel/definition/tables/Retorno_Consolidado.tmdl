@@ -1,0 +1,317 @@
+table Retorno_Consolidado
+	lineageTag: b13db531-ad98-4e06-915a-4f7a5521eec9
+
+	column 'Nome da Origem'
+		dataType: string
+		lineageTag: 73f51490-03b4-4279-9db3-9613ed433a20
+		summarizeBy: none
+		sourceColumn: Nome da Origem
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Número WorFinity'
+		dataType: int64
+		formatString: 0
+		lineageTag: 1a412efb-dea7-47b8-9937-42125caa7258
+		summarizeBy: sum
+		sourceColumn: Número WorFinity
+
+		annotation SummarizationSetBy = Automatic
+
+	column Polo
+		dataType: string
+		lineageTag: 5de5019c-04fe-420f-8d3c-44b0f47835be
+		summarizeBy: none
+		sourceColumn: Polo
+
+		annotation SummarizationSetBy = Automatic
+
+	column cidade
+		dataType: string
+		lineageTag: 5a8055f4-f003-4d69-9cda-98fd83acb83f
+		summarizeBy: none
+		sourceColumn: cidade
+
+		annotation SummarizationSetBy = Automatic
+
+	column Técnico
+		dataType: string
+		lineageTag: 5cfba525-a8ae-426b-b845-3809a9c37329
+		summarizeBy: none
+		sourceColumn: Técnico
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Novo Modelo'
+		dataType: string
+		lineageTag: ba1cedba-da98-4bd6-b7c9-994cb9b4fe5f
+		summarizeBy: none
+		sourceColumn: Novo Modelo
+
+		annotation SummarizationSetBy = Automatic
+
+	column Família
+		dataType: string
+		lineageTag: 03a7ea64-291a-4a08-b72f-a5af44b12279
+		summarizeBy: none
+		sourceColumn: Família
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Tipo de Serviço'
+		dataType: string
+		lineageTag: 8440aa91-f0cc-43ae-99b8-0e9acf487cd3
+		summarizeBy: none
+		sourceColumn: Tipo de Serviço
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Abertura OS'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: e570bf19-9937-4d6a-980f-d2fd7e3f68d3
+		summarizeBy: none
+		sourceColumn: Abertura OS
+
+		variation Variation
+			isDefault
+			relationship: c6fccf8b-8daa-4489-a1f5-18520c71b51c
+			defaultHierarchy: LocalDateTable_6706cbee-c893-4347-afcd-2b161bf105dc.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Data Limite Atendimento'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 5585aad7-cbad-4bef-bd3f-04dc622bdf58
+		summarizeBy: none
+		sourceColumn: Data Limite Atendimento
+
+		variation Variation
+			isDefault
+			relationship: 9d6aaf9d-4e5d-4929-a8bb-1cc1921a75c1
+			defaultHierarchy: LocalDateTable_4551e65f-a3aa-416e-bba2-58ea3a55c151.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Fechamento OS'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: b5ef1b77-ec8a-4564-9aee-132d76143215
+		summarizeBy: none
+		sourceColumn: Fechamento OS
+
+		variation Variation
+			isDefault
+			relationship: 01b7b0a3-c92d-43be-b17f-1ee4fb7315fd
+			defaultHierarchy: LocalDateTable_f3d7c977-9d64-470f-a157-bfd0ea512994.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Está no Prazo?'
+		dataType: string
+		lineageTag: b4a846b7-6902-4980-8020-200e51646aaa
+		summarizeBy: none
+		sourceColumn: Está no Prazo?
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Lead Time Dias Ùteis'
+		dataType: int64
+		formatString: 0
+		lineageTag: 4f9c1d1f-78f1-4d1a-89e3-b2d9831cd59d
+		summarizeBy: sum
+		sourceColumn: Lead Time Dias Ùteis
+
+		annotation SummarizationSetBy = Automatic
+
+	column cep
+		dataType: int64
+		formatString: 0
+		lineageTag: cdb7e88c-d7b4-45ac-9841-7cb5f966dfe7
+		summarizeBy: sum
+		sourceColumn: cep
+
+		annotation SummarizationSetBy = Automatic
+
+	column estado
+		dataType: string
+		lineageTag: c4ab08b4-9b53-4509-b551-15e64424bce7
+		summarizeBy: none
+		sourceColumn: estado
+
+		annotation SummarizationSetBy = Automatic
+
+	column WF_Just_Prest
+		dataType: string
+		lineageTag: fe788d69-fcb8-45e0-bbed-04551caed888
+		summarizeBy: none
+		sourceColumn: WF_Just_Prest
+
+		annotation SummarizationSetBy = Automatic
+
+	column WF_Observacao
+		dataType: string
+		lineageTag: b09929f8-f551-456f-85d5-95d66ccc6897
+		summarizeBy: none
+		sourceColumn: WF_Observacao
+
+		annotation SummarizationSetBy = Automatic
+
+	column WF_Abono
+		dataType: string
+		lineageTag: 8d9518f7-4e5e-4fb7-8015-c54c15bd8c27
+		summarizeBy: none
+		sourceColumn: WF_Abono
+
+		annotation SummarizationSetBy = Automatic
+
+	column OS_ID
+		dataType: string
+		lineageTag: ac07b1b9-0b5f-452e-8e17-6677025d2e3e
+		summarizeBy: none
+		sourceColumn: OS_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column MesRef
+		dataType: string
+		lineageTag: aa478c5d-330f-47d6-9e66-3ce3090d3158
+		summarizeBy: none
+		sourceColumn: MesRef
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Retorno_Consolidado = m
+		mode: import
+		source =
+				let
+				    Fonte =
+				        Folder.Files(
+				            "C:\Users\sbahia\OneDrive - UNIVERSO ONLINE S.A\Área de Trabalho\Ambiente PY\logins\Dash Fifo\Dados Mensais"
+				        ),
+				
+				    // pega qualquer arquivo cujo nome comece com “Retorno abono_”
+				    #"Linhas Filtradas" =
+				        Table.SelectRows(
+				            Fonte,
+				            each Text.StartsWith( Text.Lower([Name]), "retorno abono_" )
+				        ),
+				
+				    #"Arquivos Ocultos Filtrados1" =
+				        Table.SelectRows(
+				            #"Linhas Filtradas",
+				            each [Attributes]?[Hidden]? <> true
+				        ),
+				
+				    #"Invocar Função Personalizada1" =
+				        Table.AddColumn(
+				            #"Arquivos Ocultos Filtrados1",
+				            "Transformar Arquivo (3)",
+				            each #"Transformar Arquivo (3)"([Content])
+				        ),
+				
+				    #"Colunas Renomeadas1" =
+				        Table.RenameColumns(
+				            #"Invocar Função Personalizada1",
+				            {"Name", "Nome da Origem"}
+				        ),
+				
+				    #"Outras Colunas Removidas1" =
+				        Table.SelectColumns(
+				            #"Colunas Renomeadas1",
+				            {"Nome da Origem", "Transformar Arquivo (3)"}
+				        ),
+				
+				    #"Coluna de Tabela Expandida1" =
+				        Table.ExpandTableColumn(
+				            #"Outras Colunas Removidas1",
+				            "Transformar Arquivo (3)",
+				            Table.ColumnNames(#"Transformar Arquivo (3)"(#"Arquivo de Amostra (3)"))
+				        ),
+				
+				    #"Tipo Alterado" =
+				        Table.TransformColumnTypes(
+				            #"Coluna de Tabela Expandida1",
+				            {
+				                {"Nome da Origem", type text},
+				                {"Número WorFinity", Int64.Type},
+				                {"Polo", type text},
+				                {"cidade", type text},
+				                {"Técnico", type text},
+				                {"Novo Modelo", type text},
+				                {"Família", type text},
+				                {"Tipo de Serviço", type text},
+				                {"Abertura OS", type datetime},
+				                {"Data Limite Atendimento", type datetime},
+				                {"Fechamento OS", type datetime},
+				                {"Está no Prazo?", type text},
+				                {"Lead Time Dias Ùteis", Int64.Type},
+				                {"cep", Int64.Type},
+				                {"estado", type text},
+				                {"WF_Just_Prest", type text},
+				                {"WF_Observacao", type any},
+				                {"WF_Abono", type text}
+				            }
+				        ),
+				
+				    #"Personalização Adicionada" =
+				        Table.AddColumn(
+				            #"Tipo Alterado",
+				            "OS_ID",
+				            each Text.Trim( Text.From([Número WorFinity]) )
+				        ),
+				
+				    #"Tipo Alterado1" =
+				        Table.TransformColumnTypes(
+				            #"Personalização Adicionada",
+				            {{"OS_ID", type text}}
+				        ),
+				
+				    #"Personalização Adicionada1" =
+				        Table.AddColumn(
+				            #"Tipo Alterado1",
+				            "MesRef",
+				            each
+				                let
+				                    pos = Text.PositionOf([Nome da Origem], "2025-")
+				                in
+				                    if pos >= 0 then Text.Range([Nome da Origem], pos, 7) else null
+				        ),
+				
+				    #"Colunas Reordenadas" =
+				        Table.ReorderColumns(
+				            #"Personalização Adicionada1",
+				            {
+				                "OS_ID",
+				                "Nome da Origem",
+				                "Número WorFinity",
+				                "Polo",
+				                "cidade",
+				                "Técnico",
+				                "Novo Modelo",
+				                "Família",
+				                "Tipo de Serviço",
+				                "Abertura OS",
+				                "Data Limite Atendimento",
+				                "Fechamento OS",
+				                "Está no Prazo?",
+				                "Lead Time Dias Ùteis",
+				                "cep",
+				                "estado",
+				                "WF_Just_Prest",
+				                "WF_Observacao",
+				                "WF_Abono",
+				                "MesRef"
+				            }
+				        ),
+				
+				    #"Linhas Filtradas1" =
+				        Table.SelectRows(#"Colunas Reordenadas", each true)
+				in
+				    #"Linhas Filtradas1"
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+
